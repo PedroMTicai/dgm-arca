@@ -8,6 +8,18 @@ Run::
 
     uv run python -m rlm.train_grpo --data rlm/data/train.jsonl --init-adapter rlm/weights/sft_lora
 
+Rewards for our MedDRA coding task (``--verifier meddra``, the default for a JSONL dataset):
+
+* ``format_reward``: the ``<think>…</think><answer>…</answer>`` structure.
+* ``accuracy_reward``: ``MedDRAVerifier`` on the answer, 1.0 if the set of Preferred Terms is
+  exactly the expected one. With ``--partial-credit`` it is the F1 between both sets instead,
+  a denser signal for the experiment on sparse rewards.
+* ``domain_reward``: MedDRA vocabulary validity (``rlm.meddra.validity_score``). An E2B
+  report with a term that is not in MedDRA is rejected by the regulator, and a term at the
+  wrong level (an LLT, a US spelling) needs a human to fix it. So each name in the answer
+  scores 1.0 if it is an exact PT, 0.5 if it is an accepted alternative and 0.0 otherwise,
+  and enumerating more than five terms scores 0.0 so that listing valid PTs is not a shortcut.
+
 The smoke test (``smoke/smoke_grpo.py``) is the minimal version of this script on GSM8K.
 Here you add what makes it *yours*:
 
@@ -26,24 +38,51 @@ import argparse
 from collections.abc import Sequence
 
 from rlm.data import load_domain_dataset, load_gsm8k
-from rlm.rewards import _completion_text, accuracy_reward, format_reward
+from rlm.meddra import MedDRADictionary, term_f1, validity_score
+from rlm.rewards import _completion_text, accuracy_reward, extract_answer, format_reward
+from rlm.verifier import MedDRAVerifier, Verifier, build_verifier
+
+_DICTIONARY: MedDRADictionary | None = None
+
+
+def _dictionary() -> MedDRADictionary:
+    global _DICTIONARY
+    if _DICTIONARY is None:
+        _DICTIONARY = MedDRADictionary.default()
+    return _DICTIONARY
 
 
 def domain_reward(prompts: Sequence, completions: Sequence, **kwargs) -> list[float]:
-    """Tu turno: a reward that captures what "good" means in your domain.
+    """MedDRA vocabulary validity of the answer, in [0, 1] (see the module docstring).
 
-    Same signature as the other rewards: one float per completion, dataset columns arrive
-    in ``kwargs``. Keep it deterministic and cheap. Examples from class and beyond:
-
-    * language consistency: fraction of words in the answer's language (DeepSeek-R1);
-    * length shaping: penalise thinking that exceeds a budget, or reward concise answers;
-    * a units check for physical quantities; a schema check for structured answers;
-    * a code-execution reward: run the unit tests of the problem (only in a sandbox!).
-
-    Until you implement it, it returns 0.0 everywhere so the script still runs.
+    It does not look at the ground truth on purpose: it rewards *codable* answers, while
+    ``accuracy_reward`` rewards *correct* ones. A completion without an ``<answer>`` block
+    scores 0.0, which the format reward already punishes too.
     """
-    texts = [_completion_text(c) for c in completions]
-    return [0.0 for _ in texts]
+    dictionary = _dictionary()
+    return [validity_score(extract_answer(_completion_text(c)), dictionary) for c in completions]
+
+
+def make_accuracy_reward(verifier: Verifier, partial_credit: bool = False):
+    """Accuracy reward driven by a verifier, with the signature ``GRPOTrainer`` expects.
+
+    With ``partial_credit`` (MedDRA only) the reward is the F1 between predicted and expected
+    PT sets instead of 0/1 set equality.
+    """
+
+    def accuracy_reward(
+        prompts: Sequence, completions: Sequence, answer: Sequence[str], **kwargs
+    ) -> list[float]:
+        rewards = []
+        for completion, expected in zip(completions, answer, strict=True):
+            text = _completion_text(completion)
+            if partial_credit and isinstance(verifier, MedDRAVerifier):
+                rewards.append(term_f1(extract_answer(text), expected, verifier.dictionary))
+            else:
+                rewards.append(1.0 if verifier.verify(text, expected).is_correct else 0.0)
+        return rewards
+
+    return accuracy_reward
 
 
 def train(args: argparse.Namespace) -> None:
@@ -53,9 +92,22 @@ def train(args: argparse.Namespace) -> None:
 
     if args.data == "gsm8k":
         dataset = load_gsm8k("train", n_examples=args.n_examples, seed=args.seed)
+        reward_funcs = [format_reward, accuracy_reward]
     else:
         dataset = load_domain_dataset(args.data)
-    print(f"{len(dataset)} training problems")
+        if args.n_examples:
+            dataset = dataset.shuffle(seed=args.seed).select(
+                range(min(args.n_examples, len(dataset)))
+            )
+        verifier = build_verifier(args.verifier)
+        reward_funcs = [format_reward, make_accuracy_reward(verifier, args.partial_credit)]
+        if args.verifier == "meddra":
+            reward_funcs.append(domain_reward)
+    weights = args.reward_weights[: len(reward_funcs)]
+    print(
+        f"{len(dataset)} training problems; rewards: "
+        + ", ".join(f"{f.__name__}×{w}" for f, w in zip(reward_funcs, weights, strict=True))
+    )
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     config = GRPOConfig(
@@ -79,7 +131,7 @@ def train(args: argparse.Namespace) -> None:
         log_completions=True,
         num_completions_to_print=2,
         model_init_kwargs={"dtype": torch.bfloat16 if device == "cuda" else torch.float32},
-        # Tu turno: reward_weights=[1.0, 2.0, 0.5] lets you weight format / accuracy / domain.
+        reward_weights=weights,
     )
 
     if args.init_adapter:
@@ -103,14 +155,17 @@ def train(args: argparse.Namespace) -> None:
 
     trainer = GRPOTrainer(
         model=model,
-        reward_funcs=[format_reward, accuracy_reward, domain_reward],
+        reward_funcs=reward_funcs,
         args=config,
         train_dataset=dataset,
         peft_config=peft_config,
     )
     trainer.train(resume_from_checkpoint=args.resume_from_checkpoint)
     trainer.save_model(args.output)
-    print(f"final adapter saved to {args.output}")
+    # trainer_state.json holds log_history: rewards, KL, completion length per step.
+    # `rlm.evaluate --history` turns it into the training curves.
+    trainer.save_state()
+    print(f"final adapter and trainer_state.json saved to {args.output}")
 
 
 def main() -> None:
@@ -137,6 +192,21 @@ def main() -> None:
         help="path to a checkpoint-XXX folder to continue an interrupted run (24h sessions!)",
     )
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument(
+        "--verifier", default="meddra", help="verifier for a JSONL dataset (see rlm/verifier.py)"
+    )
+    parser.add_argument(
+        "--partial-credit",
+        action="store_true",
+        help="accuracy = F1 between PT sets instead of exact set match (MedDRA only)",
+    )
+    parser.add_argument(
+        "--reward-weights",
+        type=float,
+        nargs="+",
+        default=[0.5, 2.0, 0.5],
+        help="weights for format / accuracy / domain rewards",
+    )
     train(parser.parse_args())
 
 

@@ -2,6 +2,10 @@
 
 **Endpoint que se evalúa:** `POST /reasoning` · **Clase:** Reasoning language models
 
+> **Nuestro dominio:** codificación MedDRA de notificaciones de acontecimientos adversos. La
+> tarea, el dataset, el verificador, las recompensas y los comandos paso a paso están en
+> [`MEDDRA.md`](MEDDRA.md).
+
 ## De qué va
 
 En clase vimos que un modelo de razonamiento no tiene nada de mágico: es un modelo entrenado

@@ -50,6 +50,11 @@ def train(args: argparse.Namespace) -> None:
 
     dataset = load_sft_dataset(args.data)
     print(f"{len(dataset)} verified traces loaded from {args.data}")
+    eval_dataset = None
+    if args.eval_fraction > 0:
+        split = dataset.train_test_split(test_size=args.eval_fraction, seed=args.seed)
+        dataset, eval_dataset = split["train"], split["test"]
+        print(f"{len(dataset)} for training, {len(eval_dataset)} held out for eval loss")
 
     peft_config = LoraConfig(
         r=args.lora_rank,
@@ -69,20 +74,27 @@ def train(args: argparse.Namespace) -> None:
         gradient_checkpointing=True,
         logging_steps=10,
         save_strategy="epoch",
+        # A rising eval loss while the train loss keeps falling means the adapter is
+        # memorising the traces: stop earlier or lower the epochs.
+        eval_strategy="epoch" if eval_dataset is not None else "no",
         report_to="none",
+        seed=args.seed,
         model_init_kwargs={"dtype": torch.bfloat16 if torch.cuda.is_available() else torch.float32},
-        # Tu turno: consider `packing=True` for throughput, `assistant_only_loss=True` if your
-        # chat template supports it, and a small eval split to watch for over-fitting.
+        # No packing: our traces are short (a few hundred tokens) and packing would mix
+        # unrelated reports in one sequence. The prompt/completion format already restricts
+        # the loss to the assistant turn, so `assistant_only_loss` is not needed.
     )
     trainer = SFTTrainer(
         model=args.model,
         args=config,
         train_dataset=dataset,
+        eval_dataset=eval_dataset,
         peft_config=peft_config,
     )
     trainer.train(resume_from_checkpoint=args.resume_from_checkpoint)
     trainer.save_model(args.output)
-    print(f"adapter saved to {args.output}")
+    trainer.save_state()  # trainer_state.json: loss curves for `rlm.evaluate --history`
+    print(f"adapter and trainer_state.json saved to {args.output}")
 
 
 def main() -> None:
@@ -100,6 +112,8 @@ def main() -> None:
     parser.add_argument("--grad-accum", type=int, default=4)
     parser.add_argument("--max-length", type=int, default=2048)
     parser.add_argument("--lora-rank", type=int, default=16)
+    parser.add_argument("--eval-fraction", type=float, default=0.05, help="0 disables eval")
+    parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--resume-from-checkpoint", default=None, help="checkpoint-XXX folder")
     train(parser.parse_args())
 

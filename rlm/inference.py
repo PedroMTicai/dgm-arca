@@ -9,12 +9,17 @@ laptop, on the DGX and inside Docker:
 
 * ``ARCA_RLM_BASE_MODEL``  base model id (default ``Qwen/Qwen3-0.6B``)
 * ``ARCA_RLM_ADAPTER``     path to your trained LoRA adapter (e.g. ``rlm/weights/final_rlm_lora``)
-* ``ARCA_RLM_VERIFIER``    ``numeric`` (default) or ``exact_match``; register yours in ``VERIFIERS``
+* ``ARCA_RLM_VERIFIER``    ``meddra`` (default, our MedDRA coding task), ``numeric`` or
+  ``exact_match``; the registry is ``VERIFIERS`` in ``rlm/verifier.py``
 
 Try it from the command line::
 
-    ARCA_RLM_ADAPTER=rlm/weights/smoke_lora \\
-        uv run python -m rlm.inference "If 5x - 3 = 12, what is 5x + 3?"
+    ARCA_RLM_ADAPTER=rlm/weights/final_rlm_lora \\
+        uv run python -m rlm.inference "Llevo una semana con sertralina y me da mucho sueño."
+
+With the MedDRA verifier, a question that does not start with the coding instruction is
+wrapped in it (instruction plus rule sheet, as in the dataset), so the endpoint also accepts
+a bare report.
 """
 
 from __future__ import annotations
@@ -28,14 +33,9 @@ from pathlib import Path
 
 from api.schemas import ReasoningResponse, VerifierVerdict
 from rlm.data import build_prompt
+from rlm.generate_meddra import INSTRUCTION, build_question
 from rlm.rewards import extract_answer, has_valid_format
-from rlm.verifier import ExactMatchVerifier, NumericVerifier, Verifier
-
-VERIFIERS: dict[str, type[Verifier]] = {
-    "numeric": NumericVerifier,
-    "exact_match": ExactMatchVerifier,
-    # Tu turno: register your domain verifier here, e.g. "sql": SQLResultVerifier
-}
+from rlm.verifier import VERIFIERS
 
 THINK_PATTERN = re.compile(r"<think>(?P<think>.*?)</think>", re.DOTALL)
 
@@ -65,7 +65,7 @@ def _base_model_from_adapter(adapter: str) -> str:
 class ReasoningModel:
     base_model: str
     adapter_path: str | None = None
-    verifier_name: str = "numeric"
+    verifier_name: str = "meddra"
 
     @classmethod
     def from_env(cls) -> ReasoningModel:
@@ -82,7 +82,7 @@ class ReasoningModel:
         return cls(
             base_model=base_model,
             adapter_path=adapter,
-            verifier_name=os.environ.get("ARCA_RLM_VERIFIER", "numeric"),
+            verifier_name=os.environ.get("ARCA_RLM_VERIFIER", "meddra"),
         )
 
     def load(self) -> None:
@@ -92,7 +92,9 @@ class ReasoningModel:
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.bfloat16 if device == "cuda" else torch.float32
-        self.tokenizer = AutoTokenizer.from_pretrained(self.base_model)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.base_model, padding_side="left")
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
         model = AutoModelForCausalLM.from_pretrained(
             self.base_model, dtype=dtype, device_map=device
         )
@@ -101,25 +103,47 @@ class ReasoningModel:
         self.model = model.eval()
         self.verifier = VERIFIERS[self.verifier_name]()
 
-    def generate(self, question: str, max_new_tokens: int = 1024) -> tuple[str, int]:
-        """Return the raw completion and the number of generated tokens."""
+    def prepare(self, question: str) -> str:
+        """For the MedDRA task, wrap a bare report in the instruction and the rule sheet."""
+        if self.verifier_name == "meddra" and not question.lstrip().startswith(INSTRUCTION):
+            return build_question(question.strip())
+        return question
+
+    def generate_batch(
+        self, questions: list[str], max_new_tokens: int = 1024, temperature: float = 0.6
+    ) -> list[tuple[str, int]]:
+        """Generate for several questions at once (left padding). ``temperature=0`` is greedy.
+
+        Returns one ``(raw completion, number of generated tokens)`` per question.
+        """
         import torch
 
-        text = self.tokenizer.apply_chat_template(
-            build_prompt(question), tokenize=False, add_generation_prompt=True
-        )
-        inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+        texts = [
+            self.tokenizer.apply_chat_template(
+                build_prompt(self.prepare(q)), tokenize=False, add_generation_prompt=True
+            )
+            for q in questions
+        ]
+        inputs = self.tokenizer(texts, return_tensors="pt", padding=True).to(self.model.device)
+        sampling = {"do_sample": True, "temperature": temperature, "top_p": 0.95}
         with torch.no_grad():
             out = self.model.generate(
                 **inputs,
                 max_new_tokens=max_new_tokens,
-                do_sample=True,
-                temperature=0.6,
-                top_p=0.95,
-                pad_token_id=self.tokenizer.pad_token_id or self.tokenizer.eos_token_id,
+                **(sampling if temperature > 0 else {"do_sample": False}),
+                pad_token_id=self.tokenizer.pad_token_id,
             )
-        new_tokens = out[0, inputs["input_ids"].shape[1] :]
-        return self.tokenizer.decode(new_tokens, skip_special_tokens=True), int(new_tokens.numel())
+        results = []
+        for row in out[:, inputs["input_ids"].shape[1] :]:
+            n_tokens = int((row != self.tokenizer.pad_token_id).sum())
+            results.append((self.tokenizer.decode(row, skip_special_tokens=True), n_tokens))
+        return results
+
+    def generate(
+        self, question: str, max_new_tokens: int = 1024, temperature: float = 0.6
+    ) -> tuple[str, int]:
+        """Return the raw completion and the number of generated tokens."""
+        return self.generate_batch([question], max_new_tokens, temperature)[0]
 
     def answer(
         self, question: str, expected_answer: str | None = None, max_new_tokens: int = 1024
@@ -149,7 +173,10 @@ class ReasoningModel:
 
 
 if __name__ == "__main__":
-    question = " ".join(sys.argv[1:]) or "If 5x - 3 = 12, what is the value of 5x + 3?"
+    question = " ".join(sys.argv[1:]) or (
+        "Llevo dos semanas tomando sertralina para la depresión y me da muchísimo sueño "
+        "durante el día. No he tenido náuseas."
+    )
     rlm = ReasoningModel.from_env()
     rlm.load()
     print(rlm.answer(question, expected_answer=None).model_dump_json(indent=2))

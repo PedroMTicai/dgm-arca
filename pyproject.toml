@@ -24,6 +24,7 @@ train = [
     "peft>=0.18",
     "datasets>=3.0",
     "accelerate>=1.5",
+    "matplotlib>=3.9",
 ]
 rag = [
     "sentence-transformers>=5.0",
