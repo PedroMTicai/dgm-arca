@@ -1,0 +1,22 @@
+{
+  "n_traces": 1600,
+  "n_verified": 821,
+  "acceptance": 0.513125,
+  "problems_with_a_verified_trace": 0.72,
+  "acceptance_by_family": {
+    "death": 0.5098039215686274,
+    "diagnosis": 0.36989795918367346,
+    "lack_of_effect": 0.5863636363636363,
+    "multi": 0.45786516853932585,
+    "single": 0.6542056074766355
+  },
+  "rejection_reasons": {
+    "missing": 447,
+    "unparseable (no </think> or no final answer)": 120,
+    "not in MedDRA": 109,
+    "extra": 103
+  },
+  "teacher": "Qwen/Qwen3-4B",
+  "samples": 4,
+  "data": "rlm/data/train.jsonl"
+}

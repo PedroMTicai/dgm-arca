@@ -164,7 +164,7 @@ uv run python -m rlm.evaluate --data rlm/data/test.jsonl --adapters base=none \
 
 # 3. Destilación: Qwen3-4B en modo thinking, 4 trazas por problema, filtradas por el verificador
 uv run python -m rlm.distill --data rlm/data/train.jsonl --teacher Qwen/Qwen3-4B \
-    --samples 4 --n-problems 600 --batch-size 4 --max-new-tokens 1536 \
+    --samples 4 --n-problems 400 --batch-size 2 --max-new-tokens 1536 \
     --output rlm/data/sft_traces.jsonl
 
 # 4. SFT (arranque en frío) sobre las trazas verificadas
@@ -174,7 +174,7 @@ uv run python -m rlm.train_sft --data rlm/data/sft_traces.jsonl --model Qwen/Qwe
 # 5. GRPO partiendo del adaptador de SFT, con las tres recompensas
 uv run python -m rlm.train_grpo --data rlm/data/train.jsonl --model Qwen/Qwen3-0.6B \
     --init-adapter rlm/weights/sft_lora --output rlm/weights/final_rlm_lora \
-    --steps 300 --max-completion-length 1024
+    --steps 100 --max-completion-length 1024
 
 # 6. Evaluación base / SFT / GRPO, en test y en OOD, con las curvas de entrenamiento
 uv run python -m rlm.evaluate --data rlm/data/test.jsonl \
