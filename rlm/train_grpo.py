@@ -35,7 +35,11 @@ Here you add what makes it *yours*:
 from __future__ import annotations
 
 import argparse
+import os
 from collections.abc import Sequence
+
+# Less fragmentation with variable-length completions; must be set before CUDA starts.
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
 from rlm.data import load_domain_dataset, load_gsm8k
 from rlm.meddra import MedDRADictionary, term_f1, validity_score
@@ -109,13 +113,24 @@ def train(args: argparse.Namespace) -> None:
         + ", ".join(f"{f.__name__}×{w}" for f, w in zip(reward_funcs, weights, strict=True))
     )
 
+    # The backward pass holds the logits of every sequence in the micro-batch
+    # (seq_len × 151k vocab), so a whole group of 8 × 1024 tokens does not fit in 16 GB.
+    # Split each group into micro-batches of --batch-size and accumulate gradients: every
+    # optimizer step still sees exactly --grad-accum full groups, so GRPO is unchanged.
+    completions_per_step = args.num_generations * args.grad_accum
+    if completions_per_step % args.batch_size:
+        raise SystemExit(
+            f"--num-generations × --grad-accum ({completions_per_step}) must be divisible by "
+            f"--batch-size ({args.batch_size})"
+        )
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
     config = GRPOConfig(
         output_dir=args.output,
         max_steps=args.steps,
         learning_rate=args.learning_rate,
-        per_device_train_batch_size=args.num_generations,
-        gradient_accumulation_steps=args.grad_accum,
+        per_device_train_batch_size=args.batch_size,
+        gradient_accumulation_steps=completions_per_step // args.batch_size,
         num_generations=args.num_generations,
         max_completion_length=args.max_completion_length,
         temperature=args.temperature,
@@ -178,7 +193,15 @@ def main() -> None:
     parser.add_argument("--output", default="rlm/weights/final_rlm_lora")
     parser.add_argument("--steps", type=int, default=300)
     parser.add_argument("--num-generations", type=int, default=8)
-    parser.add_argument("--grad-accum", type=int, default=1)
+    parser.add_argument(
+        "--grad-accum", type=int, default=1, help="full groups (prompts) per optimizer step"
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=2,
+        help="completions per forward/backward micro-batch; lower it (1) if CUDA runs out of memory",
+    )
     parser.add_argument("--max-completion-length", type=int, default=768)
     parser.add_argument("--learning-rate", type=float, default=5e-6)
     parser.add_argument("--temperature", type=float, default=1.0)

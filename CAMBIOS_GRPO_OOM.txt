@@ -1,0 +1,67 @@
+CAMBIOS PARA ARREGLAR EL "CUDA out of memory" EN EL PASO 5 (GRPO) DE rlm/MEDDRA.md
+====================================================================================
+
+PROBLEMA
+--------
+El paso 5 (rlm.train_grpo) fallaba en el primer paso, dentro de loss.backward():
+    torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 4.64 GiB ...
+
+CAUSA
+-----
+En train_grpo.py se ponía per_device_train_batch_size = num_generations (8). Es decir, las
+8 respuestas de cada grupo GRPO se pasaban a la vez por el forward y el backward. Para
+calcular los log-probs, el modelo guarda las logits de cada token sobre todo el vocabulario
+de Qwen3 (~151.000 tokens):
+    8 secuencias x ~1024 tokens x 151.936 x 4 bytes ≈ 4,6 GB
+Ese es justo el bloque de 4,64 GiB del error. Sumado al modelo, al adaptador, a las
+activaciones y al optimizador, no cabe en los 16 GB de la DGX.
+No es culpa del tamaño del dataset: los 1000 problemas de train se leen de uno en uno
+(un prompt por paso). Lo que importa es cuántas secuencias largas entran juntas en la GPU.
+
+QUÉ HE CAMBIADO
+---------------
+1) rlm/train_grpo.py
+   - Nuevo argumento --batch-size (por defecto 2): número de respuestas por micro-lote en el
+     forward/backward.
+   - per_device_train_batch_size = --batch-size y
+     gradient_accumulation_steps = num_generations x grad_accum / batch-size.
+     Con los valores por defecto (8 generaciones, grad_accum 1, batch-size 2) salen 4
+     micro-lotes de 2 y se acumula el gradiente.
+   - El algoritmo NO cambia. TRL sigue generando el grupo completo de 8 respuestas por
+     prompt de una vez (generation_batch_size = 8), calcula las ventajas sobre el grupo
+     entero y hace un solo paso del optimizador por grupo, igual que antes. Solo cambia
+     cuánta memoria se usa en cada momento. Las curvas y resultados deberían ser
+     equivalentes; cada paso puede tardar un poco más.
+   - Si num_generations x grad_accum no es divisible por --batch-size, el script para con un
+     mensaje claro.
+   - Se pone PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True (si no estaba ya definido),
+     que es lo que recomienda el propio mensaje de error para reducir la fragmentación.
+   - --grad-accum ahora tiene ayuda: significa "grupos (prompts) completos por paso del
+     optimizador", igual que antes.
+
+2) rlm/MEDDRA.md
+   - En "Notas de recursos" hay una nota explicando el micro-lote de GRPO y qué hacer si
+     sigue habiendo OOM.
+
+CÓMO EJECUTAR AHORA
+-------------------
+El comando del paso 5 es el mismo de siempre (ya usa --batch-size 2 por defecto):
+
+    uv run python -m rlm.train_grpo --data rlm/data/train.jsonl --model Qwen/Qwen3-0.6B \
+        --init-adapter rlm/weights/sft_lora --output rlm/weights/final_rlm_lora \
+        --steps 100 --max-completion-length 1024
+
+Si aún falta memoria, probad por este orden:
+    a) --batch-size 1
+    b) --max-completion-length 768
+    c) --num-generations 4   (esto sí cambia el experimento: apuntadlo en EXPERIMENTS.md)
+
+Durante el entrenamiento, vigilad la memoria desde otra terminal con: nvidia-smi
+
+NOTA SOBRE LA VELOCIDAD
+-----------------------
+El error saltó tras ~6 minutos en el paso 0. Casi todo ese tiempo es la generación de las
+8 respuestas de hasta 1024 tokens con model.generate de HF (sin vLLM), así que cada paso
+de GRPO tarda minutos. 100 pasos pueden llevar varias horas: guardad checkpoints (cada 50
+pasos por defecto, --save-steps) y, si se corta la sesión de 24 h, reanudad con
+--resume-from-checkpoint rlm/weights/final_rlm_lora/checkpoint-XX

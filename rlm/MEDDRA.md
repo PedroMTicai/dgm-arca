@@ -200,6 +200,9 @@ Los atajos equivalentes están en el `Makefile` (`make rlm-data`, `make rlm-dist
 
 **Notas de recursos.** Con 16 GB, el profesor de 4B en bf16 ocupa unos 8 GB; el resto es la
 caché KV de `batch-size × samples` secuencias, así que si hay OOM bajad `--batch-size` a 2.
+En GRPO, `train_grpo.py` hace el backward del grupo de `--num-generations` completions en
+micro-lotes de `--batch-size` (2 por defecto) con acumulación de gradiente, porque las logits
+de 8 × 1024 tokens × 151k de vocabulario no caben en 16 GB; si aun así hay OOM, `--batch-size 1`.
 Guardad checkpoints y reanudad con `--resume-from-checkpoint`; subid cada adaptador terminado
 a Hugging Face Hub. Si el profesor escribe trazas largas, vigilad en las curvas de GRPO
 `completions/clipped_ratio`: si muchas completions se cortan en `--max-completion-length`, la
