@@ -20,6 +20,7 @@ from __future__ import annotations
 import inspect
 import json
 import time
+import typing
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
@@ -58,8 +59,13 @@ class Tool:
 def _args_model_from_signature(fn: Callable[..., Any]) -> type[BaseModel]:
     """Build a Pydantic model whose fields mirror the function parameters."""
     fields: dict[str, Any] = {}
+    # With ``from __future__ import annotations`` the signature holds strings ("Answer",
+    # "int | None"); resolve them in the function's module so aliases and Literals work.
+    # include_extras keeps Annotated[type, Field(description=...)], the way to give each
+    # parameter its own description in the schema (docs/pydantic_structured_output.ipynb).
+    hints = typing.get_type_hints(fn, include_extras=True)
     for name, param in inspect.signature(fn).parameters.items():
-        annotation = param.annotation if param.annotation is not inspect.Parameter.empty else Any
+        annotation = hints.get(name, Any)
         default = ... if param.default is inspect.Parameter.empty else param.default
         fields[name] = (annotation, default)
     return create_model(f"{fn.__name__}_args", **fields)

@@ -14,6 +14,17 @@ DEFAULT_MODEL = "Qwen/Qwen3-Embedding-0.6B"
 DEFAULT_QUERY_INSTRUCTION = (
     "Given a user question, retrieve the passages from the knowledge base that answer it."
 )
+# The instructions compared in rag/evaluate.py (--instructions). "none" embeds the bare query,
+# as if the model were not instruction-aware.
+QUERY_INSTRUCTIONS = {
+    "generic": DEFAULT_QUERY_INSTRUCTION,
+    "pharmacovigilance": (
+        "Given a pharmacovigilance question in Spanish or English about a medicine or about "
+        "adverse reaction reporting, retrieve the passage of a summary of product "
+        "characteristics or of a regulatory guideline that answers it."
+    ),
+    "none": "",
+}
 
 
 class Embedder:
@@ -35,8 +46,11 @@ class Embedder:
     def embed_queries(
         self, texts: list[str], instruction: str = DEFAULT_QUERY_INSTRUCTION
     ) -> np.ndarray:
-        """Queries are prefixed with the task instruction (instruction-aware embeddings)."""
-        prompt = f"Instruct: {instruction}\nQuery: "
+        """Queries are prefixed with the task instruction (instruction-aware embeddings).
+
+        An empty instruction embeds the bare query, for the ablation.
+        """
+        prompt = f"Instruct: {instruction}\nQuery: " if instruction else ""
         return self.model.encode(texts, prompt=prompt, normalize_embeddings=True)
 
 

@@ -62,7 +62,8 @@ def load_corpus(corpus_dir: Path = CORPUS_DIR) -> list[Document]:
         text = read_document(path).strip()
         if not text:
             continue
-        relative = str(path.relative_to(corpus_dir))
+        # POSIX form so that ids and sources are the same on Windows and on the DGX.
+        relative = path.relative_to(corpus_dir).as_posix()
         documents.append(
             Document(
                 id=hashlib.sha1(relative.encode()).hexdigest()[:10],

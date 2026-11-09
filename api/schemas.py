@@ -81,6 +81,10 @@ class ToolsResponse(BaseModel):
     tool_calls: list[ToolCallRecord]
     turns: int
     model: str = ""
+    tokens_generated: int = 0
+    finished: bool = Field(
+        default=True, description="False when max_turns ran out while the model still called tools."
+    )
 
 
 # ---------------------------------------------------------------------------- phase 3: /rag
@@ -103,6 +107,10 @@ class RagResponse(BaseModel):
     answer: str
     chunks: list[RetrievedChunk]
     citations: list[str] = Field(default_factory=list, description="Chunk ids cited in the answer.")
+    invalid_citations: list[str] = Field(
+        default_factory=list,
+        description="Bracketed ids in the answer that are not among the returned chunks.",
+    )
     retriever: Literal["dense", "bm25", "hybrid"]
     model: str = ""
 

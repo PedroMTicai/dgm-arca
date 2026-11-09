@@ -44,3 +44,24 @@ def test_calculator_is_safe_and_correct():
         ToolRegistry().register(calculator).call("calculator", {"expression": "__import__('os')"})
     )
     assert not record.ok
+
+
+def test_annotated_field_descriptions_reach_the_schema():
+    from typing import Annotated, Literal
+
+    from pydantic import Field
+
+    Unit = Literal["mg", "g"]
+
+    @tool
+    def convert(
+        value: Annotated[float, Field(gt=0, description="Amount to convert.")],
+        unit: Annotated[Unit, Field(description="Target unit.")] = "mg",
+    ) -> float:
+        """Convert an amount."""
+        return value
+
+    props = convert.definition["function"]["parameters"]["properties"]
+    assert props["value"]["description"] == "Amount to convert."
+    assert props["unit"]["enum"] == ["mg", "g"]
+    assert not ToolRegistry().register(convert).call("convert", {"value": -1}).ok

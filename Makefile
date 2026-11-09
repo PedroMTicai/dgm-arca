@@ -64,6 +64,22 @@ rlm-eval: ## Fase 1: pass@1 base / SFT / GRPO en test y OOD, y curvas de entrena
 		--n-examples 100 --out reports/phase1_eval_ood.json \
 		--adapters base=none sft=rlm/weights/sft_lora grpo=rlm/weights/final_rlm_lora
 
+# Fase 3: RAG sobre fichas técnicas (CIMA) y guías de la EMA. Detalle en rag/CORPUS.md
+rag-corpus: ## Fase 3: descarga el corpus (fichas técnicas de CIMA y guías de la EMA)
+	$(UV) run python -m rag.download_corpus
+
+rag-gold: ## Fase 3: comprueba que todas las citas del conjunto dorado existen en el corpus
+	$(UV) run python -m rag.gold rag/gold/gold.jsonl
+
+rag-eval: ## Fase 3: chunking, tres retrievers, barrido de λ, instrucciones y contexto (GPU)
+	$(UV) run python -m rag.evaluate --gold rag/gold/gold.jsonl
+
+rag-eval-gen: ## Fase 3: lo anterior más la generación con citas sobre el conjunto dorado (GPU)
+	$(UV) run python -m rag.evaluate --gold rag/gold/gold.jsonl --generation
+
+rag-test: ## Fase 3: mide UNA vez el conjunto de test (100 preguntas) con la configuración fijada (GPU)
+	$(UV) run python -m rag.evaluate --gold rag/gold/gold_test.jsonl --strategies recursive 		--fixed-lambda 0.3 --generation --out reports/phase3_test.json
+
 api: ## Levanta la API en local con recarga automática
 	$(UV) run uvicorn api.app:app --host 0.0.0.0 --port 8000 --reload
 
@@ -88,4 +104,4 @@ docker-api: ## API dentro del contenedor
 shell: ## Shell interactiva con GPU dentro del contenedor
 	docker compose run --rm train
 
-.PHONY: help setup setup-min lock test lint format check-gpu smoke smoke-dry rlm-data rlm-distill rlm-sft rlm-grpo rlm-eval api enunciado build docker-check-gpu docker-smoke docker-api shell
+.PHONY: help setup setup-min lock test lint format check-gpu smoke smoke-dry rlm-data rlm-distill rlm-sft rlm-grpo rlm-eval rag-corpus rag-gold rag-eval rag-eval-gen rag-test api enunciado build docker-check-gpu docker-smoke docker-api shell

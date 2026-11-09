@@ -1,0 +1,2316 @@
+{
+  "gold": "rag/gold/gold.jsonl",
+  "instruction": "pharmacovigilance",
+  "chunking": {
+    "recursive": {
+      "n_chunks": 2656,
+      "mean_chars": 634.2620481927711,
+      "median_chars": 703,
+      "min_chars": 17,
+      "max_chars": 800,
+      "mean_relevant_chunks_per_question": 1.06
+    },
+    "semantic:0.75": {
+      "n_chunks": 2412,
+      "mean_chars": 669.1057213930349,
+      "median_chars": 549,
+      "min_chars": 2,
+      "max_chars": 1500,
+      "mean_relevant_chunks_per_question": 1.04
+    }
+  },
+  "retrievers": {
+    "recursive": {
+      "bm25": {
+        "recall@1": 0.43,
+        "hit@1": 0.44,
+        "recall@3": 0.59,
+        "hit@3": 0.6,
+        "recall@5": 0.65,
+        "hit@5": 0.66,
+        "recall@10": 0.67,
+        "hit@10": 0.68,
+        "mrr": 0.5226666666666666,
+        "n_questions": 50
+      },
+      "dense": {
+        "recall@1": 0.5766666666666667,
+        "hit@1": 0.6,
+        "recall@3": 0.9066666666666667,
+        "hit@3": 0.92,
+        "recall@5": 0.9266666666666667,
+        "hit@5": 0.94,
+        "recall@10": 0.9666666666666667,
+        "hit@10": 0.98,
+        "mrr": 0.7453888888888889,
+        "n_questions": 50
+      },
+      "hybrid": {
+        "recall@1": 0.6166666666666667,
+        "hit@1": 0.64,
+        "recall@3": 0.8866666666666667,
+        "hit@3": 0.9,
+        "recall@5": 0.9666666666666667,
+        "hit@5": 0.98,
+        "recall@10": 0.9666666666666667,
+        "hit@10": 0.98,
+        "mrr": 0.7803333333333333,
+        "n_questions": 50
+      }
+    },
+    "semantic:0.75": {
+      "bm25": {
+        "recall@1": 0.43,
+        "hit@1": 0.44,
+        "recall@3": 0.61,
+        "hit@3": 0.62,
+        "recall@5": 0.65,
+        "hit@5": 0.66,
+        "recall@10": 0.69,
+        "hit@10": 0.7,
+        "mrr": 0.5307460317460317,
+        "n_questions": 50
+      },
+      "dense": {
+        "recall@1": 0.53,
+        "hit@1": 0.54,
+        "recall@3": 0.81,
+        "hit@3": 0.82,
+        "recall@5": 0.89,
+        "hit@5": 0.9,
+        "recall@10": 0.92,
+        "hit@10": 0.92,
+        "mrr": 0.6991666666666666,
+        "n_questions": 50
+      },
+      "hybrid": {
+        "recall@1": 0.63,
+        "hit@1": 0.64,
+        "recall@3": 0.85,
+        "hit@3": 0.86,
+        "recall@5": 0.87,
+        "hit@5": 0.88,
+        "recall@10": 0.9,
+        "hit@10": 0.9,
+        "mrr": 0.755,
+        "n_questions": 50
+      }
+    }
+  },
+  "lambda_sweep": {
+    "recursive": [
+      {
+        "lambda": 0.0,
+        "recall@1": 0.5766666666666667,
+        "hit@1": 0.6,
+        "recall@3": 0.9066666666666667,
+        "hit@3": 0.92,
+        "recall@5": 0.9266666666666667,
+        "hit@5": 0.94,
+        "recall@10": 0.9666666666666667,
+        "hit@10": 0.98,
+        "mrr": 0.7453888888888889,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.1,
+        "recall@1": 0.5366666666666666,
+        "hit@1": 0.56,
+        "recall@3": 0.9066666666666667,
+        "hit@3": 0.92,
+        "recall@5": 0.9266666666666667,
+        "hit@5": 0.94,
+        "recall@10": 0.9666666666666667,
+        "hit@10": 0.98,
+        "mrr": 0.7406666666666666,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.2,
+        "recall@1": 0.5766666666666667,
+        "hit@1": 0.6,
+        "recall@3": 0.9066666666666667,
+        "hit@3": 0.92,
+        "recall@5": 0.9666666666666667,
+        "hit@5": 0.98,
+        "recall@10": 0.9666666666666667,
+        "hit@10": 0.98,
+        "mrr": 0.7596666666666667,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.3,
+        "recall@1": 0.6166666666666667,
+        "hit@1": 0.64,
+        "recall@3": 0.8866666666666667,
+        "hit@3": 0.9,
+        "recall@5": 0.9666666666666667,
+        "hit@5": 0.98,
+        "recall@10": 0.9666666666666667,
+        "hit@10": 0.98,
+        "mrr": 0.7803333333333333,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.4,
+        "recall@1": 0.6166666666666667,
+        "hit@1": 0.64,
+        "recall@3": 0.8666666666666667,
+        "hit@3": 0.88,
+        "recall@5": 0.9066666666666667,
+        "hit@5": 0.92,
+        "recall@10": 0.9666666666666667,
+        "hit@10": 0.98,
+        "mrr": 0.763,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.5,
+        "recall@1": 0.5166666666666666,
+        "hit@1": 0.54,
+        "recall@3": 0.7166666666666667,
+        "hit@3": 0.74,
+        "recall@5": 0.8266666666666667,
+        "hit@5": 0.84,
+        "recall@10": 0.8866666666666667,
+        "hit@10": 0.9,
+        "mrr": 0.6623333333333333,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.6,
+        "recall@1": 0.51,
+        "hit@1": 0.52,
+        "recall@3": 0.6966666666666668,
+        "hit@3": 0.72,
+        "recall@5": 0.7066666666666667,
+        "hit@5": 0.72,
+        "recall@10": 0.8066666666666668,
+        "hit@10": 0.82,
+        "mrr": 0.6164047619047619,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.7,
+        "recall@1": 0.49,
+        "hit@1": 0.5,
+        "recall@3": 0.67,
+        "hit@3": 0.68,
+        "recall@5": 0.67,
+        "hit@5": 0.68,
+        "recall@10": 0.7666666666666667,
+        "hit@10": 0.78,
+        "mrr": 0.5850555555555556,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.8,
+        "recall@1": 0.47,
+        "hit@1": 0.48,
+        "recall@3": 0.65,
+        "hit@3": 0.66,
+        "recall@5": 0.67,
+        "hit@5": 0.68,
+        "recall@10": 0.72,
+        "hit@10": 0.72,
+        "mrr": 0.5661111111111111,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.9,
+        "recall@1": 0.43,
+        "hit@1": 0.44,
+        "recall@3": 0.61,
+        "hit@3": 0.62,
+        "recall@5": 0.65,
+        "hit@5": 0.66,
+        "recall@10": 0.69,
+        "hit@10": 0.7,
+        "mrr": 0.5348571428571428,
+        "n_questions": 50
+      },
+      {
+        "lambda": 1.0,
+        "recall@1": 0.43,
+        "hit@1": 0.44,
+        "recall@3": 0.59,
+        "hit@3": 0.6,
+        "recall@5": 0.65,
+        "hit@5": 0.66,
+        "recall@10": 0.67,
+        "hit@10": 0.68,
+        "mrr": 0.5226666666666666,
+        "n_questions": 50
+      }
+    ],
+    "semantic:0.75": [
+      {
+        "lambda": 0.0,
+        "recall@1": 0.53,
+        "hit@1": 0.54,
+        "recall@3": 0.81,
+        "hit@3": 0.82,
+        "recall@5": 0.89,
+        "hit@5": 0.9,
+        "recall@10": 0.92,
+        "hit@10": 0.92,
+        "mrr": 0.6991666666666666,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.1,
+        "recall@1": 0.57,
+        "hit@1": 0.58,
+        "recall@3": 0.85,
+        "hit@3": 0.86,
+        "recall@5": 0.89,
+        "hit@5": 0.9,
+        "recall@10": 0.92,
+        "hit@10": 0.92,
+        "mrr": 0.7258333333333333,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.2,
+        "recall@1": 0.59,
+        "hit@1": 0.6,
+        "recall@3": 0.83,
+        "hit@3": 0.84,
+        "recall@5": 0.89,
+        "hit@5": 0.9,
+        "recall@10": 0.92,
+        "hit@10": 0.92,
+        "mrr": 0.7341666666666665,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.3,
+        "recall@1": 0.63,
+        "hit@1": 0.64,
+        "recall@3": 0.85,
+        "hit@3": 0.86,
+        "recall@5": 0.87,
+        "hit@5": 0.88,
+        "recall@10": 0.9,
+        "hit@10": 0.9,
+        "mrr": 0.755,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.4,
+        "recall@1": 0.61,
+        "hit@1": 0.62,
+        "recall@3": 0.83,
+        "hit@3": 0.84,
+        "recall@5": 0.87,
+        "hit@5": 0.88,
+        "recall@10": 0.88,
+        "hit@10": 0.88,
+        "mrr": 0.7289999999999999,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.5,
+        "recall@1": 0.53,
+        "hit@1": 0.54,
+        "recall@3": 0.73,
+        "hit@3": 0.74,
+        "recall@5": 0.77,
+        "hit@5": 0.78,
+        "recall@10": 0.88,
+        "hit@10": 0.88,
+        "mrr": 0.6542777777777777,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.6,
+        "recall@1": 0.49,
+        "hit@1": 0.5,
+        "recall@3": 0.69,
+        "hit@3": 0.7,
+        "recall@5": 0.74,
+        "hit@5": 0.74,
+        "recall@10": 0.76,
+        "hit@10": 0.76,
+        "mrr": 0.6,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.7,
+        "recall@1": 0.49,
+        "hit@1": 0.5,
+        "recall@3": 0.69,
+        "hit@3": 0.7,
+        "recall@5": 0.69,
+        "hit@5": 0.7,
+        "recall@10": 0.74,
+        "hit@10": 0.74,
+        "mrr": 0.5961904761904762,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.8,
+        "recall@1": 0.49,
+        "hit@1": 0.5,
+        "recall@3": 0.65,
+        "hit@3": 0.66,
+        "recall@5": 0.67,
+        "hit@5": 0.68,
+        "recall@10": 0.71,
+        "hit@10": 0.72,
+        "mrr": 0.5770238095238095,
+        "n_questions": 50
+      },
+      {
+        "lambda": 0.9,
+        "recall@1": 0.47,
+        "hit@1": 0.48,
+        "recall@3": 0.65,
+        "hit@3": 0.66,
+        "recall@5": 0.67,
+        "hit@5": 0.68,
+        "recall@10": 0.71,
+        "hit@10": 0.72,
+        "mrr": 0.5623333333333334,
+        "n_questions": 50
+      },
+      {
+        "lambda": 1.0,
+        "recall@1": 0.43,
+        "hit@1": 0.44,
+        "recall@3": 0.61,
+        "hit@3": 0.62,
+        "recall@5": 0.65,
+        "hit@5": 0.66,
+        "recall@10": 0.69,
+        "hit@10": 0.7,
+        "mrr": 0.5307460317460317,
+        "n_questions": 50
+      }
+    ]
+  },
+  "best_lambda": {
+    "recursive": 0.3,
+    "semantic:0.75": 0.3
+  },
+  "per_question": {
+    "recursive": [
+      {
+        "id": "q01",
+        "question": "¿Con qué frecuencia produce somnolencia la sertralina?",
+        "relevant": [
+          "ee3f3fd9f0-0062"
+        ],
+        "rank_bm25": 14,
+        "rank_dense": 8,
+        "rank_hybrid": 5
+      },
+      {
+        "id": "q02",
+        "question": "¿Cuánto tiempo hay que esperar después de dejar un IMAO irreversible para empezar con sertralina?",
+        "relevant": [
+          "ee3f3fd9f0-0010"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 3,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q03",
+        "question": "¿Qué síntomas da una sobredosis de sertralina?",
+        "relevant": [
+          "ee3f3fd9f0-0076"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q04",
+        "question": "Si un paciente toma demasiada sertralina, ¿hay que hacerle un electrocardiograma?",
+        "relevant": [
+          "ee3f3fd9f0-0077"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q05",
+        "question": "¿Cuál es la reacción adversa más frecuente de la sertralina?",
+        "relevant": [
+          "ee3f3fd9f0-0057"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q06",
+        "question": "¿Qué efectos secundarios se notifican más con el amlodipino?",
+        "relevant": [
+          "1d381329ee-0018"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q07",
+        "question": "¿Cuándo suelen aparecer las erupciones en la piel con lamotrigina?",
+        "relevant": [
+          "1b6877d5a8-0047"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 1,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q08",
+        "question": "¿Qué incidencia tienen las erupciones cutáneas graves con lamotrigina en adultos con epilepsia?",
+        "relevant": [
+          "1b6877d5a8-0048"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q09",
+        "question": "¿A partir de qué filtrado glomerular está contraindicada la metformina?",
+        "relevant": [
+          "161cb12606-0006",
+          "161cb12606-0011"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q10",
+        "question": "¿Qué molestias son típicas al empezar con metformina?",
+        "relevant": [
+          "161cb12606-0023"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 3,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q11",
+        "question": "¿A partir de qué semana de embarazo el ibuprofeno puede provocar oligohidramnios?",
+        "relevant": [
+          "aa82a25118-0043"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q12",
+        "question": "¿Se puede tomar omeprazol junto con nelfinavir?",
+        "relevant": [
+          "e062f4c919-0027"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q13",
+        "question": "¿Cuáles son las reacciones adversas más frecuentes del omeprazol?",
+        "relevant": [
+          "e062f4c919-0037"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 9,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q14",
+        "question": "¿Cuánto tiempo como máximo se puede tomar zolpidem?",
+        "relevant": [
+          "d265be0c42-0001"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q15",
+        "question": "Tomé zolpidem anoche, ¿puedo conducir por la mañana?",
+        "relevant": [
+          "d265be0c42-0031"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q16",
+        "question": "¿Qué cantidad de paracetamol se considera sobredosis en un adulto?",
+        "relevant": [
+          "9113ce6d13-0025"
+        ],
+        "rank_bm25": 4,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q17",
+        "question": "¿Qué síntomas aparecen en las primeras horas de una intoxicación por paracetamol?",
+        "relevant": [
+          "9113ce6d13-0024"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q18",
+        "question": "¿El ciprofloxacino aumenta el riesgo de aneurisma de aorta?",
+        "relevant": [
+          "d59d7cb7ea-0020"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q19",
+        "question": "¿Qué dosis de fosfomicina se da para una cistitis no complicada?",
+        "relevant": [
+          "d0b2717f67-0000"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q20",
+        "question": "¿Cómo hay que tomar la fosfomicina respecto a las comidas?",
+        "relevant": [
+          "d0b2717f67-0001"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q21",
+        "question": "¿Puede conducir un paciente que toma tramadol?",
+        "relevant": [
+          "aa85f57614-0031"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q22",
+        "question": "¿Qué hacer si suben las transaminasas con atorvastatina?",
+        "relevant": [
+          "58de64b808-0011"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q23",
+        "question": "¿Se puede tomar enalapril durante el embarazo?",
+        "relevant": [
+          "b787aa0884-0046"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q24",
+        "question": "¿Se puede combinar losartán con aliskirén?",
+        "relevant": [
+          "a24b1ccbb8-0009"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 3,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q25",
+        "question": "¿Qué dosis de escitalopram se han tomado sin síntomas graves?",
+        "relevant": [
+          "974d1c3041-0054"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 3,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q26",
+        "question": "¿Cuál es la dosis máxima de venlafaxina para la depresión?",
+        "relevant": [
+          "aa13df65cd-0001"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q27",
+        "question": "¿El lorazepam afecta a la capacidad de conducir?",
+        "relevant": [
+          "e17f1cb191-0021"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q28",
+        "question": "¿Es peligrosa una sobredosis de alprazolam?",
+        "relevant": [
+          "c261c63f6f-0038"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q29",
+        "question": "¿Qué dosis de lormetazepam toma un adulto para dormir?",
+        "relevant": [
+          "bbdaed23fc-0001"
+        ],
+        "rank_bm25": 12,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q30",
+        "question": "¿Se puede dar naproxeno a un niño de un año?",
+        "relevant": [
+          "2da1124b62-0004"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q31",
+        "question": "¿Es normal tener gases al empezar con lactulosa?",
+        "relevant": [
+          "86549f37cb-0009"
+        ],
+        "rank_bm25": 10,
+        "rank_dense": 1,
+        "rank_hybrid": 5
+      },
+      {
+        "id": "q32",
+        "question": "¿Puede tomar celecoxib alguien alérgico a las sulfamidas?",
+        "relevant": [
+          "7652fd6109-0008"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q33",
+        "question": "¿Sirve el montelukast para una crisis de asma?",
+        "relevant": [
+          "155c365700-0005"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q34",
+        "question": "¿Cuál es la dosis inicial de levetiracetam en adultos?",
+        "relevant": [
+          "ba2b27dfd2-0002"
+        ],
+        "rank_bm25": 5,
+        "rank_dense": 1,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q35",
+        "question": "¿Se puede usar ácido valproico en el embarazo?",
+        "relevant": [
+          "f80180908e-0064"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q36",
+        "question": "¿Puede tomar sumatriptán alguien que ha tenido un infarto?",
+        "relevant": [
+          "a0eceb0942-0005"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q37",
+        "question": "¿Se puede usar empagliflozina en diabetes tipo 1?",
+        "relevant": [
+          "5ff1deaf52-0005"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q38",
+        "question": "¿El salbutamol puede bajar el potasio?",
+        "relevant": [
+          "6f7f78af78-0017"
+        ],
+        "rank_bm25": 15,
+        "rank_dense": 5,
+        "rank_hybrid": 5
+      },
+      {
+        "id": "q39",
+        "question": "¿Cuánto tarda el pantoprazol en aliviar el reflujo?",
+        "relevant": [
+          "ff57b98cfc-0002"
+        ],
+        "rank_bm25": 4,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q40",
+        "question": "¿Con qué dosis se empieza la rosuvastatina?",
+        "relevant": [
+          "0489eed4c8-0002"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q41",
+        "question": "¿Qué datos mínimos necesita una notificación de caso (ICSR) para ser válida?",
+        "relevant": [
+          "102ad6cc62-0051"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 3,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q42",
+        "question": "¿En qué plazo se envían los casos no graves a EudraVigilance?",
+        "relevant": [
+          "102ad6cc62-0214"
+        ],
+        "rank_bm25": null,
+        "rank_dense": null,
+        "rank_hybrid": null
+      },
+      {
+        "id": "q43",
+        "question": "¿Qué se considera el día cero de una notificación?",
+        "relevant": [
+          "102ad6cc62-0117"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q44",
+        "question": "¿Cuándo se considera grave una reacción adversa?",
+        "relevant": [
+          "610e8aef7e-0120"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 3
+      },
+      {
+        "id": "q45",
+        "question": "¿Qué es un error de medicación?",
+        "relevant": [
+          "610e8aef7e-0085"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q46",
+        "question": "¿En cuántos días debe confirmarse una señal validada?",
+        "relevant": [
+          "076e88be22-0025"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 3,
+        "rank_hybrid": 3
+      },
+      {
+        "id": "q47",
+        "question": "Un antibiótico deja de funcionar por una cepa resistente: ¿en qué plazo se notifica?",
+        "relevant": [
+          "102ad6cc62-0115"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 3,
+        "rank_hybrid": 4
+      },
+      {
+        "id": "q48",
+        "question": "¿Qué es un acontecimiento adverso?",
+        "relevant": [
+          "102ad6cc62-0036"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q49",
+        "question": "¿Qué actividades incluye la gestión de señales en la UE?",
+        "relevant": [
+          "076e88be22-0017"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q50",
+        "question": "Si a una notificación le falta el paciente identificable, ¿se envía como ICSR?",
+        "relevant": [
+          "102ad6cc62-0078",
+          "102ad6cc62-0079",
+          "102ad6cc62-0081"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      }
+    ],
+    "semantic:0.75": [
+      {
+        "id": "q01",
+        "question": "¿Con qué frecuencia produce somnolencia la sertralina?",
+        "relevant": [
+          "ee3f3fd9f0-s0044"
+        ],
+        "rank_bm25": 9,
+        "rank_dense": 3,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q02",
+        "question": "¿Cuánto tiempo hay que esperar después de dejar un IMAO irreversible para empezar con sertralina?",
+        "relevant": [
+          "ee3f3fd9f0-s0011"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q03",
+        "question": "¿Qué síntomas da una sobredosis de sertralina?",
+        "relevant": [
+          "ee3f3fd9f0-s0054"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q04",
+        "question": "Si un paciente toma demasiada sertralina, ¿hay que hacerle un electrocardiograma?",
+        "relevant": [
+          "ee3f3fd9f0-s0055"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q05",
+        "question": "¿Cuál es la reacción adversa más frecuente de la sertralina?",
+        "relevant": [
+          "ee3f3fd9f0-s0042"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q06",
+        "question": "¿Qué efectos secundarios se notifican más con el amlodipino?",
+        "relevant": [
+          "1d381329ee-s0019"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q07",
+        "question": "¿Cuándo suelen aparecer las erupciones en la piel con lamotrigina?",
+        "relevant": [
+          "1b6877d5a8-s0030"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q08",
+        "question": "¿Qué incidencia tienen las erupciones cutáneas graves con lamotrigina en adultos con epilepsia?",
+        "relevant": [
+          "1b6877d5a8-s0030"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q09",
+        "question": "¿A partir de qué filtrado glomerular está contraindicada la metformina?",
+        "relevant": [
+          "161cb12606-s0006",
+          "161cb12606-s0011"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q10",
+        "question": "¿Qué molestias son típicas al empezar con metformina?",
+        "relevant": [
+          "161cb12606-s0026"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q11",
+        "question": "¿A partir de qué semana de embarazo el ibuprofeno puede provocar oligohidramnios?",
+        "relevant": [
+          "aa82a25118-s0026"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q12",
+        "question": "¿Se puede tomar omeprazol junto con nelfinavir?",
+        "relevant": [
+          "e062f4c919-s0025"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 4,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q13",
+        "question": "¿Cuáles son las reacciones adversas más frecuentes del omeprazol?",
+        "relevant": [
+          "e062f4c919-s0033"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q14",
+        "question": "¿Cuánto tiempo como máximo se puede tomar zolpidem?",
+        "relevant": [
+          "d265be0c42-s0001"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q15",
+        "question": "Tomé zolpidem anoche, ¿puedo conducir por la mañana?",
+        "relevant": [
+          "d265be0c42-s0031"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q16",
+        "question": "¿Qué cantidad de paracetamol se considera sobredosis en un adulto?",
+        "relevant": [
+          "9113ce6d13-s0034"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q17",
+        "question": "¿Qué síntomas aparecen en las primeras horas de una intoxicación por paracetamol?",
+        "relevant": [
+          "9113ce6d13-s0034"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q18",
+        "question": "¿El ciprofloxacino aumenta el riesgo de aneurisma de aorta?",
+        "relevant": [
+          "d59d7cb7ea-s0026"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q19",
+        "question": "¿Qué dosis de fosfomicina se da para una cistitis no complicada?",
+        "relevant": [
+          "d0b2717f67-s0002"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q20",
+        "question": "¿Cómo hay que tomar la fosfomicina respecto a las comidas?",
+        "relevant": [
+          "d0b2717f67-s0004"
+        ],
+        "rank_bm25": 5,
+        "rank_dense": 1,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q21",
+        "question": "¿Puede conducir un paciente que toma tramadol?",
+        "relevant": [
+          "aa85f57614-s0034"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q22",
+        "question": "¿Qué hacer si suben las transaminasas con atorvastatina?",
+        "relevant": [
+          "58de64b808-s0011"
+        ],
+        "rank_bm25": 4,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q23",
+        "question": "¿Se puede tomar enalapril durante el embarazo?",
+        "relevant": [
+          "b787aa0884-s0043"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 4,
+        "rank_hybrid": 3
+      },
+      {
+        "id": "q24",
+        "question": "¿Se puede combinar losartán con aliskirén?",
+        "relevant": [
+          "a24b1ccbb8-s0023"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q25",
+        "question": "¿Qué dosis de escitalopram se han tomado sin síntomas graves?",
+        "relevant": [
+          "974d1c3041-s0052"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q26",
+        "question": "¿Cuál es la dosis máxima de venlafaxina para la depresión?",
+        "relevant": [
+          "aa13df65cd-s0002"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q27",
+        "question": "¿El lorazepam afecta a la capacidad de conducir?",
+        "relevant": [
+          "e17f1cb191-s0020"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q28",
+        "question": "¿Es peligrosa una sobredosis de alprazolam?",
+        "relevant": [
+          "c261c63f6f-s0035"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q29",
+        "question": "¿Qué dosis de lormetazepam toma un adulto para dormir?",
+        "relevant": [
+          "bbdaed23fc-s0001"
+        ],
+        "rank_bm25": 7,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q30",
+        "question": "¿Se puede dar naproxeno a un niño de un año?",
+        "relevant": [
+          "2da1124b62-s0011"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q31",
+        "question": "¿Es normal tener gases al empezar con lactulosa?",
+        "relevant": [
+          "86549f37cb-s0029"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 6
+      },
+      {
+        "id": "q32",
+        "question": "¿Puede tomar celecoxib alguien alérgico a las sulfamidas?",
+        "relevant": [
+          "7652fd6109-s0009"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q33",
+        "question": "¿Sirve el montelukast para una crisis de asma?",
+        "relevant": [
+          "155c365700-s0008"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q34",
+        "question": "¿Cuál es la dosis inicial de levetiracetam en adultos?",
+        "relevant": [
+          "ba2b27dfd2-s0001"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q35",
+        "question": "¿Se puede usar ácido valproico en el embarazo?",
+        "relevant": [
+          "f80180908e-s0062"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 4,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q36",
+        "question": "¿Puede tomar sumatriptán alguien que ha tenido un infarto?",
+        "relevant": [
+          "a0eceb0942-s0008"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q37",
+        "question": "¿Se puede usar empagliflozina en diabetes tipo 1?",
+        "relevant": [
+          "5ff1deaf52-s0008"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q38",
+        "question": "¿El salbutamol puede bajar el potasio?",
+        "relevant": [
+          "6f7f78af78-s0033"
+        ],
+        "rank_bm25": 15,
+        "rank_dense": 4,
+        "rank_hybrid": 4
+      },
+      {
+        "id": "q39",
+        "question": "¿Cuánto tarda el pantoprazol en aliviar el reflujo?",
+        "relevant": [
+          "ff57b98cfc-s0002"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q40",
+        "question": "¿Con qué dosis se empieza la rosuvastatina?",
+        "relevant": [
+          "0489eed4c8-s0002"
+        ],
+        "rank_bm25": 19,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q41",
+        "question": "¿Qué datos mínimos necesita una notificación de caso (ICSR) para ser válida?",
+        "relevant": [
+          "102ad6cc62-s0225"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 12,
+        "rank_hybrid": 12
+      },
+      {
+        "id": "q42",
+        "question": "¿En qué plazo se envían los casos no graves a EudraVigilance?",
+        "relevant": [
+          "102ad6cc62-s0362"
+        ],
+        "rank_bm25": null,
+        "rank_dense": null,
+        "rank_hybrid": null
+      },
+      {
+        "id": "q43",
+        "question": "¿Qué se considera el día cero de una notificación?",
+        "relevant": [
+          "102ad6cc62-s0283"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 8,
+        "rank_hybrid": 11
+      },
+      {
+        "id": "q44",
+        "question": "¿Cuándo se considera grave una reacción adversa?",
+        "relevant": [
+          "610e8aef7e-s0071"
+        ],
+        "rank_bm25": null,
+        "rank_dense": null,
+        "rank_hybrid": null
+      },
+      {
+        "id": "q45",
+        "question": "¿Qué es un error de medicación?",
+        "relevant": [
+          "610e8aef7e-s0053"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q46",
+        "question": "¿En cuántos días debe confirmarse una señal validada?",
+        "relevant": [
+          "076e88be22-s0071"
+        ],
+        "rank_bm25": null,
+        "rank_dense": null,
+        "rank_hybrid": null
+      },
+      {
+        "id": "q47",
+        "question": "Un antibiótico deja de funcionar por una cepa resistente: ¿en qué plazo se notifica?",
+        "relevant": [
+          "102ad6cc62-s0282"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "q48",
+        "question": "¿Qué es un acontecimiento adverso?",
+        "relevant": [
+          "102ad6cc62-s0212"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q49",
+        "question": "¿Qué actividades incluye la gestión de señales en la UE?",
+        "relevant": [
+          "076e88be22-s0066"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "q50",
+        "question": "Si a una notificación le falta el paciente identificable, ¿se envía como ICSR?",
+        "relevant": [
+          "102ad6cc62-s0249",
+          "102ad6cc62-s0251"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      }
+    ]
+  },
+  "instructions": {
+    "generic": {
+      "recall@1": 0.5366666666666666,
+      "hit@1": 0.56,
+      "recall@3": 0.8266666666666667,
+      "hit@3": 0.84,
+      "recall@5": 0.8666666666666667,
+      "hit@5": 0.88,
+      "recall@10": 0.9466666666666668,
+      "hit@10": 0.96,
+      "mrr": 0.7035555555555555,
+      "n_questions": 50
+    },
+    "pharmacovigilance": {
+      "recall@1": 0.5766666666666667,
+      "hit@1": 0.6,
+      "recall@3": 0.9066666666666667,
+      "hit@3": 0.92,
+      "recall@5": 0.9266666666666667,
+      "hit@5": 0.94,
+      "recall@10": 0.9666666666666667,
+      "hit@10": 0.98,
+      "mrr": 0.7453888888888889,
+      "n_questions": 50
+    },
+    "none": {
+      "recall@1": 0.57,
+      "hit@1": 0.58,
+      "recall@3": 0.8466666666666667,
+      "hit@3": 0.86,
+      "recall@5": 0.8666666666666667,
+      "hit@5": 0.88,
+      "recall@10": 0.9466666666666668,
+      "hit@10": 0.96,
+      "mrr": 0.7222142857142857,
+      "n_questions": 50
+    }
+  },
+  "no_context": {
+    "bm25": {
+      "recall@1": 0.39,
+      "hit@1": 0.4,
+      "recall@3": 0.53,
+      "hit@3": 0.54,
+      "recall@5": 0.55,
+      "hit@5": 0.56,
+      "recall@10": 0.59,
+      "hit@10": 0.6,
+      "mrr": 0.467,
+      "n_questions": 50
+    },
+    "dense": {
+      "recall@1": 0.5566666666666666,
+      "hit@1": 0.58,
+      "recall@3": 0.8066666666666668,
+      "hit@3": 0.82,
+      "recall@5": 0.8933333333333333,
+      "hit@5": 0.9,
+      "recall@10": 0.9133333333333333,
+      "hit@10": 0.92,
+      "mrr": 0.722,
+      "n_questions": 50
+    }
+  },
+  "generation": {
+    "summary": {
+      "answers_with_citation": 0.94,
+      "answers_with_invalid_citation": 0.0,
+      "relevant_in_context": 0.98,
+      "cites_relevant": 0.66,
+      "cites_relevant_when_in_context": 0.673469387755102,
+      "false_abstention_rate": 0.0,
+      "abstention_on_unanswerable": 1.0
+    },
+    "rows": [
+      {
+        "id": "q01",
+        "question": "¿Con qué frecuencia produce somnolencia la sertralina?",
+        "type": "ficha",
+        "expected": "Muy frecuente (≥1/10)",
+        "answer": "La somnolencia es un síntoma adverso reportado con frecuencia en la sertralina, según la ficha técnica. Se menciona que la somnolencia es una reacción adversa mediada por la serotonina y se clasifica como \"muy frecuente\" (≥ 1/10). \n\n[ee3f3fd9f0-0073]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "ee3f3fd9f0-0073"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q02",
+        "question": "¿Cuánto tiempo hay que esperar después de dejar un IMAO irreversible para empezar con sertralina?",
+        "type": "ficha",
+        "expected": "Al menos 14 días",
+        "answer": "La información indica que se debe esperar al menos 14 días después de haber suspendido el tratamiento con un IMAO irreversible antes de iniciar el tratamiento con sertralina. Esto se menciona en la sección 4.3 del documento [ee3f3fd9f0-0010]. \n\nPor lo tanto, la respuesta es: se debe esperar al menos 14 días después de dejar de tomar un IMAO irreversible antes de comenzar con sertralina.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "ee3f3fd9f0-0010"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q03",
+        "question": "¿Qué síntomas da una sobredosis de sertralina?",
+        "type": "ficha",
+        "expected": "Somnolencia, náuseas y vómitos, taquicardia, temblor, agitación, mareos",
+        "answer": "Una sobredosis de sertralina puede causar síntomas como somnolencia, trastornos gastrointestinales (náuseas y vómitos), taquicardia, temblor, agitación y mareos. Además, se ha notificado coma en casos de sobredosis, aunque de forma menos frecuente. [ee3f3fd9f0-0076]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "ee3f3fd9f0-0076"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q04",
+        "question": "Si un paciente toma demasiada sertralina, ¿hay que hacerle un electrocardiograma?",
+        "type": "ficha",
+        "expected": "Sí, por riesgo de prolongación del QTc",
+        "answer": "Si un paciente toma demasiada sertralina, se recomienda hacerle un electrocardiograma (ECG) como parte del manejo de la sobredosis. Esto se basa en la información proporcionada en el documento [ee3f3fd9f0-0077], donde se menciona que se recomienda la monitorización de ECG en todas las ingestiones de sobredosis de sertralina.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "ee3f3fd9f0-0077"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q05",
+        "question": "¿Cuál es la reacción adversa más frecuente de la sertralina?",
+        "type": "ficha",
+        "expected": "Las náuseas",
+        "answer": "La reacción adversa más frecuente de la sertralina es la náuseas. Esta información se encuentra en el apartado 4.8. Reacciones adversas [ee3f3fd9f0-0057].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "ee3f3fd9f0-0057"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q06",
+        "question": "¿Qué efectos secundarios se notifican más con el amlodipino?",
+        "type": "ficha",
+        "expected": "Somnolencia, mareos, cefalea, palpitaciones, sofocos, edema...",
+        "answer": "Los efectos secundarios más notificados durante el tratamiento con amlodipino son somnolencia, mareos, dolor de cabeza, palpitaciones, sofocos, dolor abdominal, náuseas, hinchazón de los tobillos, edema y fatiga. Estos efectos se clasifican como \"muy frecuentes\" (≥ 1/10) según el perfil de seguridad proporcionado en el documento [1d381329ee-0018].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "1d381329ee-0018"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q07",
+        "question": "¿Cuándo suelen aparecer las erupciones en la piel con lamotrigina?",
+        "type": "ficha",
+        "expected": "En las primeras 8 semanas",
+        "answer": "Las erupciones cutáneas con lamotrigina suelen aparecer generalmente en las primeras 8 semanas tras el inicio del tratamiento. Esto se menciona en el pasaje [1b6877d5a8-0117], donde se indica que \"las erupciones cutáneas, normalmente de aspecto maculopapular, aparece generalmente en las primeras 8 semanas tras el inicio del tratamiento con lamotrigina\". \n\nNo se menciona una fecha específica para la aparición de las erupciones en el pasaje [1b6877d5a8-0047] o [1b6877d5a8-0048], pero se refiere a que suelen aparecer en las primeras 8 semanas. \n\nPor lo tanto, la respuesta es: las erupciones cutáneas con lamotrigina suelen aparecer generalmente en las primeras 8 semanas tras el inicio del tratamiento.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "1b6877d5a8-0117",
+          "1b6877d5a8-0047",
+          "1b6877d5a8-0048"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q08",
+        "question": "¿Qué incidencia tienen las erupciones cutáneas graves con lamotrigina en adultos con epilepsia?",
+        "type": "ficha",
+        "expected": "Aproximadamente 1 de cada 500",
+        "answer": "La incidencia de erupciones cutáneas graves con lamotrigina en adultos con epilepsia es aproximadamente 1 de cada 500 pacientes, según los estudios mencionados en el documento [1b6877d5a8-0048].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "1b6877d5a8-0048"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q09",
+        "question": "¿A partir de qué filtrado glomerular está contraindicada la metformina?",
+        "type": "ficha",
+        "expected": "TFG < 30 ml/min",
+        "answer": "La metformina está contraindicada en pacientes con una función renal menor a 30 ml/min, como se menciona en el pasaje [161cb12606-0011], que indica que se debe evaluar la TFG antes de iniciar el tratamiento y que la metformina está contraindicada en pacientes con TFG < 30 ml/min. \n\nPor lo tanto, la metformina está contraindicada a partir de un filtrado glomerular de 30 ml/min o menos. \n\n[161cb12606-0011]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "161cb12606-0011"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q10",
+        "question": "¿Qué molestias son típicas al empezar con metformina?",
+        "type": "ficha",
+        "expected": "Náuseas, vómitos, diarrea, dolor abdominal, pérdida de apetito",
+        "answer": "Las molestias típicas al empezar con metformina son náuseas, vómitos, diarreas, dolor abdominal o pérdida de apetito. Estas reacciones adversas se resuelven espontáneamente en la mayoría de los casos. Para prevenirlas, se recomienda tomar metformina en 2 o 3 dosis al día, durante o después de las comidas, y incrementar la dosis lentamente. \n\n[161cb12606-0023]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "161cb12606-0023"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q11",
+        "question": "¿A partir de qué semana de embarazo el ibuprofeno puede provocar oligohidramnios?",
+        "type": "ficha",
+        "expected": "Semana 20",
+        "answer": "A partir de la semana 20 de embarazo, el uso de ibuprofeno puede provocar oligohidramnios como resultado de una disfunción renal fetal. Esto puede ocurrir poco después del inicio del tratamiento y habitualmente es reversible mediante la interrupción del tratamiento. \n\n[aa82a25118-0043]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "aa82a25118-0043"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q12",
+        "question": "¿Se puede tomar omeprazol junto con nelfinavir?",
+        "type": "ficha",
+        "expected": "No, está contraindicado",
+        "answer": "Sí, se debe evitar la combinación de omeprazol con nelfinavir, según la ficha técnica proporcionada. La interacción entre estos medicamentos puede causar una disminución de la exposición a nelfinavir y su metabolito con actividad farmacológica, lo cual se menciona en la sección 4.5 de la ficha técnica [e062f4c919-0017]. Además, la contraindicación específica de la combinación de omeprazol con nelfinavir se detalla en la sección 4.3 de la ficha técnica [e062f4c919-0028].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "e062f4c919-0017",
+          "e062f4c919-0028"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q13",
+        "question": "¿Cuáles son las reacciones adversas más frecuentes del omeprazol?",
+        "type": "ficha",
+        "expected": "Cefalea, dolor abdominal, estreñimiento, diarrea, flatulencia, náuseas/vómitos",
+        "answer": "Las reacciones adversas más frecuentes del omeprazol, según la información proporcionada, son cefalea, dolor abdominal, estreñimiento, diarrea, flatulencia y náuseas/vómitos. Estas se clasifican como \"más frecuentes\" en la ficha técnica. \n\n[e062f4c919-0041]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "e062f4c919-0041"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q14",
+        "question": "¿Cuánto tiempo como máximo se puede tomar zolpidem?",
+        "type": "ficha",
+        "expected": "Máximo cuatro semanas incluida la retirada",
+        "answer": "El máximo tiempo que se puede tomar zolpidem, según la información proporcionada, es de cuatro semanas, incluyendo el período de disminución de dosis. Esto se menciona en la sección 4.2 de la ficha técnica [d265be0c42-0001].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d265be0c42-0001"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q15",
+        "question": "Tomé zolpidem anoche, ¿puedo conducir por la mañana?",
+        "type": "ficha",
+        "expected": "No se aconseja hasta comprobar que no está afectado",
+        "answer": "After reviewing the provided information, it is clear that zolpidem can cause somnolence and impaired motor function, which may persist the following day. The passage [d265be0c42-0031] states that zolpidem may cause somnolence the next morning and that it is not advised to drive or operate machinery until it is confirmed that the capacity to perform these activities is not affected.\n\nTherefore, the answer is:\n\nNo, you should not drive in the morning after taking zolpidem, as it may cause somnolence that persists the following day. [d265be0c42-0031]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d265be0c42-0031"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q16",
+        "question": "¿Qué cantidad de paracetamol se considera sobredosis en un adulto?",
+        "type": "ficha",
+        "expected": "7,5 g o más en una sola toma",
+        "answer": "La cantidad de paracetamol considerada sobredosis en un adulto es de 7,5 g o más en una sola administración. Esto se basa en la información proporcionada en el documento [9113ce6d13-0025], donde se menciona que la sobredosis se define como 7,5 g o más de paracetamol en una sola administración en adultos.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "9113ce6d13-0025"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q17",
+        "question": "¿Qué síntomas aparecen en las primeras horas de una intoxicación por paracetamol?",
+        "type": "ficha",
+        "expected": "Náuseas, vómitos, anorexia, palidez, dolor abdominal",
+        "answer": "Los síntomas de una intoxicación por paracetamol aparecen por lo general en las primeras 24 horas después de la administración. Estos incluyen náuseas, vómitos, anorexia, palidez y dolor abdominal. \n\nEsta información se basa en el pasaje [9113ce6d13-0024], que menciona que \"los síntomas aparecen por lo general en las primeras 24 horas e incluyen: náuseas, vómitos, anorexia, palidez y dolor abdominal\".\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "9113ce6d13-0024"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q18",
+        "question": "¿El ciprofloxacino aumenta el riesgo de aneurisma de aorta?",
+        "type": "ficha",
+        "expected": "Sí, especialmente en ancianos",
+        "answer": "Sí, el ciprofloxacino aumenta el riesgo de aneurisma de aorta. Esto se menciona en varias fuentes del documento proporcionado. En particular, [d59d7cb7ea-0020] indica que en estudios epidemiológicos se ha notificado un aumento del riesgo de disección y aneurisma aórticos, especialmente en pacientes de edad avanzada, y de regurgitación de válvulas mitral y aórtica después de la ingestión de fluoroquinolonas. Además, [d59d7cb7ea-0074] afirma que se han notificado casos de disección y aneurisma aórticos en pacientes que reciben fluoroquinolonas. Por lo tanto, el ciprofloxacino, siendo una fluoroquinolona, está asociado con un aumento del riesgo de aneurisma de aorta.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d59d7cb7ea-0020",
+          "d59d7cb7ea-0074"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q19",
+        "question": "¿Qué dosis de fosfomicina se da para una cistitis no complicada?",
+        "type": "ficha",
+        "expected": "3 g en dosis única",
+        "answer": "La dosis de fosfomicina que se da para una cistitis no complicada en mujeres adultas y adolescentes (edad >12 años) es de 3 g de fosfomicina una sola vez. \n\nEsta información se encuentra en la sección 4.1 de la ficha técnica de fosfomicina: FOSFOMICINA ABAMED 3G GRANULADO PARA SOLUCION ORAL EN SOBRES EFG [d0b2717f67-0000].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d0b2717f67-0000"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q20",
+        "question": "¿Cómo hay que tomar la fosfomicina respecto a las comidas?",
+        "type": "ficha",
+        "expected": "Con el estómago vacío",
+        "answer": "La fosfomicina debe tomarse con el estómago vacío o 2-3 horas después de las comidas. Esto se menciona en la sección 4.2 de la ficha técnica, específicamente en el párrafo que indica: \"se debe tomar con el estómago vacío (aproximadamente 2-3 horas antes o 2-3 horas después de una comida), de forma preferente antes de acostarse y tras la micción.\"\n\nRespuesta: La fosfomicina debe tomarse con el estómago vacío o 2-3 horas después de las comidas. [d0b2717f67-0006]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d0b2717f67-0006"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q21",
+        "question": "¿Puede conducir un paciente que toma tramadol?",
+        "type": "ficha",
+        "expected": "No si siente somnolencia, mareo o alteraciones visuales",
+        "answer": "Si un paciente toma tramadol, no debe conducir ni utilizar máquinas debido a los posibles efectos secundarios como somnolencia, mareo o alteraciones visuales, que pueden afectar su capacidad para realizar tareas potencialmente peligrosas. Esto se menciona en el apartado 4.7 de la ficha técnica de tramadol.\n\nNo se proporciona información adicional sobre la capacidad del paciente para conducir, pero se advierte claramente en la ficha técnica. Por lo tanto, la respuesta es:\n\nNo, un paciente que toma tramadol no debe conducir ni utilizar máquinas debido a los efectos secundarios que pueden afectar su capacidad mental y física. [aa85f57614-0031]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "aa85f57614-0031"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q22",
+        "question": "¿Qué hacer si suben las transaminasas con atorvastatina?",
+        "type": "ficha",
+        "expected": "Reducir dosis o retirar si >3 veces el límite normal",
+        "answer": "Si suben las transaminasas con atorvastatina, se debe realizar un control regular de los niveles de transaminasas, como se menciona en la ficha técnica. Según la información proporcionada, si los niveles de transaminasas superan el triple del valor máximo de normalidad, se recomienda una reducción de la dosis o la retirada del medicamento, como se detalla en la sección 4.8 [58de64b808-0011]. Además, si los niveles de CK (citrato citratoasa) aumentan significativamente, se debe interrumpir el tratamiento con atorvastatina, ya que esto puede indicar rabdomiólisis [58de64b808-0019].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "58de64b808-0011",
+          "58de64b808-0019"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q23",
+        "question": "¿Se puede tomar enalapril durante el embarazo?",
+        "type": "ficha",
+        "expected": "Contraindicado en 2º y 3er trimestre; no recomendado en el 1º",
+        "answer": "No se recomienda el uso de inhibidores de la ECA durante el primer trimestre del embarazo, y el uso durante el segundo y tercer trimestres está contraindicado. Además, se debe interrumpir el tratamiento inmediatamente cuando se confirme el embarazo. Por lo tanto, no se puede tomar enalapril durante el embarazo sin excepción, a menos que el tratamiento continuado con un inhibidor de la ECA se considere esencial. \n\nEsta información se basa en las secciones 4.3 y 4.4 de la ficha técnica de enalapril [b787aa0884-0008] y [b787aa0884-0032].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "b787aa0884-0008",
+          "b787aa0884-0032"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q24",
+        "question": "¿Se puede combinar losartán con aliskirén?",
+        "type": "ficha",
+        "expected": "Contraindicado en diabéticos o con insuficiencia renal",
+        "answer": "No se puede combinar losartán con aliskirén. El uso concomitante de losartán junto con aliskirén está contraindicado en pacientes con diabetes mellitus o insuficiencia renal (TFG < 60 ml/min/1,73 m²), según la ficha técnica. [a24b1ccbb8-0012]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "a24b1ccbb8-0012"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q25",
+        "question": "¿Qué dosis de escitalopram se han tomado sin síntomas graves?",
+        "type": "ficha",
+        "expected": "Entre 400 y 800 mg",
+        "answer": "La información disponible indica que se han tomado dosis de escitalopram entre 400 y 800 mg sin síntomas graves. Esta información se encuentra en el párrafo de \"Toxicidad\" del documento [974d1c3041-0054].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "974d1c3041-0054"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q26",
+        "question": "¿Cuál es la dosis máxima de venlafaxina para la depresión?",
+        "type": "ficha",
+        "expected": "375 mg/día",
+        "answer": "La dosis máxima de venlafaxina para la depresión, según la información proporcionada, es de 375 mg/día. Esta dosis se establece como máxima cuando los pacientes no responden a la dosis inicial de 75 mg/día y se pueden realizar incrementos de la dosis a intervalos de 2 semanas o más, siempre que esté justificado clínicamente. La dosis máxima recomendada es de 375 mg/día. \n\n[aa13df65cd-0001]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "aa13df65cd-0001"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q27",
+        "question": "¿El lorazepam afecta a la capacidad de conducir?",
+        "type": "ficha",
+        "expected": "Sí, puede disminuir la atención y producir somnolencia",
+        "answer": "Sí, el lorazepam puede afectar la capacidad de conducir. Según la ficha técnica, lorazepam puede disminuir la atención, alterar la capacidad de reacción y producir somnolencia, especialmente al inicio del tratamiento o después de un incremento de la dosis. No se aconseja conducir vehículos ni manejar maquinaria cuya utilización requiera especial atención o concentración, hasta que se compruebe que la capacidad para realizar estas actividades no queda afectada. \n\nEsta información se encuentra en el párrafo [e17f1cb191-0021] de la ficha técnica de lorazepam.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "e17f1cb191-0021"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q28",
+        "question": "¿Es peligrosa una sobredosis de alprazolam?",
+        "type": "ficha",
+        "expected": "No suele serlo salvo combinada con alcohol u otros depresores",
+        "answer": "Sí, una sobredosis de alprazolam puede ser peligrosa. Según la ficha técnica, la sobredosis con benzodiazepinas, incluida la sobredosis de alprazolam, se manifiesta generalmente por distintos grados de depresión del sistema nervioso central, que pueden ir desde somnolencia hasta coma, y en algunos casos incluso a la muerte si se combina con otros depresores del sistema nervioso central, incluidos el alcohol, los opioides, y otras benzodiazepinas.\n\nLa ficha técnica menciona que \"la sobredosis no presenta una amenaza vital a no ser que su administración se combine con otros depresores del sistema nervioso central (incluyendo alcohol)\" y que \"se han notificado muertes relacionadas con sobredosis cuando se abusa de alprazolam junto con otros depresores del SNC, incluidos los opioides, otras benzodiazepinas y el alcohol\".\n\nPor lo tanto, la sobredosis de alprazolam puede ser peligrosa, especialmente cuando se combina con otros fármacos que afectan el sistema nervioso central.\n\n[c261c63f6f-0039]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "c261c63f6f-0039"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q29",
+        "question": "¿Qué dosis de lormetazepam toma un adulto para dormir?",
+        "type": "ficha",
+        "expected": "1 mg, 15-30 minutos antes de acostarse",
+        "answer": "Un adulto toma una dosis de 1 mg de lormetazepam para dormir. Esta dosis se recomienda de 15 a 30 minutos antes de acostarse. En casos de insomnio grave o persistente que no respondan a esta pauta, se puede incrementar a 2 mg. \n\n[bbdaed23fc-0001]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "bbdaed23fc-0001"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q30",
+        "question": "¿Se puede dar naproxeno a un niño de un año?",
+        "type": "ficha",
+        "expected": "No, contraindicado en menores de 2 años",
+        "answer": "No se puede dar naproxeno a un niño de un año de edad. Según la ficha técnica de naproxeno, se menciona que no debe administrarse a pacientes menores de 2 años de edad. Por lo tanto, la respuesta es: No.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q31",
+        "question": "¿Es normal tener gases al empezar con lactulosa?",
+        "type": "ficha",
+        "expected": "Sí, suele desaparecer con el tratamiento continuado",
+        "answer": "Sí, es normal tener gases al empezar con lactulosa. Según la ficha técnica, durante los primeros días de tratamiento puede producirse meteorismo y flatulencia, que generalmente desaparecen con la terapia continuada. [86549f37cb-0009]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "86549f37cb-0009"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q32",
+        "question": "¿Puede tomar celecoxib alguien alérgico a las sulfamidas?",
+        "type": "ficha",
+        "expected": "No, es una contraindicación",
+        "answer": "Sí, alguien alérgico a las sulfamidas puede tomar celecoxib, pero con precauciones. La contraindicación específica para celecoxib mencionada en la ficha técnica indica que se debe evitar su uso en pacientes con hipersensibilidad conocida a sulfamidas [7652fd6109-0008]. Sin embargo, es importante destacar que la hipersensibilidad a sulfamidas no es un contraindicado absoluto para el uso de celecoxib, ya que el medicamento no contiene sulfamidas como principio activo. Por lo tanto, si un paciente tiene una alergia conocida a sulfamidas, el uso de celecoxib debe ser evaluado cuidadosamente, y en algunos casos, podría ser indicado bajo supervisión médica.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "7652fd6109-0008"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q33",
+        "question": "¿Sirve el montelukast para una crisis de asma?",
+        "type": "ficha",
+        "expected": "No",
+        "answer": "No, el montelukast no se utiliza para tratar crisis de asma. Según la información proporcionada, el montelukast está indicado como terapia adicional en pacientes con asma persistente de leve a moderada, no controlados adecuadamente con corticosteroides inhalados y en quienes los β-agonistas de acción corta \"a demanda\" no permiten un control clínico adecuado del asma. En caso de crisis aguda de asma, se debe utilizar un β-agonista inhalado de acción corta. \n\nLa respuesta exacta es: No, el montelukast no sirve para una crisis de asma.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q34",
+        "question": "¿Cuál es la dosis inicial de levetiracetam en adultos?",
+        "type": "ficha",
+        "expected": "500 mg dos veces al día",
+        "answer": "La dosis inicial de levetiracetam en adultos es de 10 mg/kg dos veces al día. Esto se basa en la información proporcionada en el documento [ba2b27dfd2-0014].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "ba2b27dfd2-0014"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q35",
+        "question": "¿Se puede usar ácido valproico en el embarazo?",
+        "type": "ficha",
+        "expected": "Contraindicado salvo que no haya alternativa",
+        "answer": "No, se debe evitar el uso del ácido valproico durante el embarazo, a menos que no exista un tratamiento alternativo adecuado. La ficha técnica indica que el tratamiento con valproato está contraindicado en mujeres en edad fértil, y se recomienda referir a un especialista con experiencia en teratología para evaluar el riesgo del embarazo expuesto. [f80180908e-0064] [f80180908e-0075]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "f80180908e-0064",
+          "f80180908e-0075"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q36",
+        "question": "¿Puede tomar sumatriptán alguien que ha tenido un infarto?",
+        "type": "ficha",
+        "expected": "No",
+        "answer": "No puede tomar sumatriptán alguien que ha tenido un infarto de miocardio. Esta condición es contraindicada según la ficha técnica de sumatriptán, ya que el sumatriptán no se debe administrar a pacientes con un historial de infarto de miocardio o enfermedad coronaria isquémica. [a0eceb0942-0005]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "a0eceb0942-0005"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q37",
+        "question": "¿Se puede usar empagliflozina en diabetes tipo 1?",
+        "type": "ficha",
+        "expected": "No",
+        "answer": "No, empagliflozina no se debe utilizar en pacientes con diabetes mellitus tipo 1. Esta indicación se menciona en la sección 4.1 de la ficha técnica, donde se especifica que \"Empagliflozina no se debe utilizar en pacientes con diabetes tipo 1\". \n\n[5ff1deaf52-0000]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "5ff1deaf52-0000"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q38",
+        "question": "¿El salbutamol puede bajar el potasio?",
+        "type": "ficha",
+        "expected": "Sí, hipocalemia potencialmente grave",
+        "answer": "Sí, el salbutamol puede bajar el potasio sérico. Esto se menciona en el texto [6f7f78af78-0011], donde se indica que la terapia con agonistas beta-2 puede dar lugar a una hipocalemia potencialmente grave, principalmente tras la administración de presentaciones parenterales y nebulizadas. Además, se recomienda controlar los niveles séricos de potasio y reponerlos con potasio por vía oral, salvo en pacientes con hipocalemia grave donde puede ser necesaria la vía intravenosa.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "6f7f78af78-0011"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q39",
+        "question": "¿Cuánto tarda el pantoprazol en aliviar el reflujo?",
+        "type": "ficha",
+        "expected": "De 2 a 4 semanas",
+        "answer": "El alivio de los síntomas generalmente se logra después de un período de 2 a 4 semanas. Si no fuera suficiente, el alivio de los síntomas se conseguirá normalmente, después de un período adicional de 4 semanas. \n\nEsta información se encuentra en la sección 4.2. Posología y forma de administración de la ficha técnica de pantoprazol [ff57b98cfc-0002].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "ff57b98cfc-0002"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q40",
+        "question": "¿Con qué dosis se empieza la rosuvastatina?",
+        "type": "ficha",
+        "expected": "5 o 10 mg una vez al día",
+        "answer": "La dosis inicial recomendada de rosuvastatina es 5 o 10 mg vía oral, una vez al día, tanto en pacientes que no hayan recibido estatinas como en pacientes que hayan sido tratados previamente con otro inhibidor de la HMG-CoA reductasa. Esta dosis se elige considerando el nivel de colesterol del paciente y el posible riesgo cardiovascular, así como el riesgo potencial de reacciones adversas.\n\n[0489eed4c8-0002]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "0489eed4c8-0002"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q41",
+        "question": "¿Qué datos mínimos necesita una notificación de caso (ICSR) para ser válida?",
+        "type": "guideline",
+        "expected": "Notificador, paciente, reacción y medicamento sospechoso identificables",
+        "answer": "Para que una notificación de caso (ICSR) sea válida, se requiere que tenga información disponible para al menos uno de los descriptores cualificadores mencionados. Este requisito se establece en el pasaje [102ad6cc62-0079], donde se indica que \"un ICSR debería considerarse válido para la presentación solo si información es disponible para al menos uno de los descriptores cualificadores\". \n\nAdemás, en el mismo pasaje se menciona que, en ausencia de un descriptor cualificador, una notificación que refiere a un número definido de pacientes no será considerada válida hasta que se pueda caracterizar a un paciente individual mediante uno de los descriptores cualificadores. \n\nPor lo tanto, los datos mínimos necesarios para que una ICSR sea válida son: \n1. Al menos uno de los descriptores cualificadores.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "102ad6cc62-0079"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q42",
+        "question": "¿En qué plazo se envían los casos no graves a EudraVigilance?",
+        "type": "guideline",
+        "expected": "90 días",
+        "answer": "Los casos no graves se envían a EudraVigilance dentro de 90 días desde la fecha de recepción de los informes. Este plazo se establece en el artículo 107(3) y 107a(4) de la Directiva 2001/83/EC, y se refleja en el marco de la Guía de Prácticas de Vigilancia Farmacovigilante (GVP) - Modulo VI (Rev 2), específicamente en el párrafo que menciona el cumplimiento del plazo de 90 días para los ICSRs no graves. \n\n[102ad6cc62-0227]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "102ad6cc62-0227"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "q43",
+        "question": "¿Qué se considera el día cero de una notificación?",
+        "type": "guideline",
+        "expected": "El primer día en que se conoce un ICSR válido",
+        "answer": "El día cero de una notificación se considera el momento en que la información conteniendo los criterios mínimos para una notificación de reacción adversa se hace conocida para la organización o su colaborador contractual. Este día se establece como el primero en el cual una autoridad competente o el titular de la autorización de mercado obtiene conocimiento de la notificación, independientemente de si la información se recibe durante un fin de semana o un día festivo. \n\nLa definición se basa en el pasaje [102ad6cc62-0117].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "102ad6cc62-0117"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q44",
+        "question": "¿Cuándo se considera grave una reacción adversa?",
+        "type": "guideline",
+        "expected": "Muerte, riesgo vital, hospitalización, discapacidad, anomalía congénita",
+        "answer": "Una reacción adversa se considera grave si resulta en muerte, es vida amenazante, requiere hospitalización inpatient o prolongación de la hospitalización, causa persistente o grave discapacidad o es un anormale/defecto congénito. Esta definición se alinea con el ICH-E2A y el Directivo Europeo (DIR 2001/83/EC Art 1(12)).\n\nPor lo tanto, la respuesta es: [610e8aef7e-0120] [102ad6cc62-0049] [102ad6cc62-0048].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "610e8aef7e-0120",
+          "102ad6cc62-0049",
+          "102ad6cc62-0048"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q45",
+        "question": "¿Qué es un error de medicación?",
+        "type": "guideline",
+        "expected": "Fallo no intencionado en el proceso de tratamiento que causa o puede causar daño",
+        "answer": "Un error de medicación es un fallo no intencional en el proceso de tratamiento con medicamentos que puede llevar a o tener el potencial de causar daño al paciente. Este tipo de error se describe en el documento [610e8aef7e-0085], donde se establece que \"un error en el proceso de tratamiento con medicamentos es un fallo no intencional que puede llevar a o tener el potencial de causar daño al paciente\". Además, se menciona que los errores no se refieren a la falta de eficacia del medicamento, sino a fallos humanos o procesales.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "610e8aef7e-0085"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q46",
+        "question": "¿En cuántos días debe confirmarse una señal validada?",
+        "type": "guideline",
+        "expected": "30 días",
+        "answer": "La señal validada debe confirmarse dentro de 30 días desde la recepción inicial. Este plazo se menciona en el pasaje [076e88be22-0097], que describe el proceso de confirmación de señales validadas por la PRAC.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "076e88be22-0097"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q47",
+        "question": "Un antibiótico deja de funcionar por una cepa resistente: ¿en qué plazo se notifica?",
+        "type": "guideline",
+        "expected": "15 días",
+        "answer": "La notificación de una cepa resistente se debe realizar dentro de los 15 días según el artículo mencionado en [102ad6cc62-0509]. Este artículo indica que se debe notificar dentro de los 15 días en caso de una falta de eficacia terapéutica debido a la aparición de una cepa resistente a un antibiótico previamente considerada susceptible. \n\nPor lo tanto, la respuesta es: [102ad6cc62-0509].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "102ad6cc62-0509"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "q48",
+        "question": "¿Qué es un acontecimiento adverso?",
+        "type": "guideline",
+        "expected": "Cualquier suceso médico desfavorable, sin necesidad de relación causal",
+        "answer": "Un acontecimiento adverso se define como cualquier untoward medical occurrence en un paciente administrado un medicamento y que no necesariamente tiene una relación causal con este tratamiento, según la definición proporcionada en el documento [102ad6cc62-0036]. Este concepto se alinea con la guía ICH-E2D, que se encuentra en el Anexo IV del GVP. Un acontecimiento adverso puede incluir signos, síntomas o enfermedades temporales asociadas con el uso del medicamento, incluso si no se consideran relacionados directamente con él.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "102ad6cc62-0036"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q49",
+        "question": "¿Qué actividades incluye la gestión de señales en la UE?",
+        "type": "guideline",
+        "expected": "Detección, validación, análisis y priorización, evaluación, recomendación",
+        "answer": "La gestión de señales en la UE incluye las siguientes actividades: señalización, validación, confirmación, análisis y priorización de señales, así como evaluación y recomendación de acciones [076e88be22-0017]. Además, se incluyen actividades relacionadas con la detección de señales a través de datos de cualquier fuente, según el proceso descrito en [076e88be22-0009].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "076e88be22-0017",
+          "076e88be22-0009"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "q50",
+        "question": "Si a una notificación le falta el paciente identificable, ¿se envía como ICSR?",
+        "type": "guideline",
+        "expected": "No, el caso es incompleto",
+        "answer": "No, si a una notificación le falta el paciente identificable, no se envía como ICSR. Según el texto proporcionado, un ICSR debe contener información para al menos un del pacientes cualificadores. Si no hay información sobre el paciente identificable, el ICSR no es válido para la submisión.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "u01",
+        "question": "¿Cuánto cuesta la sertralina en la farmacia?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "u02",
+        "question": "¿Qué efectos adversos tiene la insulina glargina?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "u03",
+        "question": "¿Cuántas notificaciones de somnolencia con sertralina hay en FAERS?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "u04",
+        "question": "¿Qué dosis de semaglutida se usa para adelgazar?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "u05",
+        "question": "¿Cuál es el plazo para notificar reacciones adversas a la PMDA japonesa?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "u06",
+        "question": "¿Qué laboratorio de la India fabrica el principio activo de la metformina?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      }
+    ]
+  }
+}
