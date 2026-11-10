@@ -101,12 +101,35 @@ def main() -> None:
         for line in Path(args.bench).read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    # Brains not in this run keep their previous results, so brains can be run one at a time.
+    previous = json.loads(out.read_text(encoding="utf-8")) if out.exists() else {}
+    results = {k: v for k, v in previous.items() if k not in args.brains}
+
+    def save() -> None:
+        out.write_text(
+            json.dumps(results, indent=2, ensure_ascii=False, default=list), encoding="utf-8"
+        )
+
     agent = ReActAgent.from_env()
-    results = {}
     for brain in args.brains:
         rows = []
         for task in tasks:
-            response = agent.run(task["task"], max_steps=args.max_steps, brain=brain).model_dump()
+            try:
+                response = agent.run(
+                    task["task"], max_steps=args.max_steps, brain=brain
+                ).model_dump()
+            except Exception as exc:  # noqa: BLE001 - one crash (CUDA OOM) must not lose the run
+                response = {
+                    "final_answer": "",
+                    "steps": [],
+                    "n_steps": 0,
+                    "succeeded": False,
+                    "tokens_used": 0,
+                    "stop_reason": f"error: {type(exc).__name__}",
+                    "pending_actions": [],
+                }
             ok = response["succeeded"] and check_answer(
                 task, response["final_answer"], response, agent.registry
             )
@@ -126,14 +149,9 @@ def main() -> None:
                 f"tools={sorted(used)}",
                 flush=True,
             )
-        results[brain] = {"summary": summarise(rows), "rows": rows}
+            results[brain] = {"summary": summarise(rows), "rows": rows}
+            save()  # after every task: a later crash keeps what was already measured
         print(f"{brain:>9}: {json.dumps(results[brain]['summary'])}", flush=True)
-
-    out = Path(args.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(
-        json.dumps(results, indent=2, ensure_ascii=False, default=list), encoding="utf-8"
-    )
     print(f"report -> {out}")
 
 
