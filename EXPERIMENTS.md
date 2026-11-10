@@ -421,3 +421,13 @@ respuestas es un caso de 18: con 30 casos es ruido, y cada iteración ajustada a
 casos los hace más optimistas, así que paramos de iterar las descripciones aquí. Siguiente
 experimento con sentido: el modo thinking de Qwen3 (`ARCA_TOOLS_THINKING=1`) para los fallos de
 razonamiento (dosis, orden temporal en Naranjo).
+
+### 2026-11-10 · Fase 3 · Nota al releer el test: dos ablaciones se invierten
+
+Al juntar las tablas de desarrollo y test en `rag/RESULTADOS.md` vimos que, en el test, el
+retriever denso rinde un poco *mejor* sin instrucción (MRR 0,694 frente a 0,684 con la de
+farmacovigilancia) y sin encabezado de contexto (0,707 frente a 0,684). En desarrollo era al
+revés. Las diferencias son de 1-2 centésimas, dentro del ruido con 92 preguntas, así que no
+cambiamos la configuración, pero tampoco podemos afirmar que la instrucción del dominio o el
+encabezado ayuden al denso. Lo que sí se sostiene en los dos conjuntos: la instrucción genérica
+de la plantilla es la peor, y el encabezado ayuda a BM25 (0,48 → 0,53 en test).
