@@ -125,6 +125,15 @@ class AgentRequest(BaseModel):
         default="rlm",
         description="Model driving the loop: base model, your phase-1 RLM, or a thinking model",
     )
+    session_id: str | None = Field(
+        default=None,
+        description="Reuse the memory of a previous conversation (multi-turn); omit for a new one.",
+    )
+    allow_actions: bool = Field(
+        default=False,
+        description="Execute tools with side effects (create_icsr_report). By default they are "
+        "not executed and come back in pending_actions for human confirmation.",
+    )
 
 
 class AgentAction(BaseModel):
@@ -145,3 +154,13 @@ class AgentResponse(BaseModel):
     succeeded: bool = True
     model: str = ""
     tokens_used: int = 0
+    stop_reason: str = Field(
+        default="",
+        description="final_answer, answered_without_final_answer, max_steps, loop_detected or "
+        "error.",
+    )
+    pending_actions: list[AgentAction] = Field(
+        default_factory=list, description="Side-effect calls that need human confirmation."
+    )
+    session_id: str | None = None
+    memory_compressions: int = 0

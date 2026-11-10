@@ -124,7 +124,13 @@ def agent(request: AgentRequest):
     return _run(
         "agent",
         backends.agent,
-        lambda a: a.run(request.task, max_steps=request.max_steps, brain=request.brain),
+        lambda a: a.run(
+            request.task,
+            max_steps=request.max_steps,
+            brain=request.brain,
+            session_id=request.session_id,
+            allow_actions=request.allow_actions,
+        ),
     )
 
 

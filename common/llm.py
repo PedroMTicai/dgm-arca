@@ -34,6 +34,7 @@ class ChatModel:
         self.adapter = adapter
         self.model = None
         self.tokenizer = None
+        self.last_prompt_tokens = 0
         self._lock = threading.Lock()  # one generation at a time on the shared GPU
 
     @property
@@ -58,6 +59,12 @@ class ChatModel:
             model = PeftModel.from_pretrained(model, self.adapter)
         self.model = model.eval()
         return self
+
+    def count_tokens(self, text: str) -> int:
+        """Tokens of a text with this model's tokenizer (the agent's memory budget)."""
+        if self.tokenizer is None:
+            self.load()
+        return len(self.tokenizer(text, add_special_tokens=False)["input_ids"])
 
     def render(
         self,
@@ -91,6 +98,7 @@ class ChatModel:
             self.load()
         prompt = self.render(messages, tools=tools, enable_thinking=enable_thinking)
         inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
+        self.last_prompt_tokens = int(inputs["input_ids"].shape[1])  # cost accounting (phase 4)
         sampling = (
             {"do_sample": True, "temperature": temperature, "top_p": 0.95}
             if temperature > 0

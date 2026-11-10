@@ -216,6 +216,11 @@ def _openfda_total(search: str | None, retries: int = 3) -> int:
     for attempt in range(retries):
         response = requests.get(OPENFDA_EVENTS, params=params, timeout=20)
         if response.status_code == 404:  # openFDA answers 404 "No matches found"
+            if search is None:  # the whole database cannot be empty: a transient failure
+                if attempt < retries - 1:
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise RuntimeError("openFDA did not return the database total; try again")
             return 0
         if response.status_code == 400:
             raise ValueError(

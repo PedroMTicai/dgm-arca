@@ -20,6 +20,7 @@ class ConversationMemory:
     keep_last: int = 6  # most recent messages that are never summarised
     messages: list[dict] = field(default_factory=list)
     summary: str = ""
+    compressions: int = 0
 
     def add(self, role: str, content: str, **extra) -> None:
         self.messages.append({"role": role, "content": content, **extra})
@@ -39,18 +40,29 @@ class ConversationMemory:
         return [{"role": "system", "content": system}, *self.messages]
 
     def compress(self, summarize: Callable[[list[dict]], str]) -> bool:
-        """Tu turno (the policy): decide *what* to summarise and *when*.
+        """Our policy: *when* — only when over budget; *what* — everything between the pinned
+        messages and the last ``keep_last`` ones.
 
-        The mechanics are here: if over budget, take everything except the last
-        ``keep_last`` messages, turn it into a summary with ``summarize`` (a call to your
-        model with ``SUMMARY_PROMPT``) and prepend it to the existing summary. Return True
-        if a compression happened. Then think: should tool observations be truncated
-        before summarising? Should the first user message always stay verbatim?
+        Pinned messages (``pinned=True``, the user's tasks) are never summarised: a
+        paraphrased task is how an agent drifts away from what was asked, and a task is short.
+        The ``keep_last`` most recent messages stay verbatim because the next step depends on
+        them (the last tool call and its observation). Tool observations are already
+        truncated when they enter the memory (``ReActAgent``), so a single long FAERS listing
+        cannot by itself force a summary. Returns True if a compression happened.
         """
         if not self.over_budget() or len(self.messages) <= self.keep_last:
             return False
-        old, recent = self.messages[: -self.keep_last], self.messages[-self.keep_last :]
+        head, recent = self.messages[: -self.keep_last], self.messages[-self.keep_last :]
+        pinned = [m for m in head if m.get("pinned")]
+        old = [m for m in head if not m.get("pinned")]
+        if not old:
+            return False
         new_summary = summarize(old)
         self.summary = f"{self.summary}\n{new_summary}".strip()
-        self.messages = recent
+        self.messages = pinned + recent
+        self.compressions += 1
         return True
+
+    def model_messages(self) -> list[dict]:
+        """``render()`` without our bookkeeping keys, ready for the chat template."""
+        return [{k: v for k, v in m.items() if k != "pinned"} for m in self.render()]
