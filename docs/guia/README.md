@@ -100,7 +100,7 @@ directamente. Lo controlamos con `enable_thinking`.
 | 1 | Entrenada y evaluada en la DGX | pass@1 en test: base 7,5 % → SFT 36,5 % → GRPO 41,5 %; en OOD 0 % → 10 % → 12 % |
 | 2 | Completa | Selección de herramienta 1,00; argumentos 0,83; respuesta correcta 0,67 (0,33 sin herramientas) |
 | 3 | Completa | Test: híbrido MRR 0,72, Hit@5 0,86; abstención en preguntas sin respuesta 5/8 |
-| 4 | Implementada; evaluación en curso | Bucle ReAct con permisos, timeouts, bucles, memoria multiturno; banco de 20 tareas |
+| 4 | Implementada y evaluada (falta el cerebro `rlm`) | Éxito en 20 tareas: base 0,6B 10 %, thinking 1,7B 65 %; falla las dos tareas imposibles |
 
 **Pendientes conocidos** (detalle en cada guía): subir los adaptadores LoRA de la fase 1 a
 Hugging Face Hub (sin ellos `/reasoning` y el cerebro `rlm` no arrancan en una máquina limpia);

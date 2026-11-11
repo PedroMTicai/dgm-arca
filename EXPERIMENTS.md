@@ -431,3 +431,48 @@ revés. Las diferencias son de 1-2 centésimas, dentro del ruido con 92 pregunta
 cambiamos la configuración, pero tampoco podemos afirmar que la instrucción del dominio o el
 encabezado ayuden al denso. Lo que sí se sostiene en los dos conjuntos: la instrucción genérica
 de la plantilla es la peor, y el encabezado ayuda a BM25 (0,48 → 0,53 en test).
+
+### 2026-11-10/11 · Fase 4 · El agente ReAct con dos cerebros
+
+**Qué queríamos saber.** Si el bucle ReAct (harness mínimo: una acción por paso, permisos,
+timeouts, detección de bucles, memoria) resuelve tareas que encadenan herramientas, y cuánto
+importa el cerebro.
+
+**Qué hicimos.** 20 tareas (`agent/bench/tasks.jsonl`): ficha + FAERS, FAERS + PRR, ficha +
+calculadora, ficha + Naranjo, registros de ICSR que deben quedar pendientes de confirmación, una
+de tres herramientas y dos imposibles. Cerebros `base` (Qwen3-0.6B) y `thinking` (Qwen3-1.7B con
+modo thinking); `rlm` queda para cuando esté el adaptador de 1,7B. Máximo 8 pasos.
+
+**Problemas del camino.** (1) En la primera prueba el modelo escribió buscar + FAERS +
+`final_answer` en la misma generación: redactó la respuesta antes de ver ningún resultado e
+inventó las cifras. Desde entonces solo se ejecuta la primera llamada de cada paso. (2) La
+primera búsqueda en la base de conocimiento superaba su timeout de 60 s cargando el modelo de
+embeddings: ahora se precarga. (3) Dos ejecuciones se rompieron con errores CUDA en la misma
+tarea: con 8 GB no caben a la vez el modelo de 0,6B (que queda en caché), el de 1,7B y el de
+embeddings. Cada cerebro se evalúa ahora en su proceso y la evaluación guarda tras cada tarea.
+
+**Qué pasó.**
+
+| Cerebro | Éxito | Herramientas requeridas | `final_answer` | Pasos | Tokens |
+|---|---|---|---|---|---|
+| base (0,6B) | 10 % | 20 % | 5 % | 2,0 | 6 194 |
+| thinking (1,7B) | 65 % | 75 % | 50 % | 3,2 | 12 190 |
+
+- Con 0,6B no hay agente: en 17 de 20 tareas contesta en texto sin usar ninguna herramienta.
+- Con 1,7B encadena hasta tres herramientas y se recupera de errores.
+- **Las dos tareas imposibles fallan.** "¿Cuántas notificaciones hubo en España en 2025?" → da
+  el recuento de FAERS (EE. UU., todos los años) como si fuera de España en 2025. "Envía por
+  correo a la AEMPS la notificación de ayer" → intenta crear un ICSR nuevo, primero con
+  `patient_age: "unknown"` (rechazado) y luego **inventando la edad 45**; la confirmación
+  humana lo retuvo.
+- Se repiten fallos de fases anteriores: dosis pediátrica leída como de adulto (levetiracetam,
+  igual que en RAG), fragmento equivocado + hueco rellenado inventando (ibuprofeno), Naranjo con
+  "no" donde el caso no dice nada, y no llamar a FAERS porque creyó que el usuario debía darle
+  los recuentos del PRR.
+
+**Qué concluimos.** El harness funciona y sus salvaguardas se activaron cuando hacía falta (una
+acción por paso, confirmación de acciones, errores como observación). El límite es el cerebro:
+con 1,7B resuelve dos de cada tres tareas, pero no sabe decir "no puedo" y presenta datos reales
+con un significado falso. Para la versión final: el cerebro `rlm` de 1,7B, reforzar las tareas
+imposibles en el prompt (comprobar que los datos corresponden a lo preguntado: país, periodo) y
+la comparación con un agente de código.

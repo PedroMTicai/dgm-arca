@@ -78,13 +78,17 @@ observaciones en verde. `uv run python -m agent.ui` con la API levantada.
 
 ## 4. Resultados
 
-*Evaluación en curso (`reports/phase4_eval.json`); se completará con la tabla por cerebro.*
+| Cerebro | Éxito (20 tareas) | Herramientas requeridas | Terminó con `final_answer` | Pasos | Tokens |
+|---|---|---|---|---|---|
+| `base` (Qwen3-0.6B) | 10 % | 20 % | 5 % | 2,0 | 6 194 |
+| `thinking` (Qwen3-1.7B) | **65 %** | 75 % | 50 % | 3,2 | 12 190 |
+| `rlm` | pendiente (reentrenando con 1,7B) | | | | |
 
-Primera prueba real (cerebro `thinking`): "¿con qué frecuencia produce somnolencia la sertralina
-según su ficha y cuántas notificaciones hay en FAERS?" → busca en la base de conocimiento → llama a
-FAERS con "somnolencia" (error útil) → **se corrige** con "drowsiness" → responde con la cifra real
-(5 472). Falla la frecuencia: dice "≥ 1/100" en lugar de "muy frecuente (≥ 1/10)", porque pidió un
-solo fragmento y recibió el bloque equivocado (el mismo fallo que vimos en RAG).
+Con 0,6B no hay agente (responde de memoria); con 1,7B encadena hasta tres herramientas. **Las dos
+tareas imposibles fallan**: presenta el recuento de FAERS (EE. UU., todos los años) como "en España
+en 2025", y ante "envía un correo a la AEMPS" intenta crear un ICSR inventando la edad (la
+confirmación humana lo retiene). Tabla por tipo de tarea y análisis de fallos en
+[`agent/RESULTADOS.md`](../../agent/RESULTADOS.md).
 
 ## 5. Tests (`tests/test_agent.py`, 12 tests)
 
