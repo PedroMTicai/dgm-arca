@@ -3,9 +3,10 @@
 This is the "minimal harness" of the course: the model only produces text; everything that
 turns it into an agent lives here. Phases 1 to 3 meet in it:
 
-* **Brain** (``brain=``): ``base`` is Qwen3-0.6B, the model phase 1 started from; ``rlm`` is
-  the same model with our phase-1 LoRA adapter (``ARCA_RLM_ADAPTER``); ``thinking`` is
-  Qwen3-1.7B with its native thinking mode on. base vs rlm answers "did our training help
+* **Brain** (``brain=``): ``base`` is Qwen3-1.7B without thinking, the model phase 1 started
+  from (``ARCA_RLM_BASE_MODEL``); ``rlm`` is the same model with our phase-1 LoRA adapter
+  (``ARCA_RLM_ADAPTER``, a folder or a Hub id); ``thinking`` is Qwen3-1.7B with its native
+  thinking mode on (``ARCA_THINKING_MODEL``). base vs rlm answers "did our training help
   the agent?"; thinking is the native reasoning model to compare against.
 * **Hands**: the phase-2 registry (FAERS, Naranjo, PRR, ICSR, calculator), the phase-3
   retriever as ``search_knowledge_base``, ``final_answer``, and ``code_meddra`` (the phase-1
@@ -128,7 +129,7 @@ class Brain:
 
 
 def _brain_specs() -> dict[str, dict]:
-    base = os.environ.get("ARCA_RLM_BASE_MODEL", "Qwen/Qwen3-0.6B")
+    base = os.environ.get("ARCA_RLM_BASE_MODEL", "Qwen/Qwen3-1.7B")
     return {
         "base": {"model_id": base},
         "rlm": {"model_id": base, "adapter": os.environ.get("ARCA_RLM_ADAPTER") or None},

@@ -7,8 +7,9 @@ request carries the expected answer, it also runs the verifier and returns the v
 Configuration comes from environment variables so that the same code runs on your
 laptop, on the DGX and inside Docker:
 
-* ``ARCA_RLM_BASE_MODEL``  base model id (default ``Qwen/Qwen3-0.6B``)
-* ``ARCA_RLM_ADAPTER``     path to your trained LoRA adapter (e.g. ``rlm/weights/final_rlm_lora``)
+* ``ARCA_RLM_BASE_MODEL``  base model id (default: the one recorded in the adapter)
+* ``ARCA_RLM_ADAPTER``     the trained LoRA adapter: a local folder (e.g.
+  ``rlm/weights/grpo_lora_1.7b``) or a Hugging Face Hub id (``user/arca-meddra-qwen3-1.7b``)
 * ``ARCA_RLM_VERIFIER``    ``meddra`` (default, our MedDRA coding task), ``numeric`` or
   ``exact_match``; the registry is ``VERIFIERS`` in ``rlm/verifier.py``
 
@@ -51,14 +52,26 @@ def split_thinking(raw: str) -> tuple[str, str]:
     return thinking, answer
 
 
+def is_hub_id(adapter: str) -> bool:
+    """``user/name`` that is not a local folder: a Hugging Face Hub repository."""
+    return (
+        not Path(adapter).exists()
+        and adapter.count("/") == 1
+        and not adapter.startswith((".", "/", "~"))
+    )
+
+
 def _base_model_from_adapter(adapter: str) -> str:
     """PEFT stores the base model id in adapter_config.json; use it unless overridden."""
+    base = None
     config = Path(adapter) / "adapter_config.json"
     if config.exists():
         base = json.loads(config.read_text()).get("base_model_name_or_path")
-        if base:
-            return base
-    return "Qwen/Qwen3-0.6B"
+    elif is_hub_id(adapter):
+        from peft import PeftConfig
+
+        base = PeftConfig.from_pretrained(adapter).base_model_name_or_path
+    return base or "Qwen/Qwen3-1.7B"
 
 
 @dataclass
@@ -76,8 +89,10 @@ class ReasoningModel:
                 "LoRA adapter (see rlm/README.md). For a quick check you can point it to the "
                 "adapter produced by the smoke test, rlm/weights/smoke_lora."
             )
-        if not Path(adapter).exists():
-            raise FileNotFoundError(f"ARCA_RLM_ADAPTER points to a missing folder: {adapter}")
+        if not Path(adapter).exists() and not is_hub_id(adapter):
+            raise FileNotFoundError(
+                f"ARCA_RLM_ADAPTER is neither a local folder nor a Hub id (user/name): {adapter}"
+            )
         base_model = os.environ.get("ARCA_RLM_BASE_MODEL") or _base_model_from_adapter(adapter)
         return cls(
             base_model=base_model,

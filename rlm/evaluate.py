@@ -71,7 +71,7 @@ def evaluate_model(
             if isinstance(verifier, MedDRAVerifier):
                 row["f1"] = term_f1(result.predicted, example["answer"], verifier.dictionary)
             rows.append(row)
-        print(f"  [{len(rows)}/{len(dataset)}] pass@1 so far = {pass_at_1(rows):.3f}")
+        print(f"  [{len(rows)}/{len(dataset)}] pass@1 so far = {pass_at_1(rows):.3f}", flush=True)
     return rows
 
 
@@ -224,10 +224,13 @@ def main() -> None:
         dataset = dataset.select(range(min(args.n_examples, len(dataset))))
         verifier = build_verifier(args.verifier)
 
+    # Saved after every model, so a session that ends mid-run keeps the models already done.
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
     results = {}
     for pair in adapters:
         name, path = pair.split("=", 1)
-        print(f"== {name} ({path})")
+        print(f"== {name} ({path})", flush=True)
         rows = evaluate_model(
             args.model,
             None if path == "none" else path,
@@ -240,11 +243,9 @@ def main() -> None:
         summary = summarize(rows)
         results[name] = {"pass@1": summary["pass@1"], "summary": summary, "rows": rows}
         print(f"{name:>8}: pass@1 = {summary['pass@1']:.3f} on {len(rows)} problems")
-        print(json.dumps({k: v for k, v in summary.items() if k != "pass@1"}, indent=2))
+        print(json.dumps({k: v for k, v in summary.items() if k != "pass@1"}, indent=2), flush=True)
+        out.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    out = Path(args.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
     chart = out.with_name(out.stem.replace("_eval", "") + "_pass1.png")
     plot_pass1(results, chart)
     print(f"details -> {out}\nchart -> {chart}")

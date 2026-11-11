@@ -26,6 +26,21 @@ def strip_thinking(text: str) -> str:
     return text.split("<think>")[0].strip() if "<think>" in text else text.strip()
 
 
+def cut_at_stop(text: str, stop: list[str] | None) -> str:
+    """Text up to the first stop string, ignoring stop strings inside a ``<think>`` block."""
+    if not stop:
+        return text
+    start = text.find("</think>")
+    if start >= 0:
+        start += len("</think>")
+    elif "<think>" in text:
+        return text  # still thinking
+    else:
+        start = 0
+    cuts = [i for s in stop if (i := text.find(s, start)) >= 0]
+    return text[: min(cuts)] if cuts else text
+
+
 class ChatModel:
     """A Hugging Face causal LM (plus optional LoRA adapter) behind a chat interface."""
 
@@ -87,10 +102,13 @@ class ChatModel:
         temperature: float = 0.0,
         enable_thinking: bool = False,
         tools: list[dict] | None = None,
+        stop: list[str] | None = None,
     ) -> tuple[str, int]:
         """One completion for the conversation. Returns ``(raw text, generated tokens)``.
 
         ``temperature=0`` is greedy decoding, so answers are reproducible for the grader.
+        ``stop`` ends the generation at the first of those strings, which is cut from the
+        text (the code agent stops at "Observation:" so the model does not invent one).
         """
         import torch
 
@@ -104,6 +122,9 @@ class ChatModel:
             if temperature > 0
             else {"do_sample": False}
         )
+        if stop:
+            # Not transformers' stop_strings: those would also fire inside <think>.
+            sampling["stopping_criteria"] = [self._stop_criterion(stop, inputs)]
         with self._lock, torch.no_grad():
             out = self.model.generate(
                 **inputs,
@@ -115,7 +136,22 @@ class ChatModel:
         # Keep <think>/<tool_call> markers (they are not special tokens in Qwen3) but drop
         # <|im_end|> and padding.
         text = self.tokenizer.decode(new_tokens, skip_special_tokens=True)
-        return text, int(new_tokens.shape[0])
+        return cut_at_stop(text, stop), int(new_tokens.shape[0])
+
+    def _stop_criterion(self, stop: list[str], inputs):
+        """Stop once a stop string appears after the thinking block (one sequence)."""
+        import torch
+        from transformers import StoppingCriteria
+
+        tokenizer, prompt_len = self.tokenizer, int(inputs["input_ids"].shape[1])
+
+        class StopAfterThinking(StoppingCriteria):
+            def __call__(self, input_ids, scores, **kwargs):
+                text = tokenizer.decode(input_ids[0, prompt_len:], skip_special_tokens=True)
+                done = cut_at_stop(text, stop) != text
+                return torch.full((input_ids.shape[0],), done, device=input_ids.device)
+
+        return StopAfterThinking()
 
 
 _MODELS: dict[tuple[str, str | None], ChatModel] = {}

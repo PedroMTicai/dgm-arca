@@ -20,7 +20,7 @@ agente JSON con un agente de código; traza visible.
 
 | Pieza del harness | Nuestra decisión | Por qué |
 |---|---|---|
-| **Cerebro** (`brain`) | `base` = Qwen3-0.6B (el modelo del que partió la fase 1); `rlm` = Qwen3-0.6B + nuestro LoRA de la fase 1; `thinking` = Qwen3-1.7B con modo thinking | `base` frente a `rlm` responde a "¿ayudó entrenar?"; `thinking` es el modelo con razonamiento nativo |
+| **Cerebro** (`brain`) | `base` = Qwen3-1.7B sin thinking (el modelo del que partió la fase 1); `rlm` = Qwen3-1.7B + nuestro LoRA de la fase 1 (carpeta local o id del Hub); `thinking` = Qwen3-1.7B con modo thinking. La primera evaluación se hizo con `base` = Qwen3-0.6B | `base` frente a `rlm` responde a "¿ayudó entrenar?"; `thinking` es el modelo con razonamiento nativo. Los tres con los mismos pesos de partida, para que solo cambie una cosa |
 | **Herramientas** | Las 5 de la fase 2 + `search_knowledge_base` (fase 3) + `final_answer` + `code_meddra` (el modelo de la fase 1 como herramienta, si está el adaptador) | Pocas herramientas y bien descritas: un modelo pequeño se pierde con muchas |
 | **Una acción por paso** | Si el modelo escribe varias llamadas a la vez, solo se ejecuta la primera y se le avisa | En la primera prueba el modelo escribió buscar + FAERS + `final_answer` en la misma generación, es decir, **respondió antes de ver los resultados** (inventó "1 500 notificaciones" cuando FAERS daba 5 472) |
 | **Permisos** | Las herramientas con `requires_confirmation` (el ICSR) **no se ejecutan** salvo `allow_actions=True`; se validan y quedan en `pending_actions` para un humano | En la fase 2 el modelo inventó `patient_age: 0` para saltarse una validación |
@@ -49,6 +49,20 @@ agente JSON con un agente de código; traza visible.
 - `observe`: aplica la política de permisos, ejecuta con timeout y recorta la observación.
 - `execute`: `registry.call` en un hilo con timeout.
 - `summarize`: resume lo antiguo con el cerebro y `SUMMARY_PROMPT`.
+
+### `code_agent.py` (nuestro) · el contraste: un agente de código
+El mismo banco con `CodeAgent` de smolagents: en vez de una llamada JSON por paso, el modelo
+escribe Python que llama a las herramientas como funciones, guarda resultados en variables y
+calcula con ellos (CodeAct). Para que la comparación mida solo el formato de la acción:
+- `LocalModel` adapta nuestro `ChatModel` a smolagents: **los mismos cerebros y pesos** que ReAct.
+- `RegistryTool` envuelve cada herramienta de nuestro registro: **las mismas herramientas**, con
+  la validación de Pydantic, los timeouts de ReAct y los errores como observación.
+- **La misma política de permisos**: el ICSR se valida y queda en `pending_actions`.
+- `INSTRUCTIONS`: las reglas de dominio de nuestro prompt ReAct, añadidas al de smolagents.
+
+En `agent/evaluate.py`, un cerebro `code-<cerebro>` (`code-thinking`) usa este agente.
+`ChatModel.generate` acepta `stop` (smolagents corta en "Observation:"), con un criterio de
+parada propio que no corta dentro de `<think>`.
 
 ### `memory.py` (del profesor, con nuestra política)
 `ConversationMemory`: lista de mensajes con presupuesto de tokens. Nuestra política en
@@ -100,9 +114,8 @@ resume sin tocar la tarea; cerebro desconocido rechazado.
 
 ## 6. Pendiente
 
-- Cerebro `rlm`: el adaptador de la fase 1 solo está en la DGX. Hay que subirlo a Hugging Face Hub.
-- Comparación con un **agente de código** (`CodeAgent` de smolagents, o un harness como DeepSeek
-  Harness/Codex del repositorio `harnesses` vía MCP).
+- Evaluar los tres cerebros a 1,7B y el agente de código en la DGX (`scripts/dgx_session.sh`).
+- Subir el adaptador de la fase 1 a Hugging Face Hub (`ARCA_RLM_ADAPTER` acepta el id).
 - Probar `/agent` por HTTP y el visor `ui.py`.
 
 ## Referencias

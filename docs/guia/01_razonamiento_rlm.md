@@ -182,7 +182,10 @@ del verificador. En la fase 4 se reutiliza como herramienta `code_meddra`.
 
 | Modelo | pass@1 test | pass@1 OOD | Formato válido (test) |
 |---|---|---|---|
-| Qwen3-0.6B base | 7,5 % | 0 % | 61 % |
+| Qwen3-1.7B base (2048 tokens) | 18,5 % | 14 % | 22,5 % |
+| + SFT | 51,5 % | 30 % | 86,5 % |
+| + SFT + GRPO | **56,5 %** | **38 %** | 90,5 % |
+| Qwen3-0.6B base (1024 tokens) | 7,5 % | 0 % | 61 % |
 | + SFT | 36,5 % | 10 % | 73,5 % |
 | + SFT + GRPO | **41,5 %** | **12 %** | 84 % |
 

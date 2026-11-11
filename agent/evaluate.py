@@ -20,7 +20,8 @@ Run every brain::
 
     uv run python -m agent.evaluate --bench agent/bench/tasks.jsonl --brains base thinking
 
-and put the resulting table in the report next to the JSON-vs-code-agent comparison.
+A brain named ``code-<brain>`` (``code-thinking``) runs the same tasks with smolagents'
+``CodeAgent`` (``agent/code_agent.py``) and that brain's model: the JSON-vs-code comparison.
 """
 
 from __future__ import annotations
@@ -112,14 +113,33 @@ def main() -> None:
             json.dumps(results, indent=2, ensure_ascii=False, default=list), encoding="utf-8"
         )
 
-    agent = ReActAgent.from_env()
+    agents: dict[str, object] = {}  # built on first use: the code agent needs smolagents
+
+    def runner_for(brain: str):
+        """``code-<brain>`` runs smolagents' CodeAgent with that brain; anything else, ReAct."""
+        kind = "code" if brain.startswith("code-") else "react"
+        if kind not in agents:
+            if kind == "code":
+                from agent.code_agent import CodeAgentRunner
+
+                agents[kind] = CodeAgentRunner.from_env()
+            else:
+                agents[kind] = ReActAgent.from_env()
+        agent = agents[kind]
+
+        def run(task: str) -> dict:
+            if kind == "code":
+                return agent.run(task, max_steps=args.max_steps, brain=brain[len("code-") :])
+            return agent.run(task, max_steps=args.max_steps, brain=brain).model_dump()
+
+        return agent, run
+
     for brain in args.brains:
+        agent, run = runner_for(brain)
         rows = []
         for task in tasks:
             try:
-                response = agent.run(
-                    task["task"], max_steps=args.max_steps, brain=brain
-                ).model_dump()
+                response = run(task["task"])
             except Exception as exc:  # noqa: BLE001 - one crash (CUDA OOM) must not lose the run
                 response = {
                     "final_answer": "",
