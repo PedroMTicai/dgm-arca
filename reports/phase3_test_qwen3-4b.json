@@ -1,0 +1,2709 @@
+{
+  "gold": "rag/gold/gold_test.jsonl",
+  "instruction": "pharmacovigilance",
+  "chunking": {
+    "recursive": {
+      "n_chunks": 2656,
+      "mean_chars": 634.2620481927711,
+      "median_chars": 703,
+      "min_chars": 17,
+      "max_chars": 800,
+      "mean_relevant_chunks_per_question": 1.0434782608695652
+    }
+  },
+  "retrievers": {
+    "recursive": {
+      "bm25": {
+        "recall@1": 0.42391304347826086,
+        "hit@1": 0.43478260869565216,
+        "recall@3": 0.5978260869565217,
+        "hit@3": 0.5978260869565217,
+        "recall@5": 0.6630434782608695,
+        "hit@5": 0.6630434782608695,
+        "recall@10": 0.7065217391304348,
+        "hit@10": 0.7065217391304348,
+        "mrr": 0.5296497584541062,
+        "n_questions": 92
+      },
+      "dense": {
+        "recall@1": 0.5108695652173914,
+        "hit@1": 0.5217391304347826,
+        "recall@3": 0.7989130434782609,
+        "hit@3": 0.8152173913043478,
+        "recall@5": 0.8858695652173914,
+        "hit@5": 0.8913043478260869,
+        "recall@10": 0.9402173913043478,
+        "hit@10": 0.9456521739130435,
+        "mrr": 0.6799344375431332,
+        "n_questions": 92
+      },
+      "hybrid": {
+        "recall@1": 0.5978260869565217,
+        "hit@1": 0.6086956521739131,
+        "recall@3": 0.7880434782608695,
+        "hit@3": 0.7934782608695652,
+        "recall@5": 0.842391304347826,
+        "hit@5": 0.8478260869565217,
+        "recall@10": 0.9184782608695652,
+        "hit@10": 0.9239130434782609,
+        "mrr": 0.7152562111801241,
+        "n_questions": 92
+      }
+    }
+  },
+  "lambda_sweep": {
+    "recursive": [
+      {
+        "lambda": 0.0,
+        "recall@1": 0.5108695652173914,
+        "hit@1": 0.5217391304347826,
+        "recall@3": 0.7989130434782609,
+        "hit@3": 0.8152173913043478,
+        "recall@5": 0.8858695652173914,
+        "hit@5": 0.8913043478260869,
+        "recall@10": 0.9402173913043478,
+        "hit@10": 0.9456521739130435,
+        "mrr": 0.6799344375431332,
+        "n_questions": 92
+      },
+      {
+        "lambda": 0.1,
+        "recall@1": 0.5543478260869565,
+        "hit@1": 0.5652173913043478,
+        "recall@3": 0.8206521739130435,
+        "hit@3": 0.8369565217391305,
+        "recall@5": 0.8967391304347826,
+        "hit@5": 0.9021739130434783,
+        "recall@10": 0.9293478260869565,
+        "hit@10": 0.9347826086956522,
+        "mrr": 0.7087215320910972,
+        "n_questions": 92
+      },
+      {
+        "lambda": 0.2,
+        "recall@1": 0.5869565217391305,
+        "hit@1": 0.5978260869565217,
+        "recall@3": 0.7934782608695652,
+        "hit@3": 0.8043478260869565,
+        "recall@5": 0.8858695652173914,
+        "hit@5": 0.8913043478260869,
+        "recall@10": 0.9293478260869565,
+        "hit@10": 0.9347826086956522,
+        "mrr": 0.7200741890959282,
+        "n_questions": 92
+      },
+      {
+        "lambda": 0.3,
+        "recall@1": 0.5978260869565217,
+        "hit@1": 0.6086956521739131,
+        "recall@3": 0.7880434782608695,
+        "hit@3": 0.7934782608695652,
+        "recall@5": 0.842391304347826,
+        "hit@5": 0.8478260869565217,
+        "recall@10": 0.9184782608695652,
+        "hit@10": 0.9239130434782609,
+        "mrr": 0.7152562111801241,
+        "n_questions": 92
+      },
+      {
+        "lambda": 0.4,
+        "recall@1": 0.6086956521739131,
+        "hit@1": 0.6195652173913043,
+        "recall@3": 0.7554347826086957,
+        "hit@3": 0.7608695652173914,
+        "recall@5": 0.7880434782608695,
+        "hit@5": 0.7934782608695652,
+        "recall@10": 0.8641304347826086,
+        "hit@10": 0.8695652173913043,
+        "mrr": 0.702760524499655,
+        "n_questions": 92
+      },
+      {
+        "lambda": 0.5,
+        "recall@1": 0.5869565217391305,
+        "hit@1": 0.5978260869565217,
+        "recall@3": 0.717391304347826,
+        "hit@3": 0.717391304347826,
+        "recall@5": 0.7391304347826086,
+        "hit@5": 0.7391304347826086,
+        "recall@10": 0.8206521739130435,
+        "hit@10": 0.8260869565217391,
+        "mrr": 0.6684739475500344,
+        "n_questions": 92
+      },
+      {
+        "lambda": 0.6,
+        "recall@1": 0.5543478260869565,
+        "hit@1": 0.5652173913043478,
+        "recall@3": 0.717391304347826,
+        "hit@3": 0.717391304347826,
+        "recall@5": 0.7282608695652174,
+        "hit@5": 0.7282608695652174,
+        "recall@10": 0.7771739130434783,
+        "hit@10": 0.782608695652174,
+        "mrr": 0.6435990338164251,
+        "n_questions": 92
+      },
+      {
+        "lambda": 0.7,
+        "recall@1": 0.5,
+        "hit@1": 0.5108695652173914,
+        "recall@3": 0.6956521739130435,
+        "hit@3": 0.6956521739130435,
+        "recall@5": 0.7282608695652174,
+        "hit@5": 0.7282608695652174,
+        "recall@10": 0.7663043478260869,
+        "hit@10": 0.7717391304347826,
+        "mrr": 0.6015700483091787,
+        "n_questions": 92
+      },
+      {
+        "lambda": 0.8,
+        "recall@1": 0.45652173913043476,
+        "hit@1": 0.4673913043478261,
+        "recall@3": 0.6304347826086957,
+        "hit@3": 0.6304347826086957,
+        "recall@5": 0.6739130434782609,
+        "hit@5": 0.6739130434782609,
+        "recall@10": 0.75,
+        "hit@10": 0.75,
+        "mrr": 0.5667701863354037,
+        "n_questions": 92
+      },
+      {
+        "lambda": 0.9,
+        "recall@1": 0.43478260869565216,
+        "hit@1": 0.44565217391304346,
+        "recall@3": 0.6304347826086957,
+        "hit@3": 0.6304347826086957,
+        "recall@5": 0.6739130434782609,
+        "hit@5": 0.6739130434782609,
+        "recall@10": 0.7065217391304348,
+        "hit@10": 0.7065217391304348,
+        "mrr": 0.5453502415458936,
+        "n_questions": 92
+      },
+      {
+        "lambda": 1.0,
+        "recall@1": 0.42391304347826086,
+        "hit@1": 0.43478260869565216,
+        "recall@3": 0.5978260869565217,
+        "hit@3": 0.5978260869565217,
+        "recall@5": 0.6630434782608695,
+        "hit@5": 0.6630434782608695,
+        "recall@10": 0.7065217391304348,
+        "hit@10": 0.7065217391304348,
+        "mrr": 0.5296497584541062,
+        "n_questions": 92
+      }
+    ]
+  },
+  "best_lambda": {
+    "recursive": 0.3
+  },
+  "per_question": {
+    "recursive": [
+      {
+        "id": "t001",
+        "question": "¿Puedo conducir si tomo atorvastatina?",
+        "relevant": [
+          "58de64b808-0066"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t002",
+        "question": "Llevo dos días con amlodipino y estoy algo mareado, ¿es seguro coger el coche?",
+        "relevant": [
+          "1d381329ee-0017"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 3
+      },
+      {
+        "id": "t003",
+        "question": "Tomo celecoxib y a veces tengo vértigo, ¿puedo manejar maquinaria?",
+        "relevant": [
+          "7652fd6109-0043"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t004",
+        "question": "¿Afecta el ciprofloxacino a los reflejos al volante?",
+        "relevant": [
+          "d59d7cb7ea-0062"
+        ],
+        "rank_bm25": 5,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "t005",
+        "question": "¿Qué precaución debe tener al conducir un diabético que toma empagliflozina?",
+        "relevant": [
+          "5ff1deaf52-0032"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t006",
+        "question": "¿El enalapril puede dar cansancio cuando conduces?",
+        "relevant": [
+          "b787aa0884-0050"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t007",
+        "question": "¿El escitalopram da sueño como para no conducir?",
+        "relevant": [
+          "974d1c3041-0043"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t008",
+        "question": "Si me tomo un ibuprofeno suelto, ¿tengo que tener cuidado al conducir?",
+        "relevant": [
+          "aa82a25118-0046"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 3,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "t009",
+        "question": "¿La lactulosa afecta a la conducción?",
+        "relevant": [
+          "86549f37cb-0009"
+        ],
+        "rank_bm25": 10,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t010",
+        "question": "¿Influye la levotiroxina en la capacidad de conducir?",
+        "relevant": [
+          "afc86d2450-0039"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t011",
+        "question": "Tomo solo metformina, ¿me puede dar una bajada de azúcar conduciendo?",
+        "relevant": [
+          "161cb12606-0023"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t012",
+        "question": "¿El montelukast produce somnolencia?",
+        "relevant": [
+          "155c365700-0016"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t013",
+        "question": "¿Puedo conducir con omeprazol si veo borroso?",
+        "relevant": [
+          "e062f4c919-0037"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t014",
+        "question": "La migraña y el sumatriptán, ¿pueden afectar a la conducción?",
+        "relevant": [
+          "a0eceb0942-0020"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t015",
+        "question": "¿Cuándo es más probable marearse con losartán?",
+        "relevant": [
+          "a24b1ccbb8-0036"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 6,
+        "rank_hybrid": 10
+      },
+      {
+        "id": "t016",
+        "question": "¿Qué efectos del topiramato pueden afectar a la conducción?",
+        "relevant": [
+          "12a9021796-0078"
+        ],
+        "rank_bm25": 4,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t017",
+        "question": "¿Qué le pasa a la tensión en una intoxicación por amlodipino?",
+        "relevant": [
+          "1d381329ee-0026"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 4
+      },
+      {
+        "id": "t018",
+        "question": "Sobredosis de atorvastatina: ¿qué analíticas hay que pedir?",
+        "relevant": [
+          "58de64b808-0077"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t019",
+        "question": "¿Qué dosis de celecoxib se han dado a voluntarios sin efectos importantes?",
+        "relevant": [
+          "7652fd6109-0060"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 3,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t020",
+        "question": "¿Qué pasó en el caso de sobredosis de 16 gramos de ciprofloxacino?",
+        "relevant": [
+          "d59d7cb7ea-0075"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 3,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t021",
+        "question": "¿Cuánto tarda en bajar la tensión tras tomar muchas pastillas de enalapril?",
+        "relevant": [
+          "b787aa0884-0058"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 7,
+        "rank_hybrid": 12
+      },
+      {
+        "id": "t022",
+        "question": "¿A partir de qué dosis de ibuprofeno hay riesgo de síntomas por sobredosis?",
+        "relevant": [
+          "aa82a25118-0056"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t023",
+        "question": "Mi hijo se ha bebido medio bote de lactulosa, ¿es grave?",
+        "relevant": [
+          "86549f37cb-0011"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "t024",
+        "question": "¿Qué síntomas da una sobredosis de lamotrigina?",
+        "relevant": [
+          "1b6877d5a8-0120"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t025",
+        "question": "¿Qué se ha visto en sobredosis de levetiracetam?",
+        "relevant": [
+          "ba2b27dfd2-0055"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t026",
+        "question": "¿Qué análisis indica mejor que alguien se ha pasado con la levotiroxina?",
+        "relevant": [
+          "afc86d2450-0046"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 10,
+        "rank_hybrid": null
+      },
+      {
+        "id": "t027",
+        "question": "¿Una sobredosis grande de metformina da hipoglucemia?",
+        "relevant": [
+          "161cb12606-0028"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t028",
+        "question": "¿Qué dosis altas de montelukast se han probado en asmáticos?",
+        "relevant": [
+          "155c365700-0025"
+        ],
+        "rank_bm25": 9,
+        "rank_dense": 4,
+        "rank_hybrid": 8
+      },
+      {
+        "id": "t029",
+        "question": "¿Cuál es la mayor dosis de omeprazol notificada de una vez?",
+        "relevant": [
+          "e062f4c919-0047"
+        ],
+        "rank_bm25": 18,
+        "rank_dense": 1,
+        "rank_hybrid": 7
+      },
+      {
+        "id": "t030",
+        "question": "¿Sirve la diálisis en una intoxicación por pantoprazol?",
+        "relevant": [
+          "ff57b98cfc-0033"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t031",
+        "question": "¿Ayuda la hemodiálisis si alguien toma demasiada rosuvastatina?",
+        "relevant": [
+          "0489eed4c8-0074"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 11,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "t032",
+        "question": "¿Qué antídoto se usa en una sobredosis de salbutamol?",
+        "relevant": [
+          "6f7f78af78-0021"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t033",
+        "question": "¿Cuál es la mayor cantidad de simvastatina ingerida en una sobredosis registrada?",
+        "relevant": [
+          "72ae17170f-0098"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t034",
+        "question": "¿Qué síntomas tiene una intoxicación por topiramato?",
+        "relevant": [
+          "12a9021796-0097"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t035",
+        "question": "¿Cómo se manifiesta una intoxicación con tramadol?",
+        "relevant": [
+          "aa85f57614-0040"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t036",
+        "question": "¿Qué síntomas da una sobredosis moderada de zolpidem?",
+        "relevant": [
+          "d265be0c42-0038"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t037",
+        "question": "¿Cuáles son los signos de intoxicación por ácido valproico?",
+        "relevant": [
+          "f80180908e-0102"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t038",
+        "question": "¿Qué dosis de empagliflozina se dieron a voluntarios sanos sin toxicidad?",
+        "relevant": [
+          "5ff1deaf52-0058"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t039",
+        "question": "¿Qué síntomas tiene una sobredosis fuerte de naproxeno?",
+        "relevant": [
+          "2da1124b62-0042"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t040",
+        "question": "¿Qué es lo más frecuente en sobredosis de venlafaxina?",
+        "relevant": [
+          "aa13df65cd-0054"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t041",
+        "question": "¿El alprazolam es para tratamientos largos?",
+        "relevant": [
+          "c261c63f6f-0000"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 3,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "t042",
+        "question": "¿Para qué enfermedades está indicado el celecoxib?",
+        "relevant": [
+          "7652fd6109-0000"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t043",
+        "question": "¿Desde qué edad se puede usar empagliflozina?",
+        "relevant": [
+          "5ff1deaf52-0000"
+        ],
+        "rank_bm25": 5,
+        "rank_dense": 3,
+        "rank_hybrid": 3
+      },
+      {
+        "id": "t044",
+        "question": "¿El enalapril sirve para la insuficiencia cardiaca?",
+        "relevant": [
+          "b787aa0884-0000"
+        ],
+        "rank_bm25": 6,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "t045",
+        "question": "¿A partir de qué edad se puede tomar tramadol?",
+        "relevant": [
+          "aa85f57614-0000"
+        ],
+        "rank_bm25": 2,
+        "rank_dense": 4,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "t046",
+        "question": "¿El sumatriptán sirve para prevenir las migrañas?",
+        "relevant": [
+          "a0eceb0942-0000"
+        ],
+        "rank_bm25": 4,
+        "rank_dense": 1,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "t047",
+        "question": "¿Para qué se receta el lormetazepam?",
+        "relevant": [
+          "bbdaed23fc-0000"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t048",
+        "question": "¿Se puede dar losartán a niños con hipertensión?",
+        "relevant": [
+          "a24b1ccbb8-0000"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t049",
+        "question": "¿Puede tomar alprazolam alguien con apnea del sueño?",
+        "relevant": [
+          "c261c63f6f-0006"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 5,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t050",
+        "question": "¿Se puede tomar ciprofloxacino con tizanidina?",
+        "relevant": [
+          "d59d7cb7ea-0018"
+        ],
+        "rank_bm25": 4,
+        "rank_dense": 3,
+        "rank_hybrid": 4
+      },
+      {
+        "id": "t051",
+        "question": "Tuve angioedema con otro IECA, ¿puedo tomar enalapril?",
+        "relevant": [
+          "b787aa0884-0008"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t052",
+        "question": "¿Se puede combinar escitalopram con un IMAO?",
+        "relevant": [
+          "974d1c3041-0008"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 4,
+        "rank_hybrid": 7
+      },
+      {
+        "id": "t053",
+        "question": "¿Puede tomar levotiroxina alguien con el tiroides acelerado sin tratar?",
+        "relevant": [
+          "afc86d2450-0009"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 9,
+        "rank_hybrid": 18
+      },
+      {
+        "id": "t054",
+        "question": "¿Puede usar lormetazepam una persona con antecedentes de adicción?",
+        "relevant": [
+          "bbdaed23fc-0002",
+          "bbdaed23fc-0003"
+        ],
+        "rank_bm25": 13,
+        "rank_dense": 2,
+        "rank_hybrid": 4
+      },
+      {
+        "id": "t055",
+        "question": "¿Cuándo está contraindicada la rosuvastatina por las transaminasas?",
+        "relevant": [
+          "0489eed4c8-0016"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t056",
+        "question": "¿Se puede tomar simvastatina con itraconazol?",
+        "relevant": [
+          "72ae17170f-0009"
+        ],
+        "rank_bm25": 6,
+        "rank_dense": 10,
+        "rank_hybrid": 6
+      },
+      {
+        "id": "t057",
+        "question": "Soy alérgico al cacahuete, ¿puedo tomar topiramato?",
+        "relevant": [
+          "12a9021796-0015"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t058",
+        "question": "Dejé un IMAO hace una semana, ¿puedo empezar tramadol?",
+        "relevant": [
+          "aa85f57614-0007"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "t059",
+        "question": "¿Está contraindicado el zolpidem en problemas respiratorios?",
+        "relevant": [
+          "d265be0c42-0004"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t060",
+        "question": "¿Se puede tomar atorvastatina embarazada?",
+        "relevant": [
+          "58de64b808-0064"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "t061",
+        "question": "¿Puedo beber alcohol si tomo alprazolam?",
+        "relevant": [
+          "c261c63f6f-0018"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t062",
+        "question": "¿Hay problema en tomar amlodipino con claritromicina?",
+        "relevant": [
+          "1d381329ee-0009"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t063",
+        "question": "Tomo Sintrom/warfarina, ¿qué pasa si empiezo celecoxib?",
+        "relevant": [
+          "7652fd6109-0026"
+        ],
+        "rank_bm25": 3,
+        "rank_dense": 2,
+        "rank_hybrid": 3
+      },
+      {
+        "id": "t064",
+        "question": "¿Ciprofloxacino con fármacos que alargan el QT?",
+        "relevant": [
+          "d59d7cb7ea-0048"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t065",
+        "question": "¿Qué pasa si combino empagliflozina con un diurético?",
+        "relevant": [
+          "5ff1deaf52-0021"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t066",
+        "question": "¿Se puede tomar fosfomicina con metoclopramida?",
+        "relevant": [
+          "d0b2717f67-0005"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t067",
+        "question": "¿La lactulosa interfiere con la mesalazina?",
+        "relevant": [
+          "86549f37cb-0007"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t068",
+        "question": "¿El levetiracetam altera los niveles de otros antiepilépticos?",
+        "relevant": [
+          "ba2b27dfd2-0029"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t069",
+        "question": "¿Puedo tomar el hierro a la vez que la levotiroxina?",
+        "relevant": [
+          "afc86d2450-0022"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t070",
+        "question": "¿Es peligroso beber alcohol tomando metformina?",
+        "relevant": [
+          "161cb12606-0016"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t071",
+        "question": "¿El probenecid cambia la dosis de paracetamol?",
+        "relevant": [
+          "9113ce6d13-0016"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t072",
+        "question": "¿Interactúa el sumatriptán con el propranolol?",
+        "relevant": [
+          "a0eceb0942-0014",
+          "a0eceb0942-0015"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t073",
+        "question": "¿Tomar naproxeno con comida hace que funcione peor?",
+        "relevant": [
+          "2da1124b62-0023"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 4,
+        "rank_hybrid": 5
+      },
+      {
+        "id": "t074",
+        "question": "Me he quedado embarazada y tomo levotiroxina, ¿la dejo?",
+        "relevant": [
+          "afc86d2450-0035"
+        ],
+        "rank_bm25": 19,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t075",
+        "question": "¿Se puede tomar omeprazol en el embarazo?",
+        "relevant": [
+          "e062f4c919-0036"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t076",
+        "question": "¿Es seguro el lorazepam en el embarazo?",
+        "relevant": [
+          "e17f1cb191-0017",
+          "e17f1cb191-0018"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t077",
+        "question": "¿Puede tomar rosuvastatina una mujer que da el pecho?",
+        "relevant": [
+          "0489eed4c8-0062"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t078",
+        "question": "¿La lactulosa es segura para el bebé si estoy embarazada?",
+        "relevant": [
+          "86549f37cb-0008"
+        ],
+        "rank_bm25": 5,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t079",
+        "question": "¿Se recomienda el zolpidem durante el embarazo?",
+        "relevant": [
+          "d265be0c42-0027"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 2,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t080",
+        "question": "¿Qué datos hay del sumatriptán en el primer trimestre?",
+        "relevant": [
+          "a0eceb0942-0018"
+        ],
+        "rank_bm25": 1,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t081",
+        "question": "¿Qué significa usar un medicamento fuera de indicación?",
+        "relevant": [
+          "610e8aef7e-0096"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      },
+      {
+        "id": "t082",
+        "question": "¿Qué se considera sobredosis a efectos de farmacovigilancia?",
+        "relevant": [
+          "610e8aef7e-0098"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 17,
+        "rank_hybrid": null
+      },
+      {
+        "id": "t083",
+        "question": "¿Cuenta como exposición ocupacional la exposición durante la fabricación del medicamento?",
+        "relevant": [
+          "610e8aef7e-0095"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 3
+      },
+      {
+        "id": "t084",
+        "question": "¿Cuándo es inesperada una reacción adversa?",
+        "relevant": [
+          "610e8aef7e-0139"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 3,
+        "rank_hybrid": 7
+      },
+      {
+        "id": "t085",
+        "question": "¿Qué es una señal en farmacovigilancia?",
+        "relevant": [
+          "610e8aef7e-0122"
+        ],
+        "rank_bm25": null,
+        "rank_dense": null,
+        "rank_hybrid": null
+      },
+      {
+        "id": "t086",
+        "question": "¿El familiar de un paciente que notifica cuenta como consumidor?",
+        "relevant": [
+          "610e8aef7e-0051"
+        ],
+        "rank_bm25": null,
+        "rank_dense": null,
+        "rank_hybrid": null
+      },
+      {
+        "id": "t087",
+        "question": "¿Qué es un problema de seguridad emergente?",
+        "relevant": [
+          "610e8aef7e-0056"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 5,
+        "rank_hybrid": 5
+      },
+      {
+        "id": "t088",
+        "question": "¿Con qué frecuencia debe revisar la literatura médica el titular de la autorización?",
+        "relevant": [
+          "102ad6cc62-0062"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 1,
+        "rank_hybrid": 1
+      },
+      {
+        "id": "t089",
+        "question": "¿Qué es una notificación espontánea?",
+        "relevant": [
+          "102ad6cc62-0057"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 5,
+        "rank_hybrid": 6
+      },
+      {
+        "id": "t090",
+        "question": "¿De dónde vienen las notificaciones solicitadas?",
+        "relevant": [
+          "102ad6cc62-0069"
+        ],
+        "rank_bm25": null,
+        "rank_dense": null,
+        "rank_hybrid": null
+      },
+      {
+        "id": "t091",
+        "question": "¿Cada cuánto conviene revisar los datos de EudraVigilance?",
+        "relevant": [
+          "076e88be22-0062"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 3
+      },
+      {
+        "id": "t092",
+        "question": "¿Se notifica una reacción adversa con un medicamento falsificado?",
+        "relevant": [
+          "102ad6cc62-0200",
+          "102ad6cc62-0201"
+        ],
+        "rank_bm25": null,
+        "rank_dense": 2,
+        "rank_hybrid": 2
+      }
+    ]
+  },
+  "instructions": {
+    "generic": {
+      "recall@1": 0.5217391304347826,
+      "hit@1": 0.532608695652174,
+      "recall@3": 0.7391304347826086,
+      "hit@3": 0.75,
+      "recall@5": 0.8260869565217391,
+      "hit@5": 0.8369565217391305,
+      "recall@10": 0.9239130434782609,
+      "hit@10": 0.9347826086956522,
+      "mrr": 0.6595971359558316,
+      "n_questions": 92
+    },
+    "pharmacovigilance": {
+      "recall@1": 0.5108695652173914,
+      "hit@1": 0.5217391304347826,
+      "recall@3": 0.7989130434782609,
+      "hit@3": 0.8152173913043478,
+      "recall@5": 0.8858695652173914,
+      "hit@5": 0.8913043478260869,
+      "recall@10": 0.9402173913043478,
+      "hit@10": 0.9456521739130435,
+      "mrr": 0.6799344375431332,
+      "n_questions": 92
+    },
+    "none": {
+      "recall@1": 0.5434782608695652,
+      "hit@1": 0.5543478260869565,
+      "recall@3": 0.7771739130434783,
+      "hit@3": 0.7934782608695652,
+      "recall@5": 0.8804347826086957,
+      "hit@5": 0.8913043478260869,
+      "recall@10": 0.9184782608695652,
+      "hit@10": 0.9239130434782609,
+      "mrr": 0.6893245341614908,
+      "n_questions": 92
+    }
+  },
+  "no_context": {
+    "bm25": {
+      "recall@1": 0.3804347826086957,
+      "hit@1": 0.391304347826087,
+      "recall@3": 0.5380434782608695,
+      "hit@3": 0.5434782608695652,
+      "recall@5": 0.6141304347826086,
+      "hit@5": 0.6195652173913043,
+      "recall@10": 0.6684782608695652,
+      "hit@10": 0.6739130434782609,
+      "mrr": 0.4844461697722568,
+      "n_questions": 92
+    },
+    "dense": {
+      "recall@1": 0.5978260869565217,
+      "hit@1": 0.6086956521739131,
+      "recall@3": 0.7880434782608695,
+      "hit@3": 0.7934782608695652,
+      "recall@5": 0.8369565217391305,
+      "hit@5": 0.8478260869565217,
+      "recall@10": 0.8913043478260869,
+      "hit@10": 0.9021739130434783,
+      "mrr": 0.7134187370600414,
+      "n_questions": 92
+    }
+  },
+  "generation": {
+    "summary": {
+      "answers_with_citation": 0.967391304347826,
+      "answers_with_invalid_citation": 0.0,
+      "relevant_in_context": 0.8478260869565217,
+      "cites_relevant": 0.6739130434782609,
+      "cites_relevant_when_in_context": 0.7948717948717948,
+      "false_abstention_rate": 0.03260869565217391,
+      "abstention_on_unanswerable": 1.0
+    },
+    "rows": [
+      {
+        "id": "t001",
+        "question": "¿Puedo conducir si tomo atorvastatina?",
+        "type": "ficha",
+        "expected": "Sí, influencia nula o insignificante",
+        "answer": "Sí, puedo conducir si tomo atorvastatina. La influencia de atorvastatina sobre la capacidad para conducir y utilizar máquinas es nula o insignificante [58de64b808-0067].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "58de64b808-0067"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t002",
+        "question": "Llevo dos días con amlodipino y estoy algo mareado, ¿es seguro coger el coche?",
+        "type": "ficha",
+        "expected": "Precaución: los mareos pueden afectar a la capacidad de reacción",
+        "answer": "Según la información disponible, el amlodipino puede afectar la capacidad para conducir y utilizar máquinas, ya que puede causar mareos, fatiga o náuseas, que podrían influir en la capacidad de reacción del paciente [1d381329ee-0018]. Se recomienda precaución especialmente al inicio del tratamiento. Por lo tanto, dado que estás experimentando mareos después de dos días de tomar amlodipino, no es seguro coger el coche. [1d381329ee-0018]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "1d381329ee-0018"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t003",
+        "question": "Tomo celecoxib y a veces tengo vértigo, ¿puedo manejar maquinaria?",
+        "type": "ficha",
+        "expected": "No mientras tenga vértigo",
+        "answer": "Sí, según la información disponible, el vértigo puede ser un efecto secundario de celecoxib que afecta la capacidad para conducir y utilizar máquinas. Los pacientes que experimenten mareo, vértigo o somnolencia mientras estén tomando celecoxib deben abstenerse de conducir o manejar maquinaria [7652fd6109-0043]. Por lo tanto, si usted experimenta vértigo mientras toma celecoxib, debería evitar manejar maquinaria.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "7652fd6109-0043"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t004",
+        "question": "¿Afecta el ciprofloxacino a los reflejos al volante?",
+        "type": "ficha",
+        "expected": "Sí, puede alterar el tiempo de reacción",
+        "answer": "Sí, el ciprofloxacino puede afectar la capacidad para conducir o utilizar máquinas debido a sus efectos neurológicos, que pueden alterar el tiempo de reacción. Este punto se menciona en la sección 4.7 de la ficha técnica [d59d7cb7ea-0037].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d59d7cb7ea-0037"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t005",
+        "question": "¿Qué precaución debe tener al conducir un diabético que toma empagliflozina?",
+        "type": "ficha",
+        "expected": "Evitar hipoglucemias, sobre todo con sulfonilurea o insulina",
+        "answer": "El diabético que toma empagliflozina debe tener precaución para evitar una hipoglucemia mientras conduce y utiliza máquinas, sobre todo cuando empagliflozina se use en combinación con una sulfonilurea y/o con insulina [5ff1deaf52-0032].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "5ff1deaf52-0032"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t006",
+        "question": "¿El enalapril puede dar cansancio cuando conduces?",
+        "type": "ficha",
+        "expected": "Sí, ocasionalmente mareos o cansancio",
+        "answer": "Sí, el enalapril puede dar cansancio cuando conduces. Se debe tener en cuenta que ocasionalmente se pueden producir mareos o cansancio al conducir vehículos o utilizar máquinas [b787aa0884-0050].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "b787aa0884-0050"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t007",
+        "question": "¿El escitalopram da sueño como para no conducir?",
+        "type": "ficha",
+        "expected": "Puede producir sedación y mareos; evitar tareas peligrosas si aparecen",
+        "answer": "Sí, el escitalopram puede producir sedación, mareos. Por consiguiente, se debe indicar a los pacientes que si experimentan sedación o mareos, deben evitar la realización de tareas potencialmente peligrosas, como conducir o utilizar máquinas [974d1c3041-0043].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "974d1c3041-0043"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t008",
+        "question": "Si me tomo un ibuprofeno suelto, ¿tengo que tener cuidado al conducir?",
+        "type": "ficha",
+        "expected": "No hacen falta precauciones especiales",
+        "answer": "Sí, si se administra una sola dosis de ibuprofeno o durante un periodo corto, no es necesario adoptar precauciones especiales. Sin embargo, los pacientes que experimenten mareo, vértigo, alteraciones visuales u otros trastornos del sistema nervioso central mientras estén tomando ibuprofeno, deberán abstenerse de conducir o manejar maquinaria [aa82a25118-0047].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "aa82a25118-0047"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t009",
+        "question": "¿La lactulosa afecta a la conducción?",
+        "type": "ficha",
+        "expected": "No",
+        "answer": "No se han descrito efectos negativos sobre la capacidad de conducir o de manejar maquinaria peligrosa [86549f37cb-0009].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "86549f37cb-0009"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t010",
+        "question": "¿Influye la levotiroxina en la capacidad de conducir?",
+        "type": "ficha",
+        "expected": "No se espera ninguna influencia",
+        "answer": "La levotiroxina no influye en la capacidad para conducir y utilizar máquinas. Dado que la levotiroxina es idéntica a la hormona tiroidea natural, no se espera que la levotiroxina tenga ninguna influencia sobre la capacidad para conducir y utilizar máquinas [afc86d2450-0039].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "afc86d2450-0039"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t011",
+        "question": "Tomo solo metformina, ¿me puede dar una bajada de azúcar conduciendo?",
+        "type": "ficha",
+        "expected": "No en monoterapia",
+        "answer": "No, la metformina en monoterapia no produce hipoglucemia y por lo tanto no afecta a la capacidad para conducir o utilizar máquinas. [161cb12606-0023]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "161cb12606-0023"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t012",
+        "question": "¿El montelukast produce somnolencia?",
+        "type": "ficha",
+        "expected": "Se han notificado casos de somnolencia o mareo",
+        "answer": "Sí, el montelukast puede producir somnolencia. Se indica que \"los individuos han notificado casos de somnolencia o mareo\" como efectos relacionados con el uso de montelukast [155c365700-0016].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "155c365700-0016"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t013",
+        "question": "¿Puedo conducir con omeprazol si veo borroso?",
+        "type": "ficha",
+        "expected": "No si aparecen mareo o alteraciones visuales",
+        "answer": "No es probable que omeprazol afecte a la capacidad para conducir o utilizar máquinas. Pueden aparecer reacciones adversas a medicamentos tales como mareo y alteraciones visuales [e062f4c919-0037]. Si vees borroso, lo cual podría ser una alteración visual, deberías evitar conducir o utilizar máquinas hasta que pasen estos efectos [e062f4c919-0037].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "e062f4c919-0037"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t014",
+        "question": "La migraña y el sumatriptán, ¿pueden afectar a la conducción?",
+        "type": "ficha",
+        "expected": "Sí, pueden producir somnolencia",
+        "answer": "Sí, la migraña y el sumatriptán pueden afectar a la conducción. La sección 4.7 indica que no se han realizado estudios sobre el efecto del sumatriptán en la capacidad para conducir y usar máquinas. Sin embargo, la migraña o el tratamiento con sumatriptán pueden producir somnolencia, lo cual puede tener influencia sobre la capacidad para conducir y para el manejo de máquinas [a0eceb0942-0020].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "a0eceb0942-0020"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t015",
+        "question": "¿Cuándo es más probable marearse con losartán?",
+        "type": "ficha",
+        "expected": "Al inicio o al subir la dosis",
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t016",
+        "question": "¿Qué efectos del topiramato pueden afectar a la conducción?",
+        "type": "ficha",
+        "expected": "Somnolencia, mareos, alteraciones visuales, menor capacidad de reacción",
+        "answer": "Los efectos del topiramato que pueden afectar a la conducción son la somnolencia, los mareos, las alteraciones visuales y la disminución de la capacidad de reacción. Estos efectos, así como la propia enfermedad, hacen que se recomiende tener precaución a la hora de conducir vehículos o manejar maquinaria peligrosa, especialmente mientras no se haya establecido la sensibilidad particular de cada paciente al medicamento [12a9021796-0078].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "12a9021796-0078"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t017",
+        "question": "¿Qué le pasa a la tensión en una intoxicación por amlodipino?",
+        "type": "ficha",
+        "expected": "Hipotensión marcada, incluso shock",
+        "answer": "En una intoxicación por amlodipino, se produce una hipotensión clínicamente importante debido a la excesiva vasodilatación periférica, lo que puede llevar a taquicardia refleja, hipotensión sistémica marcada y, en casos graves, shock con posibles consecuencias fatales [1d381329ee-0026]. Además, en raras ocasiones, puede ocurrir edema pulmonar no cardiogénico con inicio tardío (24-48 horas después de la ingestión), requiriendo soporte ventilatorio [1d381329ee-0026].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "1d381329ee-0026"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t018",
+        "question": "Sobredosis de atorvastatina: ¿qué analíticas hay que pedir?",
+        "type": "ficha",
+        "expected": "Función hepática y CK",
+        "answer": "En caso de sobredosis de atorvastatina, se deben realizar pruebas de función hepática y monitorizar los niveles séricos de CK. [58de64b808-0077]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "58de64b808-0077"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t019",
+        "question": "¿Qué dosis de celecoxib se han dado a voluntarios sin efectos importantes?",
+        "type": "ficha",
+        "expected": "Hasta 1.200 mg en dosis única",
+        "answer": "Se han administrado a sujetos sanos, dosis únicas de hasta 1.200 mg [7652fd6109-0060].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "7652fd6109-0060"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t020",
+        "question": "¿Qué pasó en el caso de sobredosis de 16 gramos de ciprofloxacino?",
+        "type": "ficha",
+        "expected": "Insuficiencia renal aguda",
+        "answer": "En el caso de sobredosis de 16 gramos de ciprofloxacino, se describió una intoxicación aguda que causó insuficiencia renal aguda. Además, los síntomas de sobredosis incluyeron mareos, temblores, cefalea, cansancio, crisis convulsivas, alucinaciones, confusión, molestias abdominales, insuficiencia renal y hepática, así como cristaluria y hematuria. Se ha notificado casos de toxicidad renal reversible [d59d7cb7ea-0075][d59d7cb7ea-0076].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d59d7cb7ea-0075",
+          "d59d7cb7ea-0076"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t021",
+        "question": "¿Cuánto tarda en bajar la tensión tras tomar muchas pastillas de enalapril?",
+        "type": "ficha",
+        "expected": "Unas seis horas",
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t022",
+        "question": "¿A partir de qué dosis de ibuprofeno hay riesgo de síntomas por sobredosis?",
+        "type": "ficha",
+        "expected": "> 80-100 mg/kg",
+        "answer": "A partir de una dosis de más de 80-100 mg/kg de ibuprofeno hay riesgo de síntomas por sobredosis [aa82a25118-0056].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "aa82a25118-0056"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t023",
+        "question": "Mi hijo se ha bebido medio bote de lactulosa, ¿es grave?",
+        "type": "ficha",
+        "expected": "Lo esperable es diarrea",
+        "answer": "Si tu hijo se ha bebido medio bote de lactulosa, es importante evaluar la cantidad exacta consumida y el peso del niño para determinar si es una sobredosis. Según la información disponible, la lactulosa prácticamente no se absorbe en el cuerpo, por lo que la ingesta masiva podría provocar solo diarrea. Sin embargo, en casos de sobredosis, se recomienda interrumpir el tratamiento con lactulosa y administrar líquidos y electrolitos para prevenir desequilibrios hidroelectrolíticos [86549f37cb-0009]. \n\nDado que no se proporciona la cantidad exacta del bote ni el peso del niño, no se puede determinar con certeza si es grave. Sin embargo, es recomendable consultar inmediatamente a un médico o farmacéutico para obtener orientación específica.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "86549f37cb-0009"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t024",
+        "question": "¿Qué síntomas da una sobredosis de lamotrigina?",
+        "type": "ficha",
+        "expected": "Nistagmo, ataxia, alteración de la conciencia, crisis, coma",
+        "answer": "Una sobredosis de lamotrigina puede dar lugar a la aparición de síntomas entre los que se incluyen nistagmo, ataxia, alteración de la conciencia, crisis de gran mal y coma. Además, se ha observado ensanchamiento del QRS (retraso en la conducción intraventricular) y prolongación del intervalo QT. Cuando la duración del ensanchamiento del QRS es mayor a 100 ms, puede asociarse a toxicidad más grave [1b6877d5a8-0120].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "1b6877d5a8-0120"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t025",
+        "question": "¿Qué se ha visto en sobredosis de levetiracetam?",
+        "type": "ficha",
+        "expected": "Somnolencia, agitación, agresión, depresión respiratoria, coma",
+        "answer": "En sobredosis de levetiracetam se ha observado somnolencia, agitación, agresión, nivel de consciencia disminuido, depresión respiratoria y coma [ba2b27dfd2-0055].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "ba2b27dfd2-0055"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t026",
+        "question": "¿Qué análisis indica mejor que alguien se ha pasado con la levotiroxina?",
+        "type": "ficha",
+        "expected": "La T3",
+        "answer": "El análisis que indica mejor que alguien se ha pasado con la levotiroxina es el ECG, ya que en personas con sospecha de tener enfermedad cardiovascular o de alto riesgo, es importante realizar un ECG antes de comenzar el tratamiento con levotiroxina para detectar cambios compatibles con isquemia, en cuyo caso, debe iniciarse el tratamiento con levotiroxina con una dosis baja, seguida de aumento progresivo de la dosis para evitar el empeoramiento de la isquemia o precipitación de un infarto [afc86d2450-0016].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "afc86d2450-0016"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t027",
+        "question": "¿Una sobredosis grande de metformina da hipoglucemia?",
+        "type": "ficha",
+        "expected": "No, pero sí acidosis láctica",
+        "answer": "No, una sobredosis grande de metformina no da hipoglucemia. En cambio, se ha observado acidosis láctica con dosis de hidrocloruro de metformina de hasta 85 g, aunque en estas condiciones ha aparecido acidosis láctica. Una gran sobredosis de metformina o riesgos concomitantes pueden desembocar en acidosis láctica. La acidosis láctica es una urgencia médica y debe ser tratada en un hospital. [161cb12606-0028]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "161cb12606-0028"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t028",
+        "question": "¿Qué dosis altas de montelukast se han probado en asmáticos?",
+        "type": "ficha",
+        "expected": "Hasta 200 mg/día durante 22 semanas",
+        "answer": "La dosis alta de montelukast que se ha probado en asmáticos es de 10 mg. Según la información proporcionada, los comprimidos recubiertos con película de 10 mg en aproximadamente 4.000 pacientes adultos y adolescentes asmáticos de 15 años de edad y mayores, así como en aproximadamente 400 pacientes adultos y adolescentes asmáticos de 15 años de edad y mayores, con rinitis alérgica estacional, han sido evaluados en ensayos clínicos [155c365700-0016].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "155c365700-0016"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t029",
+        "question": "¿Cuál es la mayor dosis de omeprazol notificada de una vez?",
+        "type": "ficha",
+        "expected": "2.400 mg (120 veces la dosis habitual)",
+        "answer": "La mayor dosis de omeprazol notificada de una vez es 40 mg. Este dato se menciona en varios pasajes, incluyendo [e062f4c919-0004], [e062f4c919-0009], [e062f4c919-0008], [e062f4c919-0002] y [e062f4c919-0011].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "e062f4c919-0004",
+          "e062f4c919-0009",
+          "e062f4c919-0008",
+          "e062f4c919-0002",
+          "e062f4c919-0011"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t030",
+        "question": "¿Sirve la diálisis en una intoxicación por pantoprazol?",
+        "type": "ficha",
+        "expected": "No se dializa fácilmente",
+        "answer": "No, la diálisis no es efectiva en una intoxicación por pantoprazol. Según la información disponible, \"pantoprazol no se dializa fácilmente debido a su amplia unión a proteínas plasmáticas\" [ff57b98cfc-0033].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "ff57b98cfc-0033"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t031",
+        "question": "¿Ayuda la hemodiálisis si alguien toma demasiada rosuvastatina?",
+        "type": "ficha",
+        "expected": "No es probable",
+        "answer": "No. En caso de sobredosis de rosuvastatina, no existe un tratamiento específico y la hemodiálisis no proporciona ningún beneficio. Se debe tratar al paciente sintomáticamente e instaurar medidas de soporte, según sea necesario, y monitorizar la función hepática y los niveles de CK. [0489eed4c8-0013]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "0489eed4c8-0013"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t032",
+        "question": "¿Qué antídoto se usa en una sobredosis de salbutamol?",
+        "type": "ficha",
+        "expected": "Un betabloqueante cardioselectivo",
+        "answer": "En una sobredosis de salbutamol, el antídoto preferido es un agente betabloqueante cardioselectivo. Sin embargo, los compuestos betabloqueantes deben ser utilizados con precaución en pacientes con antecedentes de broncoespasmo [6f7f78af78-0021].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "6f7f78af78-0021"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t033",
+        "question": "¿Cuál es la mayor cantidad de simvastatina ingerida en una sobredosis registrada?",
+        "type": "ficha",
+        "expected": "3,6 g",
+        "answer": "La mayor cantidad de simvastatina ingerida en una sobredosis registrada fue de 3,6 g. Este dato se encuentra en la sección 4.9. Sobredosis (simvastatina) [72ae17170f-0098].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "72ae17170f-0098"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t034",
+        "question": "¿Qué síntomas tiene una intoxicación por topiramato?",
+        "type": "ficha",
+        "expected": "Convulsiones, somnolencia, trastornos del habla, visión borrosa...",
+        "answer": "Una intoxicación por topiramato puede presentar los siguientes síntomas: convulsiones, somnolencia, trastornos del habla, visión borrosa, diplopía, actividad mental alterada, letargia, coordinación anormal, estupor, hipotensión, dolor abdominal, agitación, mareo y depresión [12a9021796-0097]. Además, puede dar lugar a acidosis metabólica grave [12a9021796-0097].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "12a9021796-0097"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t035",
+        "question": "¿Cómo se manifiesta una intoxicación con tramadol?",
+        "type": "ficha",
+        "expected": "Miosis, vómitos, colapso cardiovascular, coma, convulsiones, depresión respiratoria",
+        "answer": "Una intoxicación con tramadol se manifiesta con síntomas similares a los esperados en los analgésicos de acción central (opioides), incluyendo miosis, vómitos, colapso cardiovascular, alteración del nivel de consciencia hasta coma, convulsiones y depresión respiratoria e incluso parada respiratoria. También se ha notificado síndrome serotoninérgico [aa85f57614-0040].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "aa85f57614-0040"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t036",
+        "question": "¿Qué síntomas da una sobredosis moderada de zolpidem?",
+        "type": "ficha",
+        "expected": "Somnolencia, confusión mental y letargia",
+        "answer": "Una sobredosis moderada de zolpidem puede dar lugar a síntomas como somnolencia, confusión mental y letargia, según [d265be0c42-0038].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d265be0c42-0038"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t037",
+        "question": "¿Cuáles son los signos de intoxicación por ácido valproico?",
+        "type": "ficha",
+        "expected": "Confusión, sedación, coma con hipotonía...",
+        "answer": "Los signos de intoxicación por ácido valproico incluyen confusión, sedación o incluso coma con hipotonia muscular, miastenia e hipo o arreflexia. En algunos casos también se ha observado hipotensión, miosis, alteraciones cardiovasculares y respiratorias, colapso circulatorio/shock, acidosis metabólica, hipocalcemia e hipernatremia [f80180908e-0102].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "f80180908e-0102"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t038",
+        "question": "¿Qué dosis de empagliflozina se dieron a voluntarios sanos sin toxicidad?",
+        "type": "ficha",
+        "expected": "Hasta 800 mg",
+        "answer": "En ensayos clínicos controlados, dosis únicas de hasta 800 mg de empagliflozina en voluntarios sanos no mostraron toxicidad [5ff1deaf52-0058].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "5ff1deaf52-0058"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t039",
+        "question": "¿Qué síntomas tiene una sobredosis fuerte de naproxeno?",
+        "type": "ficha",
+        "expected": "Mareo, somnolencia, epigastralgia, náuseas...",
+        "answer": "Una sobredosis fuerte de naproxeno puede cursar con mareo, somnolencia, epigastralgia, molestias abdominales, indigestión, pirosis, náuseas. Trastornos pasajeros de la función hepática, hipoprotombinemia, disfunción renal, acidosis metabólica, apnea, desorientación o vómitos. Algunos pacientes han experimentado convulsiones, pero se desconoce la relación que ello pueda tener con el medicamento [2da1124b62-0042].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "2da1124b62-0042"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t040",
+        "question": "¿Qué es lo más frecuente en sobredosis de venlafaxina?",
+        "type": "ficha",
+        "expected": "Taquicardia, cambios de consciencia...",
+        "answer": "Lo más frecuente en sobredosis de venlafaxina son taquicardia, cambios en el nivel de conciencia (que oscila desde somnolencia hasta coma), midriasis, convulsiones y vómitos [aa13df65cd-0054].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "aa13df65cd-0054"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t041",
+        "question": "¿El alprazolam es para tratamientos largos?",
+        "type": "ficha",
+        "expected": "No, a corto plazo",
+        "answer": "No, el alprazolam no es para tratamientos largos. La duración del tratamiento debe ser lo más corta posible y no más de 2-4 semanas. No se recomienda el tratamiento a largo plazo. [c261c63f6f-0003]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "c261c63f6f-0003"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t042",
+        "question": "¿Para qué enfermedades está indicado el celecoxib?",
+        "type": "ficha",
+        "expected": "Artrosis, artritis reumatoide, espondilitis anquilosante",
+        "answer": "El celecoxib está indicado en adultos para el alivio sintomático en el tratamiento de la artrosis, de la artritis reumatoide y de la espondilitis anquilosante [7652fd6109-0000].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "7652fd6109-0000"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t043",
+        "question": "¿Desde qué edad se puede usar empagliflozina?",
+        "type": "ficha",
+        "expected": "Desde los 10 años",
+        "answer": "Empagliflozina está indicado en adultos y niños a partir de 10 años de edad para el tratamiento de la diabetes mellitus tipo 2 no suficientemente controlada asociado a dieta y ejercicio [5ff1deaf52-0000].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "5ff1deaf52-0000"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t044",
+        "question": "¿El enalapril sirve para la insuficiencia cardiaca?",
+        "type": "ficha",
+        "expected": "Sí",
+        "answer": "Sí, el enalapril sirve para la insuficiencia cardiaca. Según la ficha técnica, se indica que \"Tratamiento de la insuficiencia cardíaca sintomática\" y \"Prevención de la insuficiencia cardíaca sintomática en pacientes con disfunción ventricular izquierda asintomática (fracción de eyección ≤35%)\" [b787aa0884-0000]. Además, se menciona que en el tratamiento de la insuficiencia cardíaca sintomática, el enalapril se usa junto con diuréticos, y si es apropiado, con digitálicos o betabloqueantes [b787aa0884-0003].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "b787aa0884-0000",
+          "b787aa0884-0003"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t045",
+        "question": "¿A partir de qué edad se puede tomar tramadol?",
+        "type": "ficha",
+        "expected": "Desde los 12 años",
+        "answer": "A partir de 12 años se puede tomar tramadol. Los adolescentes mayores de 12 años pueden seguir recomendaciones de adultos [aa85f57614-0001]. Para niños a partir de 3 años de edad, la dosis única recomendada es de 1-2 mg de hidrocloruro de tramadol por kg de peso corporal [aa85f57614-0002]. No se recomienda el uso de tramadol en aquellos pacientes metabolizadores ultra rápidos o con problemas respiratorios (incluida apnea obstructiva del sueño) sometidos a adenoidectomia/amigdalectomía debido al posible riesgo de depresión respiratoria que puede ser mortal [aa85f57614-0002].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "aa85f57614-0001",
+          "aa85f57614-0002"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t046",
+        "question": "¿El sumatriptán sirve para prevenir las migrañas?",
+        "type": "ficha",
+        "expected": "No, es para el ataque agudo",
+        "answer": "No, el sumatriptán no sirve para prevenir las migrañas. Según la información proporcionada, \"sumatriptán no se debe usar profilácticamente\" [a0eceb0942-0001].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "a0eceb0942-0001"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t047",
+        "question": "¿Para qué se receta el lormetazepam?",
+        "type": "ficha",
+        "expected": "Insomnio, corta duración",
+        "answer": "El lormetazepam se receta para el tratamiento de corta duración del insomnio [bbdaed23fc-0000].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "bbdaed23fc-0000"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t048",
+        "question": "¿Se puede dar losartán a niños con hipertensión?",
+        "type": "ficha",
+        "expected": "Sí, de 6 a 18 años",
+        "answer": "Sí, se puede dar losartán a niños con hipertensión. Según la ficha técnica, losartán se indica como tratamiento de la hipertensión esencial en adultos y niños y adolescentes de 6 a 18 años de edad [a24b1ccbb8-0000]. Sin embargo, no se recomienda su uso en niños con índice de filtración glomerular < 30 ml/min/1,73 m2 debido a la ausencia de datos [a24b1ccbb8-0008], y tampoco se recomienda en niños con insuficiencia hepática [a24b1ccbb8-0013].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "a24b1ccbb8-0000",
+          "a24b1ccbb8-0008",
+          "a24b1ccbb8-0013"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t049",
+        "question": "¿Puede tomar alprazolam alguien con apnea del sueño?",
+        "type": "ficha",
+        "expected": "No, está contraindicado",
+        "answer": "No, alguien con apnea del sueño no debe tomar alprazolam. Esta condición está incluida en las contraindicaciones del alprazolam, según la información proporcionada [c261c63f6f-0006].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "c261c63f6f-0006"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t050",
+        "question": "¿Se puede tomar ciprofloxacino con tizanidina?",
+        "type": "ficha",
+        "expected": "No, contraindicado",
+        "answer": "No, no se puede tomar ciprofloxacino con tizanidina. La administración concomitante de estos dos medicamentos está contraindicada. Se indica que \"tizanidina no debe administrarse en combinación con ciprofloxacino\" [d59d7cb7ea-0052], y además, \"la administración concomitante de ciprofloxacino y tizanidina está contraindicada\" [d59d7cb7ea-0046].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d59d7cb7ea-0052",
+          "d59d7cb7ea-0046"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t051",
+        "question": "Tuve angioedema con otro IECA, ¿puedo tomar enalapril?",
+        "type": "ficha",
+        "expected": "No",
+        "answer": "No. Si tienes antecedentes de angioedema asociado con tratamiento previo con inhibidor de la ECA, estás contraindicado para tomar enalapril [b787aa0884-0008].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "b787aa0884-0008"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t052",
+        "question": "¿Se puede combinar escitalopram con un IMAO?",
+        "type": "ficha",
+        "expected": "No, riesgo de síndrome serotoninérgico",
+        "answer": "No, escitalopram no se puede combinar con un IMAO no selectivo irreversible. La combinación de escitalopram con un IMAO no selectivo irreversible está contraindicada debido al riesgo de síndrome serotoninérgico. El tratamiento con escitalopram se puede iniciar 14 días después de interrumpir el tratamiento con un IMAO irreversible. Debe respetarse un descanso mínimo de 7 días entre la retirada del tratamiento con escitalopram y el inicio de un tratamiento con un IMAO no selectivo irreversible [974d1c3041-0029].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "974d1c3041-0029"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t053",
+        "question": "¿Puede tomar levotiroxina alguien con el tiroides acelerado sin tratar?",
+        "type": "ficha",
+        "expected": "No",
+        "answer": "No, alguien con un tiroides acelerado sin tratar no puede tomar levotiroxina. La levotiroxina es una hormona tiroidea utilizada para tratar el hipotiroidismo, un estado en el que la tiroides no produce suficiente hormona tiroidea. En contraste, un tiroides acelerado, que se refiere a un estado de hipertiroidismo (exceso de hormonas tiroideas), requiere tratamiento con medicamentos antitiroideos, no con levotiroxina. Este punto se menciona en la sección 4.4 de la ficha técnica, donde se indica que la levotiroxina no se utiliza para tratar condiciones de hipertiroidismo, sino para el hipotiroidismo [afc86d2450-0012].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "afc86d2450-0012"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t054",
+        "question": "¿Puede usar lormetazepam una persona con antecedentes de adicción?",
+        "type": "ficha",
+        "expected": "No, contraindicado",
+        "answer": "No. La persona con antecedentes de adicción debe usar lormetazepam con precaución, ya que el tratamiento con benzodiazepinas, incluido el lormetazepam, puede provocar el desarrollo de dependencia física y psíquica, y el riesgo de dependencia se incrementa, especialmente en pacientes con antecedentes de abuso de drogas o alcohol [bbdaed23fc-0006]. Además, se menciona que el lormetazepam no está recomendado para el tratamiento de primera línea de la enfermedad psicótica y debe utilizarse con precaución en pacientes con antecedentes de consumo de drogas o alcohol [bbdaed23fc-0015].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "bbdaed23fc-0006",
+          "bbdaed23fc-0015"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t055",
+        "question": "¿Cuándo está contraindicada la rosuvastatina por las transaminasas?",
+        "type": "ficha",
+        "expected": "Si superan 3 veces el límite superior normal",
+        "answer": "La rosuvastatina está contraindicada en pacientes con enfermedad hepática activa, incluyendo elevaciones persistentes e injustificadas de las transaminasas séricas y cualquier aumento de las transaminasas séricas que supere tres veces el límite superior normal (LSN) [0489eed4c8-0016].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "0489eed4c8-0016"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t056",
+        "question": "¿Se puede tomar simvastatina con itraconazol?",
+        "type": "ficha",
+        "expected": "No, contraindicado",
+        "answer": "No, no se puede tomar simvastatina con itraconazol. Está contraindicada la combinación con itraconazol, ketoconazol, posaconazol, voriconazol, inhibidores de la proteasa del VIH (por ej. nelfinavir), boceprevir, telaprevir, eritromicina, claritromicina, telitromicina, nefazodona y medicamentos que contienen cobicistat [72ae17170f-0063].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "72ae17170f-0063"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t057",
+        "question": "Soy alérgico al cacahuete, ¿puedo tomar topiramato?",
+        "type": "ficha",
+        "expected": "No (contiene aceite de soja)",
+        "answer": "Sí, puedes tomar topiramato, pero debes tener en cuenta que este medicamento contiene aceite de soja. Sin embargo, no hay una indicación directa de que la alergia al cacahuete afecte la seguridad del uso de topiramato. La contraindicación relacionada con alergias es específica para alergias al cacahuete o a la soja [12a9021796-0015]. Por lo tanto, si tienes alergia al cacahuete, debes consultar a tu médico para evaluar si el topiramato es adecuado para ti, considerando la presencia de aceite de soja en el medicamento.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "12a9021796-0015"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t058",
+        "question": "Dejé un IMAO hace una semana, ¿puedo empezar tramadol?",
+        "type": "ficha",
+        "expected": "No, deben pasar 14 días",
+        "answer": "No, no puedes empezar tramadol si has dejado un inhibidor de la MAO (IMAÓ) hace una semana. Según la información disponible, tramadol no debe combinarse con inhibidores de la MAO y se debe esperar al menos 14 días después de la última administración de un inhibidor de la MAO antes de iniciar tramadol [aa85f57614-0024].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "aa85f57614-0024"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t059",
+        "question": "¿Está contraindicado el zolpidem en problemas respiratorios?",
+        "type": "ficha",
+        "expected": "Sí, en insuficiencia respiratoria aguda o grave",
+        "answer": "Sí, el zolpidem está contraindicado en pacientes con insuficiencia respiratoria aguda y/o grave, según la sección 4.3 de la ficha técnica [d265be0c42-0004]. Además, se menciona que se debe tener precaución cuando se prescribe zolpidem a pacientes con la función respiratoria comprometida [d265be0c42-0004].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d265be0c42-0004"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t060",
+        "question": "¿Se puede tomar atorvastatina embarazada?",
+        "type": "ficha",
+        "expected": "No",
+        "answer": "No, no se puede tomar atorvastatina durante el embarazo. Atorvastatina está contraindicada durante el embarazo (ver sección 4.3). No se ha establecido la seguridad en mujeres embarazadas. No se han realizado ensayos clínicos controlados con atorvastatina en mujeres embarazadas. Raramente se han recibido notificaciones de anomalías congénitas tras la exposición intrauterina de inhibidores de la HMG-CoA reductasa. [58de64b808-0064]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "58de64b808-0064"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t061",
+        "question": "¿Puedo beber alcohol si tomo alprazolam?",
+        "type": "ficha",
+        "expected": "No se recomienda",
+        "answer": "No se recomienda el uso concomitante de alprazolam con alcohol. El efecto sedante puede potenciarse cuando se administra alprazolam en combinación con alcohol [c261c63f6f-0018].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "c261c63f6f-0018"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t062",
+        "question": "¿Hay problema en tomar amlodipino con claritromicina?",
+        "type": "ficha",
+        "expected": "Sí, aumenta la exposición a amlodipino",
+        "answer": "Sí, hay un problema en tomar amlodipino con claritromicina. La claritromicina es un inhibidor moderado del citocromo CYP3A4, y su uso concomitante con amlodipino puede dar lugar a un aumento significativo en la exposición a amlodipino, con el consiguiente aumento del riesgo de hipotensión. Esto se debe a que la claritromicina inhibe la metabolización de amlodipino, lo que puede llevar a una mayor concentración plasmática de este medicamento [1d381329ee-0009].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "1d381329ee-0009"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t063",
+        "question": "Tomo Sintrom/warfarina, ¿qué pasa si empiezo celecoxib?",
+        "type": "ficha",
+        "expected": "Hay que vigilar la anticoagulación",
+        "answer": "Si está tomando Sintrom (warfarina) y comienza a tomar celecoxib, debe tener en cuenta que existe un riesgo aumentado de hemorragias graves, algunos de los cuales pueden tener un desenlace mortal. Se han notificado casos de hemorragias severas, incluyendo fatales, en pacientes que reciben celecoxib junto con warfarina. Este riesgo es particularmente elevado en pacientes de edad avanzada. Por lo tanto, es esencial supervisar cuidadosamente el tiempo de protrombina (INR) en los primeros días de tratamiento con celecoxib o cuando se modifique la dosis del mismo [7652fd6109-0024]. Además, se debe tener precaución al asociar celecoxib con warfarina u otros anticoagulantes orales, incluidos los nuevos [7652fd6109-0026].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "7652fd6109-0024",
+          "7652fd6109-0026"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t064",
+        "question": "¿Ciprofloxacino con fármacos que alargan el QT?",
+        "type": "ficha",
+        "expected": "Con precaución",
+        "answer": "Sí, el ciprofloxacino debe utilizarse con precaución en pacientes que reciben medicamentos conocidos por prolongar el intervalo QT, como antiarrítmicos de clase IA y III, antidepresivos tricíclicos, macrólidos y antipsicóticos [d59d7cb7ea-0048]. Además, los pacientes de edad avanzada y las mujeres pueden ser más sensibles a los medicamentos que prolongan el intervalo QT, por lo que se debe tener precaución al emplear fluoroquinolonas, incluyendo el ciprofloxacino, en este tipo de poblaciones [d59d7cb7ea-0048].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d59d7cb7ea-0048"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t065",
+        "question": "¿Qué pasa si combino empagliflozina con un diurético?",
+        "type": "ficha",
+        "expected": "Más efecto diurético, riesgo de deshidratación e hipotensión",
+        "answer": "Si se combina empagliflozina con un diurético, la empagliflozina puede aumentar el efecto diurético del diurético, lo que puede llevar a un mayor riesgo de deshidratación e hipotensión. Este efecto se menciona en la sección 4.5 de la ficha técnica de empagliflozina [5ff1deaf52-0021].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "5ff1deaf52-0021"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t066",
+        "question": "¿Se puede tomar fosfomicina con metoclopramida?",
+        "type": "ficha",
+        "expected": "Se debe evitar",
+        "answer": "No. La administración concomitante de metoclopramida reduce las concentraciones en suero y orina de fosfomicina y, por tanto, se debe evitar [d0b2717f67-0005].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d0b2717f67-0005"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t067",
+        "question": "¿La lactulosa interfiere con la mesalazina?",
+        "type": "ficha",
+        "expected": "Sí, puede disminuir su efecto",
+        "answer": "Sí, la lactulosa puede interferir con la mesalazina. Según la información proporcionada, los fármacos con una liberación dependiente del pH, como la mesalazina, pueden ver su efecto disminuido al ser administrados conjuntamente con lactulosa [86549f37cb-0007].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "86549f37cb-0007"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t068",
+        "question": "¿El levetiracetam altera los niveles de otros antiepilépticos?",
+        "type": "ficha",
+        "expected": "No",
+        "answer": "No, el levetiracetam no altera los niveles de otros antiepilépticos. Los estudios clínicos indican que el levetiracetam no influye en las concentraciones séricas de los medicamentos antiepilépticos conocidos, como la fenitoína, el carbamazepina, el ácido valproico, el fenobarbital, la lamotrigina, la gabapentina y la primidona, y que estos medicamentos antiepilépticos no influyen en la farmacocinética del levetiracetam [ba2b27dfd2-0029]. Además, una evaluación retrospectiva en niños y adolescentes confirmó que la terapia coadyuvante con levetiracetam no tuvo influencia en las concentraciones séricas de carbamazepina y valproato [ba2b27dfd2-0030].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "ba2b27dfd2-0029",
+          "ba2b27dfd2-0030"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t069",
+        "question": "¿Puedo tomar el hierro a la vez que la levotiroxina?",
+        "type": "ficha",
+        "expected": "No, reduce su absorción",
+        "answer": "No, no se recomienda tomar el hierro a la vez que la levotiroxina. El hierro, junto con otros complementos como el calcio, el aluminio, el magnesio, los suplementos de hierro, los sulfonatos de poliestireno, el sucralfato, el lantano, los secuestrantes de ácidos biliares (p. ej., colestipol), las resinas de intercambio aniónico/catión (p. ej., kayexelato, sevelamer), la cimetidina e inhibidores de la bomba de protones, reducen la absorción de levotiroxina [afc86d2450-0022]. Por lo tanto, es importante separar las dosis de levotiroxina y estos medicamentos tanto como sea posible, es decir, al menos 4 a 5 horas, para evitar la interacción.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "afc86d2450-0022"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t070",
+        "question": "¿Es peligroso beber alcohol tomando metformina?",
+        "type": "ficha",
+        "expected": "Sí, riesgo de acidosis láctica",
+        "answer": "Sí, beber alcohol mientras se toma metformina es peligroso. La intoxicación alcohólica está asociada con un mayor riesgo de acidosis láctica, especialmente en caso de ayuno, desnutrición o insuficiencia hepática [161cb12606-0016]. Además, el consumo excesivo de alcohol es un factor de riesgo para la acidosis láctica, que es una complicación metabólica grave [161cb12606-0008]. Por ello, se recomienda precaución y, en algunos casos, evitar el consumo de alcohol mientras se toma metformina.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "161cb12606-0016",
+          "161cb12606-0008"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t071",
+        "question": "¿El probenecid cambia la dosis de paracetamol?",
+        "type": "ficha",
+        "expected": "Sí, considerar reducir la dosis",
+        "answer": "Sí, el probenecid cambia la dosis de paracetamol. Según la información proporcionada, el probenecid produce una reducción de casi dos veces en el aclaramiento de paracetamol inhibiendo su conjugación con el ácido glucurónico. Así pues, debe considerarse una reducción de la dosis de paracetamol en caso de tratamiento simultáneo con probenecid [9113ce6d13-0016].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "9113ce6d13-0016"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t072",
+        "question": "¿Interactúa el sumatriptán con el propranolol?",
+        "type": "ficha",
+        "expected": "No hay evidencia",
+        "answer": "Sí, el sumatriptán interactúa con el propranolol. No existen evidencias de interacciones con propranolol, flunarizina, pizotifeno o alcohol [a0eceb0942-0015].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "a0eceb0942-0015"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t073",
+        "question": "¿Tomar naproxeno con comida hace que funcione peor?",
+        "type": "ficha",
+        "expected": "Retrasa pero no reduce la absorción",
+        "answer": "No, tomar naproxeno con comida no hace que funcione peor. La información indica que la ingestión concomitante de alimentos puede retardar la absorción de naproxeno pero no afecta al grado de absorción [2da1124b62-0024]. Por lo tanto, tomar el medicamento con comidas no reduce su eficacia.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "2da1124b62-0024"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t074",
+        "question": "Me he quedado embarazada y tomo levotiroxina, ¿la dejo?",
+        "type": "ficha",
+        "expected": "No, debe continuarse",
+        "answer": "No, no debes dejar de tomar levotiroxina si te has quedado embarazada. El tratamiento con levotiroxina debe continuarse durante el embarazo. Puede ser incluso necesario incrementar la dosis durante el embarazo debido al incremento en los niveles de estrógenos [afc86d2450-0035]. Además, no se deben realizar pruebas de supresión durante el embarazo [afc86d2450-0038]. También se menciona que las dosis terapéuticas recomendadas de levotiroxina no son suficientes para provocar el desarrollo de hipertiroidismo o la supresión de la secreción de TSH en el bebé durante la lactancia [afc86d2450-0039]. Por lo tanto, es importante continuar con el tratamiento según las indicaciones médicas.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "afc86d2450-0035",
+          "afc86d2450-0038",
+          "afc86d2450-0039"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t075",
+        "question": "¿Se puede tomar omeprazol en el embarazo?",
+        "type": "ficha",
+        "expected": "Sí",
+        "answer": "Sí, se puede tomar omeprazol durante el embarazo. Los resultados de tres estudios epidemiológicos prospectivos (que incluyeron el desenlace del embarazo de más de 1.000 mujeres expuestas) no muestran reacciones adversas del omeprazol sobre el embarazo ni la salud del feto o del recién nacido [e062f4c919-0036].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "e062f4c919-0036"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t076",
+        "question": "¿Es seguro el lorazepam en el embarazo?",
+        "type": "ficha",
+        "expected": "No debe usarse",
+        "answer": "No, el lorazepam no es seguro en el embarazo. La ficha técnica indica que \"Lorazepam no deberá ser usado durante el embarazo\" [e17f1cb191-0018]. Además, se menciona que el uso de benzodiazepinas, incluido el lorazepam, parece estar relacionado con un posible aumento del riesgo congénito de malformaciones en el primer trimestre de embarazo [e17f1cb191-0018]. También se señala que si se administra el producto durante una fase tardía del embarazo o a altas dosis durante el parto, pueden aparecer efectos sobre el neonato como hipoactividad, hipotermia, hipotonía, apnea, depresión respiratoria moderada, problemas de alimentación y desequilibrio en la respuesta metabólica al stress por frío [e17f1cb191-0019]. Por lo tanto, se recomienda evitar su uso durante el embarazo.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "e17f1cb191-0018",
+          "e17f1cb191-0019"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t077",
+        "question": "¿Puede tomar rosuvastatina una mujer que da el pecho?",
+        "type": "ficha",
+        "expected": "No",
+        "answer": "No. La rosuvastatina está contraindicada durante la lactancia. La rosuvastatina se excreta en la leche de ratas, y no existen datos respecto a la excreción en la leche humana [0489eed4c8-0063]. Por lo tanto, no se recomienda su uso en mujeres que están en lactancia.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "0489eed4c8-0063"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t078",
+        "question": "¿La lactulosa es segura para el bebé si estoy embarazada?",
+        "type": "ficha",
+        "expected": "Sí, sin efectos adversos en los datos disponibles",
+        "answer": "Sí, la lactulosa es segura para el bebé si estás embarazada. Los datos obtenidos a partir de estudios con un número limitado de embarazadas (176), tratadas con lactulosa, indican la inexistencia de efectos adversos sobre el embarazo o sobre la salud del feto/recién nacido. Además, los estudios realizados en animales han demostrado la ausencia de efectos, tanto directos como indirectos, sobre el embarazo, desarrollo embrionario y fetal, parto o desarrollo postnatal. Por tanto, LACTULOSA LAINCO Solución oral podrá ser utilizado durante el embarazo y durante el periodo de lactancia [86549f37cb-0008].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "86549f37cb-0008"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t079",
+        "question": "¿Se recomienda el zolpidem durante el embarazo?",
+        "type": "ficha",
+        "expected": "No",
+        "answer": "No se recomienda el uso de zolpidem durante el embarazo. Los estudios en animales no sugieren efectos perjudiciales directos o indirectos en términos de toxicidad para la reproducción, pero se ha asociado la administración de zolpidem durante la última fase del embarazo o durante el parto con efectos en el neonato, como hipotermia, hipotonía, dificultades en la alimentación y depresión respiratoria. Además, se han descrito casos de movimiento fetal reducido y variabilidad de la frecuencia cardíaca fetal después de la administración de benzodiazepinas o análogos de benzodiazepinas durante el segundo y/o tercer trimestre del embarazo [d265be0c42-0027].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "d265be0c42-0027"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t080",
+        "question": "¿Qué datos hay del sumatriptán en el primer trimestre?",
+        "type": "ficha",
+        "expected": "Más de 1.000 embarazadas, sin aumento claro del riesgo",
+        "answer": "Los datos del sumatriptán en el primer trimestre de embarazo son aquellos obtenidos después de la comercialización, que incluyen información sobre el uso en más de 1.000 mujeres. A pesar de que estos datos son insuficientes para establecer conclusiones definitivas, no indican un aumento del riesgo de defectos congénitos [a0eceb0942-0018].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "a0eceb0942-0018"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t081",
+        "question": "¿Qué significa usar un medicamento fuera de indicación?",
+        "type": "guideline",
+        "expected": "Uso intencionado no conforme a la autorización",
+        "answer": "Usar un medicamento fuera de indicación se refiere a situaciones donde el producto medicinal se utiliza intencionalmente para un propósito médico no en consonancia con los términos de la autorización de marketing. Esto incluye el uso del producto en condiciones médicas diferentes, en grupos de pacientes distintos (por ejemplo, un grupo de edad diferente), mediante un método o vía de administración diferente, o con una posología diferente, según lo definido en el artículo 1(16) de la Directiva [DIR Art 1(16)]. [610e8aef7e-0096]\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "610e8aef7e-0096"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t082",
+        "question": "¿Qué se considera sobredosis a efectos de farmacovigilancia?",
+        "type": "guideline",
+        "expected": "Cantidad por encima de la dosis máxima recomendada",
+        "answer": "La sobredosis a efectos de farmacovigilancia se considera como la ingesta de dosis superiores a las recomendadas o una sobredosis que puede provocar síntomas adversos. Según la información proporcionada, en el caso del ibuprofeno, se considera que existe un riesgo de sintomatología con dosis > 80-100 mg/kg de ibuprofeno, y el uso prolongado en dosis superiores a las recomendadas o una sobredosis puede provocar acidosis tubular renal e hipopotasemia [aa82a25118-0056]. En el caso de la lamotrigina, se ha comunicado la ingestión aguda de dosis entre 10 y 20 veces superiores a la dosis terapéutica máxima, incluyendo casos mortales [1b6877d5a8-0120]. Para el paracetamol, se considera sobredosis una administración de 7,5 g o más en una sola administración en adultos o 140 mg/kg de peso corporal en una sola administración en niños [9113ce6d13-0025].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "aa82a25118-0056",
+          "1b6877d5a8-0120",
+          "9113ce6d13-0025"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t083",
+        "question": "¿Cuenta como exposición ocupacional la exposición durante la fabricación del medicamento?",
+        "type": "guideline",
+        "expected": "No",
+        "answer": "No, la exposición durante la fabricación del medicamento no cuenta como exposición ocupacional. Según la información proporcionada, la exposición ocupacional se refiere a la exposición a un medicamento como resultado de un oficio profesional o no profesional, pero no incluye la exposición a uno de los ingredientes durante el proceso de fabricación antes de que el producto se libere como producto terminado [102ad6cc62-0039].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "102ad6cc62-0039"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t084",
+        "question": "¿Cuándo es inesperada una reacción adversa?",
+        "type": "guideline",
+        "expected": "Cuando no concuerda con la ficha técnica",
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t085",
+        "question": "¿Qué es una señal en farmacovigilancia?",
+        "type": "guideline",
+        "expected": "Información que sugiere una nueva asociación causal",
+        "answer": "Una señal en farmacovigilancia es información que surge de una o múltiples fuentes, incluyendo observaciones y experimentos, que sugiere una nueva posible asociación causal o un nuevo aspecto de una asociación conocida entre una intervención y un evento o conjunto de eventos relacionados, ya sea adversos o beneficiosos, que se considera de suficiente probabilidad para justificar acciones de verificación [076e88be22-0015].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "076e88be22-0015"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t086",
+        "question": "¿El familiar de un paciente que notifica cuenta como consumidor?",
+        "type": "guideline",
+        "expected": "Sí",
+        "answer": "Sí, el familiar de un paciente que notifica cuenta como consumidor. Según el documento, \"un reporte puede ser notificado por un paciente medicamente cualificado, amigo, familiar, familiar o cuidador del paciente. En estas situaciones, la información reportada se considera médica confirmada\" [102ad6cc62-0047]. Esto indica que los familiares del paciente también pueden actuar como consumidores en el contexto de la notificación de reacciones adversas.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "102ad6cc62-0047"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t087",
+        "question": "¿Qué es un problema de seguridad emergente?",
+        "type": "guideline",
+        "expected": "Uno que requiere atención urgente de la autoridad",
+        "answer": "Un problema de seguridad emergente es un tema de seguridad considerado por el titular de la autorización para requerir atención urgente por parte de la autoridad competente debido al potencial impacto significativo en el equilibrio riesgo-beneficio del producto medicinal y/o en la salud de los pacientes o el público, y la necesidad de acción regulatoria inmediata y comunicación a los pacientes y profesionales de la salud. Ejemplos incluyen: problemas de seguridad significativos identificados en el contexto de estudios en curso o recientemente finalizados, por ejemplo, una tasa inesperadamente elevada de eventos adversos mortales o de vida en peligro [076e88be22-0022].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "076e88be22-0022"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": false
+      },
+      {
+        "id": "t088",
+        "question": "¿Con qué frecuencia debe revisar la literatura médica el titular de la autorización?",
+        "type": "guideline",
+        "expected": "Al menos una vez por semana",
+        "answer": "El titular de la autorización debe realizar una revisión sistemática de la literatura médica al menos una vez por semana. Esto se debe a que se espera que los titulares mantengan conciencia de posibles publicaciones a través de una revisión sistemática de bases de datos de referencia ampliamente utilizadas (por ejemplo, Medline, Excerpta Medica o Embase) no menos frecuentemente que una vez por semana [102ad6cc62-0062]. Además, se requiere que los titulares tengan procedimientos en lugar de monitorear publicaciones científicas y médicas en revistas locales de países donde los productos medicos tienen una autorización de marketing [102ad6cc62-0062].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "102ad6cc62-0062"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t089",
+        "question": "¿Qué es una notificación espontánea?",
+        "type": "guideline",
+        "expected": "Comunicación no solicitada de un profesional o consumidor",
+        "answer": "Una notificación espontánea es un comunicado no solicitado por un profesional sanitario o consumidor a una empresa, autoridad regulatoria o otra organización que describe una o más reacciones adversas en un paciente que recibió uno o más productos medicinales y que no proviene de un estudio o cualquier esquema de recolección de datos organizado [610e8aef7e-0132]. En este contexto, una reacción adversa se refiere a una reacción sospechosa. Además, según la GVP, todas las notificaciones espontáneas son consideradas reacciones adversas sospechosas, ya que transmiten la sospecha del fuente primaria [610e8aef7e-0039].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "610e8aef7e-0132",
+          "610e8aef7e-0039"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t090",
+        "question": "¿De dónde vienen las notificaciones solicitadas?",
+        "type": "guideline",
+        "expected": "De sistemas organizados de recogida de datos (ensayos, registros...)",
+        "answer": "Las notificaciones solicitadas provienen de la cooperación entre las autoridades competentes nacionales y la Agencia [076e88be22-0057]. Además, según el documento, las notificaciones deben realizarse a la Agencia (qdefect@ema.europa.eu) y a las autoridades competentes nacionales según las exigencias nacionales, en cumplimiento de los artículos 16(2) del Reglamento (CE) No 726/2004 y 23(2) de la Directiva 2001/83/EC. También se menciona que las notificaciones deben realizarse en caso de que un ensayo clínico, realizado dentro o fuera de la Unión Europea, genere preocupaciones de seguridad que afecten al equilibrio riesgo-beneficio de un medicamento autorizado [102ad6cc62-0146].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "076e88be22-0057",
+          "102ad6cc62-0146"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t091",
+        "question": "¿Cada cuánto conviene revisar los datos de EudraVigilance?",
+        "type": "guideline",
+        "expected": "Al menos cada 6 meses",
+        "answer": "Conviene revisar los datos de EudraVigilance al menos cada 6 meses. Una revisión más frecuente se recomienda para sustancias activas contenidas en medicamentos incluidos en la lista adicional de monitoreo según el Artículo 23 del Reglamento (CE) No 726/2004, a menos que la única razón de su inclusión en la lista sea la solicitud de un estudio de seguridad post-authorización (PASS) [076e88be22-0062].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "076e88be22-0062"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t092",
+        "question": "¿Se notifica una reacción adversa con un medicamento falsificado?",
+        "type": "guideline",
+        "expected": "Sí, como ICSR válido",
+        "answer": "Sí, se notifica una reacción adversa con un medicamento falsificado. Según el documento, \"suspected adverse reactions related to falsified medicinal products or to quality defects of a medicinal product are investigated in a timely fashion and that confirmed quality defects are notified separately to the manufacturer and to the competent authorities in Member States in accordance with the provisions described in Article 13 of Directive 2003/94/EC\" [102ad6cc62-0202]. Además, \"When a report of suspected adverse reactions is associated with a suspected or confirmed falsified medicinal product, a valid ICSR should be submitted\" [102ad6cc62-0201].\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [
+          "102ad6cc62-0202",
+          "102ad6cc62-0201"
+        ],
+        "invalid_citations": [],
+        "abstained": false,
+        "answerable": true,
+        "relevant_in_context": true,
+        "cites_relevant": true
+      },
+      {
+        "id": "t093",
+        "question": "¿Qué dosis de amoxicilina se da para una otitis en niños?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t094",
+        "question": "¿Cuántos casos de hepatotoxicidad por paracetamol se notificaron en España en 2024?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t095",
+        "question": "¿Qué dice la etiqueta de la FDA sobre la sertralina?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t096",
+        "question": "¿Cuánto cuesta una caja de ibuprofeno de 600 mg?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t097",
+        "question": "¿Qué plazo da la FDA para los informes de alerta de 15 días?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t098",
+        "question": "¿Qué medicamentos con insulina glargina hay en España?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t099",
+        "question": "¿Cuál es la biodisponibilidad oral del levetiracetam?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      },
+      {
+        "id": "t100",
+        "question": "¿El omeprazol es seguro para perros?",
+        "type": "unanswerable",
+        "expected": null,
+        "answer": "No encuentro la respuesta en los documentos disponibles.\n\nAviso: información orientativa extraída de fichas técnicas y guías de farmacovigilancia; no sustituye el criterio de un profesional sanitario.",
+        "citations": [],
+        "invalid_citations": [],
+        "abstained": true,
+        "answerable": false,
+        "relevant_in_context": false,
+        "cites_relevant": false
+      }
+    ]
+  }
+}
