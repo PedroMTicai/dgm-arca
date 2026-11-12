@@ -185,7 +185,7 @@ uv run python -m rlm.evaluate --data rlm/data/test_ood.jsonl --n-examples 100 \
     --out reports/phase1_eval_ood.json
 
 # 7. El endpoint
-ARCA_RLM_ADAPTER=rlm/weights/final_rlm_lora uv run arca-api
+ARCA_RLM_ADAPTER=Matteofermar/arca-meddra-qwen3-1.7b uv run arca-api   # o la carpeta local del adaptador
 curl -s localhost:8000/reasoning -H 'Content-Type: application/json' -d '{
   "question": "Llevo dos semanas con sertralina y me da muchísimo sueño. No he tenido náuseas.",
   "expected_answer": "Somnolence"}'

@@ -9,13 +9,13 @@ laptop, on the DGX and inside Docker:
 
 * ``ARCA_RLM_BASE_MODEL``  base model id (default: the one recorded in the adapter)
 * ``ARCA_RLM_ADAPTER``     the trained LoRA adapter: a local folder (e.g.
-  ``rlm/weights/grpo_lora_1.7b``) or a Hugging Face Hub id (``user/arca-meddra-qwen3-1.7b``)
+  ``rlm/weights/grpo_lora_1.7b``) or a Hugging Face Hub id (``Matteofermar/arca-meddra-qwen3-1.7b``, our final one)
 * ``ARCA_RLM_VERIFIER``    ``meddra`` (default, our MedDRA coding task), ``numeric`` or
   ``exact_match``; the registry is ``VERIFIERS`` in ``rlm/verifier.py``
 
 Try it from the command line::
 
-    ARCA_RLM_ADAPTER=rlm/weights/final_rlm_lora \\
+    ARCA_RLM_ADAPTER=Matteofermar/arca-meddra-qwen3-1.7b \\
         uv run python -m rlm.inference "Llevo una semana con sertralina y me da mucho sueño."
 
 With the MedDRA verifier, a question that does not start with the coding instruction is

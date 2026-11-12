@@ -197,10 +197,10 @@ del verificador. En la fase 4 se reutiliza como herramienta `code_meddra`.
 
 ## 6. Pendiente
 
-Entradas de `EXPERIMENTS.md` (base, destilación, SFT, GRPO, cinco fallos), curvas en el repo,
-subir los adaptadores a Hugging Face Hub y que `ReasoningModel.from_env` acepte un id del Hub,
-reevaluar con más tokens, una o dos ablaciones (`--no-rules`, `--partial-credit`, sin
-`domain_reward`), y alinear los comandos del `Makefile` con lo ejecutado.
+Entradas de `EXPERIMENTS.md` (base, destilación, SFT, GRPO, cinco fallos), enlazar las curvas
+(ya en `reports/`) y alinear los comandos del `Makefile` con lo ejecutado. Hecho: adaptador final
+en el Hub (`Matteofermar/arca-meddra-qwen3-1.7b`, `ARCA_RLM_ADAPTER` acepta el id), reevaluación
+con 2048 tokens y ablaciones (sin `domain_reward`, `--partial-credit`; ver `rlm/RESULTADOS.md`).
 
 ## Referencias
 
