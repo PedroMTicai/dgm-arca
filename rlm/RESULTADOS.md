@@ -135,9 +135,30 @@ Fuentes: `reports/phase1_eval_ablation_nodomain_1.7b.json`,
   mantiene la exactitud estricta, que además coincide con la métrica de evaluación.
 - **Cautela**: una ejecución por variante y 200 problemas; el intervalo al 95 % de un pass@1 en
   torno al 55 % es de unos ±7 puntos. Ninguna diferencia de esta tabla es significativa por sí
-  sola (prueba de McNemar pendiente); lo consistente es que la configuración final es la mejor de
+  sola (ver la prueba de McNemar más abajo); lo consistente es que la configuración final es la mejor de
   las tres y que la recompensa de dominio importa justo en las familias donde la exactitud no da
   señal.
+
+## ¿Son significativas las diferencias? (prueba de McNemar, test, 1,7B)
+
+Prueba exacta de McNemar sobre los mismos 200 problemas: solo cuentan los problemas en los que
+los dos modelos discrepan (uno acierta y el otro falla).
+
+| Comparación | Solo acierta el 1.º | Solo acierta el 2.º | p |
+|---|---|---|---|
+| Base frente a SFT | 5 | 71 | **< 0,001** |
+| SFT frente a GRPO final | 11 | 21 | 0,11 |
+| Sin dominio frente a GRPO final | 14 | 21 | 0,31 |
+| Crédito parcial frente a GRPO final | 13 | 16 | 0,71 |
+| SFT frente a sin dominio | 14 | 17 | 0,72 |
+| SFT frente a crédito parcial | 10 | 17 | 0,25 |
+
+- **El SFT es una mejora clara y significativa.**
+- **El GRPO final mejora al SFT en casi el doble de problemas de los que empeora (21 frente a
+  11), pero con p = 0,11 no llega al 5 %**: con 200 problemas, +5 puntos está en el límite de lo
+  detectable. Es una tendencia que se repite con 0,6B (+5 también), no una prueba.
+- **Las ablaciones no se distinguen estadísticamente del GRPO final ni del SFT.** Lo que sí se ve
+  es el orden: solo la configuración final se acerca a la significación frente al SFT.
 
 ## Qwen3-0.6B · pass@1 (decodificación greedy, 1024 tokens máximos)
 
@@ -172,8 +193,7 @@ Fuentes: `reports/phase1_eval.json` (test), `reports/phase1_eval_ood.json` (OOD)
 
 ## Pendiente
 
-Prueba de McNemar (SFT frente a GRPO y cada ablación frente a GRPO), curvas de entrenamiento en
-el repo, análisis de cinco fallos.
+Curvas de entrenamiento en el repo (los PNG ya están en `reports/`), análisis de cinco fallos.
 
 ## Reproducir
 
