@@ -55,15 +55,15 @@ que el encabezado ayuda a BM25.
 
 ## Generación con citas
 
-| Métrica | Desarrollo | **Test** |
-|---|---|---|
-| Fragmento relevante en el prompt | 0,98 | 0,86 |
-| Respuestas con al menos una cita | 0,94 | 0,68 |
-| Respuestas con un id inventado | 0,00 | 0,05 |
-| La respuesta cita el fragmento relevante | 0,66 | 0,40 |
-| … cuando estaba en el prompt | 0,67 | 0,47 |
-| Abstención falsa (había respuesta) | 0,00 | 0,15 |
-| Abstención en preguntas sin respuesta | 6/6 | 5/8 |
+| Métrica | Desarrollo (1,7B) | **Test (1,7B)** | Test (Qwen3-4B) |
+|---|---|---|---|
+| Fragmento relevante en el prompt | 0,98 | 0,86 | 0,85 |
+| Respuestas con al menos una cita | 0,94 | 0,68 | **0,97** |
+| Respuestas con un id inventado | 0,00 | 0,05 | **0,00** |
+| La respuesta cita el fragmento relevante | 0,66 | 0,40 | **0,67** |
+| … cuando estaba en el prompt | 0,67 | 0,47 | **0,79** |
+| Abstención falsa (había respuesta) | 0,00 | 0,15 | **0,03** |
+| Abstención en preguntas sin respuesta | 6/6 | 5/8 | **8/8** |
 
 "Cita el fragmento relevante" es una cota inferior: a veces cita otro fragmento igual de válido.
 
@@ -74,11 +74,18 @@ que el encabezado ayuda a BM25.
 - El troceado recursivo gana: las fichas ya están estructuradas por secciones y las distancias
   entre frases son muy ruidosas.
 - **El cuello de botella es la generación con 1,7B**, no la recuperación: abstenciones falsas,
-  citas truncadas, citar un fragmento que no respalda la frase.
+  citas truncadas, citar un fragmento que no respalda la frase. **Confirmado** cambiando solo el
+  generador por Qwen3-4B, con el mismo retriever y los mismos fragmentos (relevante en el prompt
+  0,85 frente a 0,86): las respuestas con cita pasan de 0,68 a 0,97, las citas del fragmento
+  relevante de 0,40 a 0,67, las abstenciones falsas de 0,15 a 0,03, los ids inventados
+  desaparecen y se abstiene en las 8 preguntas sin respuesta. El techo que queda (0,79 cuando el
+  fragmento está en el prompt) es en parte la cota inferior de la métrica. La API mantiene 1,7B
+  por memoria (comparte GPU con las demás fases): es un compromiso consciente.
 - La salvaguarda de abstención solo caza el caso fácil (decir "no lo sé" sin citar nada); dos de
   las tres alucinaciones del test citaban fragmentos.
 
-Fuentes: `reports/phase3_eval.json` (desarrollo), `reports/phase3_test.json` (test).
+Fuentes: `reports/phase3_eval.json` (desarrollo), `reports/phase3_test.json` (test),
+`reports/phase3_test_qwen3-4b.json` (test con Qwen3-4B como generador, en la DGX).
 
 ## Reproducir
 

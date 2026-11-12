@@ -1,11 +1,52 @@
-# Resultados · Fase 4 (agente ReAct)
+# Resultados · Fase 4 (agente ReAct y agente de código)
 
 Banco: 20 tareas (`agent/bench/tasks.jsonl`) que encadenan al menos dos herramientas, con dos
 tareas imposibles; máximo 8 pasos; las acciones con efecto quedan pendientes de confirmación
 (`allow_actions=False`). Ejecutado en una RTX 5070 de 8 GB; cada cerebro en su propio proceso (dos
 cerebros a la vez no caben en 8 GB). Detalle del diseño en [`docs/guia/04_agente.md`](../docs/guia/04_agente.md).
 
-## Por cerebro
+## Evaluación final: los tres cerebros a 1,7B y el agente de código (DGX)
+
+Mismo banco y mismas reglas; los tres cerebros parten de los mismos pesos (Qwen3-1.7B), así que
+solo cambia una cosa en cada comparación. MIG de 16 GB en la DGX, un proceso por cerebro. Corpus
+completo (34 fichas + 3 guías de la EMA).
+
+| Agente | Cerebro | Éxito | Herramientas requeridas | Terminó con `final_answer` | Pasos medios | Tokens medios | Motivos de parada | Éxito sin 2 guías |
+|---|---|---|---|---|---|---|---|---|
+| ReAct (JSON) | `base` (sin thinking) | **11/20 (55 %)** | 85 % | 75 % | 3,3 | 11 550 | 15 `final_answer` · 5 texto | 50 % |
+| ReAct (JSON) | `rlm` (+ LoRA fase 1) | 2/20 (10 %) | 10 % | 0 % | 1,0 | 3 152 | 20 texto | 10 % |
+| ReAct (JSON) | `thinking` | **11/20 (55 %)** | 75 % | 50 % | 2,85 | 11 127 | 10 `final_answer` · 10 texto | 45 % |
+| Código (smolagents) | `thinking` | 7/20 (35 %) | 40 % | 60 % | 5,7 | 31 565 | 12 `final_answer` · 8 `max_steps` | 40 % |
+| Código (smolagents) | `base` | 8/20 (40 %) | 45 % | 60 % | 5,35 | 28 214 | 12 `final_answer` · 8 `max_steps` | 30 % |
+
+Fuentes: `reports/phase4_eval_1.7b.json` (corpus completo) y
+`reports/phase4_eval_1.7b_sin_guias.json` (la primera ejecución en la DGX, a la que le faltaban
+dos de las tres guías de la EMA porque la descarga falló; última columna).
+
+### Lectura
+
+- **Entrenar para la fase 1 rompe el agente**: `rlm` responde siempre en un único paso, sin
+  llamar a ninguna herramienta (20/20 en texto, en las dos ejecuciones). El LoRA aprendió un único
+  formato de salida (`<think>…</think><answer>PT</answer>`) y lo aplica a todo: olvida el
+  protocolo de herramientas. Es un caso de sobreajuste al formato de la tarea (olvido catastrófico
+  en pequeño). La forma correcta de usar el modelo de la fase 1 es **como herramienta**
+  (`code_meddra`), no como cerebro.
+- **El thinking no ayuda al agente a 1,7B**: `base` y `thinking` empatan (55 %), con el mismo coste
+  en tokens. `thinking` sigue peor el protocolo (10 de 20 respuestas sin `final_answer`): tras
+  razonar, contesta directamente en texto.
+- **El agente de código pierde frente al JSON** con estos modelos: 35–40 % frente a 55 %, con
+  **casi el triple de tokens** (el prompt de smolagents es largo y el modelo reescribe código en
+  cada paso) y 8 de 20 tareas que agotan los pasos. CodeAct rinde con modelos grandes, que escriben
+  Python correcto a la primera; uno de 1,7B se enreda corrigiendo su propio código. Para un modelo
+  pequeño, una llamada JSON por paso es más robusta. Se repite en las dos ejecuciones.
+- **Variabilidad**: con 20 tareas, el intervalo al 95 % es de unos ±20 puntos, y FAERS se consulta
+  en vivo. Entre las dos ejecuciones de la DGX los cerebros se mueven 5–10 puntos (las guías
+  ausentes explican parte), y la primera evaluación de `thinking` en la RTX 5070 dio 65 %. Solo son
+  sólidas las diferencias que se repiten: `rlm` frente al resto, y JSON frente a código.
+
+## Primera evaluación (RTX 5070, 0,6B y 1,7B)
+
+### Por cerebro
 
 | Cerebro | Modelo | Éxito | Usó las herramientas requeridas | Terminó con `final_answer` | Pasos medios | Tokens medios |
 |---|---|---|---|---|---|---|
@@ -17,7 +58,7 @@ Motivos de parada: `base` 17 respondió en texto sin herramientas, 2 agotó los 
 `final_answer`; `thinking` 10 `final_answer` y 10 respondió en texto (se acepta como respuesta,
 pero no sigue el protocolo).
 
-## `thinking` por tipo de tarea
+### `thinking` por tipo de tarea
 
 | Tipo | Tareas | Aciertos |
 |---|---|---|
@@ -32,7 +73,7 @@ pero no sigue el protocolo).
 
 Fuente: `reports/phase4_eval.json`.
 
-## Lectura
+### Lectura
 
 - **El tamaño decide si hay agente**: con 0,6B casi nunca usa herramientas y contesta de memoria;
   con 1,7B encadena hasta tres herramientas (ficha → FAERS → PRR) y se corrige tras un error
@@ -60,9 +101,8 @@ Fuente: `reports/phase4_eval.json`.
 
 ## Pendiente
 
-Cerebro `rlm` (Qwen3-1.7B + LoRA de la fase 1, en entrenamiento en la DGX); comparación con un
-agente de código; reforzar las tareas imposibles (en el prompt: "si los datos no corresponden a lo
-que se pregunta —país, año—, dilo").
+Tabla por tipo de tarea y análisis de fallos de la evaluación final; reforzar las tareas
+imposibles en el prompt ("si los datos no corresponden a lo que se pregunta —país, año—, dilo").
 
 ## Reproducir
 
@@ -70,4 +110,6 @@ que se pregunta —país, año—, dilo").
 # un cerebro por proceso si la GPU tiene menos de ~12 GB
 uv run python -m agent.evaluate --bench agent/bench/tasks.jsonl --brains base
 uv run python -m agent.evaluate --bench agent/bench/tasks.jsonl --brains thinking
+uv run python -m agent.evaluate --bench agent/bench/tasks.jsonl --brains code-thinking   # agente de código
+# todo en la DGX: bash scripts/dgx_session.sh
 ```

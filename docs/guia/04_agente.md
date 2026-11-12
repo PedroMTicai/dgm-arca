@@ -92,17 +92,25 @@ observaciones en verde. `uv run python -m agent.ui` con la API levantada.
 
 ## 4. Resultados
 
-| Cerebro | Éxito (20 tareas) | Herramientas requeridas | Terminó con `final_answer` | Pasos | Tokens |
-|---|---|---|---|---|---|
-| `base` (Qwen3-0.6B) | 10 % | 20 % | 5 % | 2,0 | 6 194 |
-| `thinking` (Qwen3-1.7B) | **65 %** | 75 % | 50 % | 3,2 | 12 190 |
-| `rlm` | pendiente (reentrenando con 1,7B) | | | | |
+Evaluación final en la DGX, los tres cerebros con Qwen3-1.7B y el corpus completo:
 
-Con 0,6B no hay agente (responde de memoria); con 1,7B encadena hasta tres herramientas. **Las dos
-tareas imposibles fallan**: presenta el recuento de FAERS (EE. UU., todos los años) como "en España
-en 2025", y ante "envía un correo a la AEMPS" intenta crear un ICSR inventando la edad (la
-confirmación humana lo retiene). Tabla por tipo de tarea y análisis de fallos en
-[`agent/RESULTADOS.md`](../../agent/RESULTADOS.md).
+| Agente | Cerebro | Éxito (20 tareas) | Herramientas requeridas | Terminó con `final_answer` | Pasos | Tokens |
+|---|---|---|---|---|---|---|
+| ReAct (JSON) | `base` | **55 %** | 85 % | 75 % | 3,3 | 11 550 |
+| ReAct (JSON) | `rlm` | 10 % | 10 % | 0 % | 1,0 | 3 152 |
+| ReAct (JSON) | `thinking` | **55 %** | 75 % | 50 % | 2,9 | 11 127 |
+| Código | `thinking` | 35 % | 40 % | 60 % | 5,7 | 31 565 |
+| Código | `base` | 40 % | 45 % | 60 % | 5,4 | 28 214 |
+
+- **`rlm` no funciona como cerebro**: el LoRA de la fase 1 responde siempre en un único paso con
+  su formato `<answer>`, sin usar herramientas. Por eso el modelo de la fase 1 entra en el agente
+  como **herramienta** (`code_meddra`).
+- **El thinking no mejora el agente a 1,7B** (55 % los dos) y sigue peor el protocolo.
+- **El agente de código rinde menos y cuesta casi el triple de tokens**: el modelo pequeño se
+  enreda corrigiendo su propio Python y agota los pasos. Una llamada JSON por paso es más robusta.
+- Las tareas imposibles siguen fallando. En la primera evaluación (RTX 5070), `base` con 0,6B dio
+  10 % y `thinking` con 1,7B dio 65 %; con 20 tareas el ruido es de unos ±20 puntos, así que solo
+  cuentan las diferencias que se repiten entre ejecuciones. Detalle en [`agent/RESULTADOS.md`](../../agent/RESULTADOS.md).
 
 ## 5. Tests (`tests/test_agent.py`, 12 tests)
 
@@ -114,7 +122,6 @@ resume sin tocar la tarea; cerebro desconocido rechazado.
 
 ## 6. Pendiente
 
-- Evaluar los tres cerebros a 1,7B y el agente de código en la DGX (`scripts/dgx_session.sh`).
 - Subir el adaptador de la fase 1 a Hugging Face Hub (`ARCA_RLM_ADAPTER` acepta el id).
 - Probar `/agent` por HTTP y el visor `ui.py`.
 

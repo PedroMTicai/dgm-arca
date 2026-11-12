@@ -95,6 +95,50 @@ Tipos de error en OOD (GRPO): missing 50 · sin respuesta 9 · extra 3 · not in
 - Lo que queda: `multi` y `diagnosis` por debajo del 50 %. El error dominante es `missing` (le
   falta un término), no inventar términos: `not in MedDRA` casi desaparece (2).
 
+## Ablaciones de las recompensas de GRPO (Qwen3-1.7B, test)
+
+Cada ablación cambia **una sola cosa** respecto al GRPO final: mismo adaptador SFT de partida,
+mismos 100 pasos, mismos datos, misma semilla, misma evaluación (greedy, 2048 tokens).
+
+| Variante | Cambio | pass@1 | F1 medio | Formato | Tokens | missing | extra | not in MedDRA | Sin respuesta |
+|---|---|---|---|---|---|---|---|---|---|
+| SFT (sin GRPO) | — | 51,5 % | 0,67 | 86,5 % | 829 | 59 | 5 | 6 | 27 |
+| **GRPO final** | formato 0,5 + exactitud 2,0 + dominio 0,5 | **56,5 %** | **0,72** | 90,5 % | 733 | 58 | 8 | 2 | 19 |
+| Sin recompensa de dominio | peso de `domain_reward` a 0 | 53,0 % | 0,70 | 90,5 % | 703 | 63 | 9 | 3 | 19 |
+| Crédito parcial | exactitud = F1 entre conjuntos de PT | 55,0 % | 0,72 | 91 % | 775 | 59 | 8 | 5 | 18 |
+
+pass@1 por familia:
+
+| Familia | Problemas | SFT | GRPO final | Sin dominio | Crédito parcial |
+|---|---|---|---|---|---|
+| single | 39 | 64 % | **72 %** | 67 % | 67 % |
+| lack_of_effect | 29 | 72 % | 72 % | 76 % | **79 %** |
+| death | 30 | 57 % | 67 % | **73 %** | 60 % |
+| multi | 58 | 45 % | **47 %** | 40 % | 43 % |
+| diagnosis | 44 | 32 % | 39 % | 30 % | **41 %** |
+
+Fuentes: `reports/phase1_eval_ablation_nodomain_1.7b.json`,
+`reports/phase1_eval_ablation_partial_1.7b.json`.
+
+### Lectura de las ablaciones
+
+- **Quitar la recompensa de dominio cuesta 3,5 puntos** (56,5 → 53,0 %), y la pérdida está en las
+  familias difíciles: `diagnosis` 39 → 30 % y `multi` 47 → 40 %. No se explica por términos
+  inventados (`not in MedDRA` pasa de 2 a 3): el SFT ya enseñó el vocabulario. La explicación más
+  probable es la **señal**: en `diagnosis` y `multi` muchos grupos de 8 respuestas fallan todos, la
+  exactitud vale 0 en todas y la ventaja es nula; `domain_reward` sigue distinguiendo entre ellas
+  (sinónimo frente a PT exacto, listas demasiado largas) y el modelo sigue aprendiendo en esos
+  problemas. Sin ella, ese paso no enseña nada.
+- **El crédito parcial no aporta** (55,0 % frente a 56,5 %; F1 0,72 en los dos). Ni siquiera sube el
+  F1, que es lo que optimiza, ni reduce los `missing` (59 frente a 58). Probable motivo: con la
+  recompensa de dominio la señal ya no es binaria, así que el F1 añade poca información nueva. Se
+  mantiene la exactitud estricta, que además coincide con la métrica de evaluación.
+- **Cautela**: una ejecución por variante y 200 problemas; el intervalo al 95 % de un pass@1 en
+  torno al 55 % es de unos ±7 puntos. Ninguna diferencia de esta tabla es significativa por sí
+  sola (prueba de McNemar pendiente); lo consistente es que la configuración final es la mejor de
+  las tres y que la recompensa de dominio importa justo en las familias donde la exactitud no da
+  señal.
+
 ## Qwen3-0.6B · pass@1 (decodificación greedy, 1024 tokens máximos)
 
 | Modelo | Test (200) | OOD (100) | Formato válido (test) | F1 medio (test) | Tokens medios (test) |
@@ -128,8 +172,8 @@ Fuentes: `reports/phase1_eval.json` (test), `reports/phase1_eval_ood.json` (OOD)
 
 ## Pendiente
 
-Prueba de McNemar SFT frente a GRPO, curvas de entrenamiento en el repo, análisis de cinco fallos,
-ablaciones (`--partial-credit`, sin `domain_reward`, `--no-rules`).
+Prueba de McNemar (SFT frente a GRPO y cada ablación frente a GRPO), curvas de entrenamiento en
+el repo, análisis de cinco fallos.
 
 ## Reproducir
 
