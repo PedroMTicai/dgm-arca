@@ -39,7 +39,12 @@ class ReasoningRequest(BaseModel):
         default=None,
         description="Optional ground truth; when given, the response includes the verifier verdict",
     )
-    max_new_tokens: int = Field(default=1024, ge=16, le=8192)
+    max_new_tokens: int = Field(
+        default=2048,
+        ge=16,
+        le=8192,
+        description="Generation budget; 2048 is what rlm/evaluate.py used for the reported pass@1",
+    )
 
 
 class VerifierVerdict(BaseModel):

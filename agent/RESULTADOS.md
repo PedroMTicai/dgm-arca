@@ -165,9 +165,17 @@ Fuente: `reports/phase4_eval.json`.
 
 ## Pendiente
 
-Reforzar las tareas imposibles en el prompt ("si los datos no corresponden a lo que se pregunta
-—país, año—, dilo") y corregir las comprobaciones débiles del banco (ver "Límites de la
-evaluación").
+**Cambios hechos después de esta evaluación, todavía sin medir:**
+- Prompt reforzado para las tareas imposibles, en ReAct (`agent/prompts.py`) y en el agente de
+  código: FAERS no filtra por país ni por fecha, una acción sin herramienta no se sustituye por
+  otra, y lo que no se puede hacer se dice en el idioma del usuario.
+- `faers_reaction_counts` devuelve en cada resultado su alcance ("worldwide reports of all
+  years; no filter by country or date").
+- `create_icsr_report` devuelve todos los problemas juntos.
+
+Falta volver a evaluar los cerebros con estos cambios (unas 2,5 h en la DGX) y, en la misma
+tanda, corregir las comprobaciones débiles del banco (ver "Límites de la evaluación"). Las cifras
+de esta página son las de antes de estos cambios.
 
 ## Reproducir
 

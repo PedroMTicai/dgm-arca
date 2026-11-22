@@ -108,6 +108,13 @@ def test_icsr_is_written_and_validated(tmp_path, monkeypatch):
     with pytest.raises(ValueError, match="not identifiable"):
         tools.create_icsr_report(**{**args, "patient_age": None, "patient_sex": "unknown"})
     assert tools.create_icsr_report.requires_confirmation
+    # Bench case c25: a Spanish term AND an unidentifiable patient. Both problems are reported,
+    # not only the first one, and no file is written.
+    with pytest.raises(ValueError, match="not Preferred Terms.*not identifiable"):
+        tools.create_icsr_report(
+            **{**args, "reactions": ["MAREOS"], "patient_age": None, "patient_sex": "unknown"}
+        )
+    assert len(list(tmp_path.iterdir())) == 1  # only the valid report of the first call
 
 
 class _ScriptedLLM:

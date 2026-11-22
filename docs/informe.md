@@ -1,6 +1,7 @@
 # ARCA · Agente de farmacovigilancia — informe técnico
 
 Práctica final de Modelos Generativos Profundos · MIA · ICAI · 2026-2027.
+Equipo: Matteo Ferrari, Pedro Meseguer y Mario Alonso.
 Repositorio, API y cuaderno de experimentos: ver los anexos.
 
 ## 1. El problema y el usuario
@@ -106,6 +107,8 @@ baja aunque el SFT ya acierta la mitad; en 15 pasos la longitud cae a 557 y form
 pasan de 0,39 a 0,88 y de 0,16 a 0,58. Después la exactitud se estanca en torno a 0,45–0,50
 (cada paso ve un problema distinto). El recorte de PPO no llega a actuar (`clip_ratio` = 0): con
 una sola actualización por lote, la política que se optimiza es la que generó las respuestas.
+El entrenamiento usa `GRPOTrainer` de TRL; `grpo_step.py` reimplementa el paso a mano para
+entenderlo y no interviene en él.
 
 **Ablaciones y significación.** Cambiando una sola cosa desde el mismo SFT:
 
@@ -133,10 +136,19 @@ SFT** (21 problemas mejoran y 11 empeoran, p = 0,11). El SFT frente a la base s�
 5. *Síntoma alucinado*: añade `Tremor` a una notificación de dolor abdominal con lorazepam, porque
    es una reacción conocida de las benzodiacepinas.
 
-**El paso de GRPO a mano** (`rlm/grpo_step.py`) nos sirvió para entender las curvas: la ventaja se
+**El paso de GRPO a mano** (`rlm/grpo_step.py`) nos sirvió para entender las curvas. La ventaja se
 normaliza dentro del grupo, así que un grupo con recompensas iguales no aporta gradiente
-(`frac_reward_zero_std` es exactamente esa fracción, 16–27 % en nuestro entrenamiento), y con un
-único paso de optimización por lote el cociente de probabilidades vale 1 y el recorte es inactivo.
+(`frac_reward_zero_std` es exactamente esa fracción, 16–27 % en nuestro entrenamiento). Con una
+única actualización por grupo, ρ = 1: el objetivo de cada token vale Aᵢ y, con la media por
+respuesta del GRPO original, la pérdida vale 0, pero su gradiente no (cada Aᵢ multiplica el
+gradiente de log π de una respuesta distinta): en esta configuración GRPO equivale a REINFORCE
+con la media del grupo como línea base. TRL promedia además por tokens (`loss_type = "dapo"`), lo
+que hace pesar más a las respuestas largas; como al principio las peores eran las cortadas a 1 024
+tokens, la pérdida registrada sale positiva y el gradiente empuja a acortar, que es justo lo que
+muestran las curvas. El valor de la pérdida en GRPO no indica si el modelo aprende.
+
+**Una limitación del subconjunto de 90 PT**: un término real de MedDRA que no esté en la lista
+cuenta como fallo. Pesa poco (2 de 200 en test) porque la respuesta esperada siempre está dentro.
 
 ## 4. Fase 2: herramientas
 
@@ -156,7 +168,10 @@ todos los Naranjo), y 6/6 respuestas sin llamar cuando no hace falta.
 Iteramos cuatro versiones de las descripciones. La más instructiva fue la v3: describir por
 parámetro arregló el multipaso, pero repetir "usa *unknown* si el caso no lo dice" en cada
 pregunta de Naranjo hizo que lo usara en exceso, y la respuesta correcta cayó de 0,72 a 0,50; la
-v4 lo dice una vez y recupera 0,67. Fallos que quedan: leer mal un número de FAERS al comparar
+v4 lo dice una vez y recupera 0,67. Comparando caso a caso, la v1 (0,72) no era mejor: acertaba
+dos Naranjo porque dos errores de signo contrario se anulaban en el total (un "no" que debía ser
+"sí" y otro que debía ser "desconocido"). Por eso para comparar versiones miramos la precisión de
+argumentos, no solo la respuesta final. Fallos que quedan: leer mal un número de FAERS al comparar
 dos fármacos, términos en español dentro del ICSR, y "no" en Naranjo para lo que el caso no
 menciona. Y un hallazgo de seguridad: ante la validación "paciente no identificable", el modelo
 **se inventó `patient_age: 0`** para que pasara. Es el motivo de la confirmación humana del agente.
@@ -194,13 +209,18 @@ encubiertas**: el modelo inventaba los efectos adversos de la insulina glargina 
 corpus) y al final añadía "no tengo información". Ahora solo es abstención si la respuesta empieza
 por la frase, y si no cita nada se devuelve solo la abstención.
 
-**Lo que falla y por qué.** Con Qwen3-1.7B, en test: 68 % de respuestas con cita, 40 % citan el
+**Lo que falla y por qué.** Hay que separar las dos piezas: el buscador trae el fragmento
+correcto entre los cinco primeros en el 86 % de las preguntas de test; lo que falla es el
+generador, que con el fragmento delante no lo usa bien. Con Qwen3-1.7B, en test: 68 % de respuestas con cita, 40 % citan el
 fragmento relevante, 15 % de abstenciones falsas, 5/8 abstenciones correctas. **Cambiando solo el
 generador a Qwen3-4B**, con la misma recuperación (fragmento relevante en el prompt 0,85 frente a
 0,86): 97 % con cita, 67 % citan el relevante, 3 % de abstenciones falsas y 8/8. El cuello de
 botella era el generador, no la recuperación. Casos típicos con 1,7B: la dosis pediátrica de
 levetiracetam (10 mg/kg) dada como de adulto, mezclando dos fragmentos de la misma ficha; citas
-válidas que no respaldan la frase; ids truncados.
+válidas que no respaldan la frase; ids truncados. Y una limitación de la evaluación: estas
+métricas miden citas y abstención, no si la respuesta es correcta. A la pregunta de si se puede
+conducir con atorvastatina, el modelo citó el fragmento correcto ("influencia nula o
+insignificante") y concluyó que no se debía conducir; cuenta como respuesta citada.
 
 ## 6. Fase 4: agente
 
@@ -254,6 +274,11 @@ notificaciones hubo en España en 2025?" consulta FAERS (EE. UU., todos los año
 "5472"; ante "envía por correo a la AEMPS la notificación de ayer", `thinking` sí dice que no
 puede, pero en inglés, y en una ejecución anterior intentó crear un ICSR inventando la edad (la
 confirmación lo retuvo).
+
+Después de esta evaluación reforzamos el prompt para las tareas imposibles (FAERS no filtra por
+país ni por fecha; no sustituir una acción imposible por otra; responder en el idioma del
+usuario), añadimos el alcance a cada resultado de FAERS e hicimos que el ICSR devuelva todos los
+problemas juntos. No hemos vuelto a medir el banco con estos cambios.
 
 ## 7. Lo que no funcionó
 

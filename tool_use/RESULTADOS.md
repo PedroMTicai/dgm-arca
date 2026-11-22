@@ -46,6 +46,41 @@ de la ejecución v2 (mismas preguntas, mismo modelo).
 - v4: la regla de "unknown" una sola vez.
 - Ajustadas mirando estos mismos 30 casos: la mejora entre versiones es optimista.
 
+### Lo que esconden los totales: comparación caso a caso
+
+La respuesta correcta baja de 0,72 (v1) a 0,67 (v4), pero con 18 casos comprobados eso es **un
+solo caso**, y caso a caso la v1 no era mejor: **acertaba en parte por errores que se
+compensaban**.
+
+- **c13 (Naranjo, esperado 8).** El caso dice que ya hay casos publicados (+1) y no dice nada del
+  placebo (0). La v1 respondió "no" a los casos publicados (0, mal) y "no" al placebo (+1, mal):
+  dos errores que se anulan, total 8, "correcto". La v4 corrige el del placebo ("unknown") y el
+  total pasa a 7, "incorrecto". En c15 pasa lo mismo (un −1 y un +1 equivocados que se anulan).
+- **El efecto de la v3 sí es real**: repetir "usa *unknown* si el caso no lo dice" en las 10
+  preguntas hizo que lo usara incluso cuando el texto lo dice ("no hay otras causas" → `unknown`
+  en vez de "no", +2 perdidos).
+- **c21 (calculadora)**: desde la v2 traduce "500 mg cada 8 horas" a `500 * 8 / 24` y luego
+  ignora el resultado de la herramienta (166,7) y responde "4,0 g". Cambiar las descripciones
+  cambió cómo traduce el enunciado a la expresión.
+- **c29 (paralelo)**: las dos llamadas son correctas y FAERS devuelve 14 073 para sertralina, pero
+  la respuesta dice "140.730": copia mal el número.
+
+Por eso la métrica de **argumentos** importa más que la de respuesta para comparar versiones: en
+c13 la v1 tenía los argumentos mal aunque el total saliera bien.
+
+### El ICSR: tres casos, mirados de cerca
+
+| Caso | Qué pide | v4 | Comprobación |
+|---|---|---|---|
+| c23 | Mujer de 45 años, somnolencia | Informe correcto (`Somnolence`, no grave, 90 días) | ✅ |
+| c24 | Hombre de 70 años, neumonía grave | Escribe la reacción `NEUROMUSCULAR DISFUNCTION`, que no tiene nada que ver; la herramienta la rechaza y el modelo no se corrige | ❌ |
+| c25 | Paciente no identificable | La herramienta lo rechaza, pero porque el modelo escribió `MAREOS` en español: la comprobación de la reacción iba antes y nunca llegaba a la del paciente | ✅ por el motivo equivocado |
+
+Entre versiones va de 3/3 (v1) a 0/3 (v3, la del `patient_age: 0`). **Corrección posterior a esta
+evaluación**: `create_icsr_report` ejecuta ahora todas las comprobaciones y devuelve todos los
+problemas juntos ("reacción no MedDRA; paciente no identificable…"), de modo que c25 se rechaza
+también por el motivo que el caso quiere medir. Hay un test para este caso.
+
 ## Lectura
 
 - **Con herramientas, la respuesta correcta se duplica** (0,33 → 0,67). Sin herramientas, el

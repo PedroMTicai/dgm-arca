@@ -5,7 +5,7 @@ y datos de FAERS, calcula señales de desproporcionalidad y prepara el ICSR, con
 confirma antes de registrar nada.**
 
 Práctica final de Modelos Generativos Profundos · Máster en Inteligencia Artificial · ICAI ·
-2026-2027. Todo con modelos abiertos pequeños (Qwen3-1.7B) entrenados y evaluados en una GPU de
+2026-2027. Equipo: Matteo Ferrari, Pedro Meseguer y Mario Alonso. Todo con modelos abiertos pequeños (Qwen3-1.7B) entrenados y evaluados en una GPU de
 16 GB. El enunciado de la práctica está en [`docs/practica.md`](docs/practica.md).
 
 ## Para quién y qué problema resuelve
