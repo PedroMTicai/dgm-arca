@@ -346,6 +346,9 @@ Fuente: `reports/phase1_eval_1.7b_batch1.json`.
 
 - **Es el mismo modelo**: formato, longitud y F1 iguales; solo cambia qué problemas concretos
   acierta, y unas familias suben mientras otras bajan.
+- **Caso a caso**: solo 7 de las 200 respuestas son idénticas palabra por palabra (el efecto de
+  bf16 no es raro, es casi universal), pero 170 tienen el mismo veredicto. Solo acierta en lotes
+  de 16 en 18 problemas y solo de uno en uno en 12: McNemar p = 0,36, no significativo.
 - **3 puntos de diferencia sin cambiar nada del modelo.** Es del mismo tamaño que la diferencia
   entre el GRPO final y la ablación sin recompensa de dominio (56,5 frente a 53,0 %). Confirma con
   un dato propio lo que decía McNemar: con 200 problemas, diferencias de 3 puntos no se separan
