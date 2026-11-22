@@ -49,6 +49,10 @@ app = FastAPI(
         "Un endpoint por fase: /reasoning, /tools, /rag y /agent."
     ),
     version="0.1.0",
+    # Behind a proxy that adds a path prefix (Open OnDemand on the DGX:
+    # /rnode/dgx/<port-node>/proxy/8000), /docs must fetch <prefix>/openapi.json. Not needed
+    # with ngrok or locally.
+    root_path=env("ARCA_ROOT_PATH"),
 )
 backends = Backends()
 
