@@ -21,8 +21,9 @@ PORT=8000
 mkdir -p "$OUT" "$BIN"
 
 if [[ "${1:-}" == "stop" ]]; then
-    pkill -f "ngrok http" && echo "ngrok parado"
-    pkill -f "arca-api" && echo "API parada"
+    # -u $USER: the DGX is shared, never touch other people's processes.
+    pkill -u "$USER" -f "ngrok http" && echo "ngrok parado"
+    pkill -u "$USER" -f "arca-api" && echo "API parada"
     exit 0
 fi
 
@@ -74,15 +75,16 @@ if [[ -z ${NGROK_AUTHTOKEN:-} ]]; then
     echo "Falta NGROK_AUTHTOKEN (export NGROK_AUTHTOKEN=... con el token de tu cuenta de ngrok)."
     exit 1
 fi
-pkill -f "ngrok http" 2>/dev/null
+pkill -u "$USER" -f "ngrok http" 2>/dev/null
 args=(http "$PORT" --log stdout)
 [[ -n ${NGROK_DOMAIN:-} ]] && args+=(--url "$NGROK_DOMAIN")
 nohup "$BIN/ngrok" "${args[@]}" > "$OUT/ngrok.log" 2>&1 &
 
+# The URL is read from OUR ngrok log, not from its local panel (localhost:4040): the DGX is
+# shared, the panel port may belong to someone else's ngrok and give their URL.
 url=""
 for _ in $(seq 1 30); do
-    url=$(curl -s localhost:4040/api/tunnels | python3 -c \
-        "import json,sys; t=json.load(sys.stdin)['tunnels']; print(t[0]['public_url'] if t else '')" 2>/dev/null)
+    url=$(grep -o 'url=https://[^ ]*' "$OUT/ngrok.log" 2>/dev/null | tail -n 1 | cut -d= -f2)
     [[ -n $url ]] && break
     sleep 1
 done
