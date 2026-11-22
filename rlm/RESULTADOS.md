@@ -329,6 +329,14 @@ Fuentes: `reports/phase1_eval.json` (test), `reports/phase1_eval_ood.json` (OOD)
 
 ## Pendiente
 
+**Medir el pass@1 tal como lo ve la API** (una pregunta por llamada, sin lotes). La evaluación se
+hizo en lotes de 16 con relleno a la izquierda; en bf16, el tamaño de lote y la GPU cambian a
+veces el token elegido en greedy, así que caso a caso la API puede responder distinto (lo vimos en
+el portátil: "tos seca" → `Dry cough` por la API, `Cough` en la evaluación). En promedio debería
+dar lo mismo; para comprobarlo, en la DGX:
+
+    uv run python -u -m rlm.evaluate --data rlm/data/test.jsonl --model Qwen/Qwen3-1.7B         --max-new-tokens 2048 --batch-size 1 --adapters grpo=$HOME/clusters/dgx/arca_weights/grpo_lora_1.7b         --out reports/phase1_eval_1.7b_batch1.json
+
 Nada de entrenamiento. Posibles extensiones: recompensa por longitud o penalización de
 repetición contra los bucles (fallo 4), y una herramienta de búsqueda en MedDRA para los
 sinónimos (fallo 1).

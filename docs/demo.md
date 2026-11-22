@@ -27,12 +27,20 @@ En Swagger, `GET /health`: las cuatro fases en `ready`.
 
 ### 0:20–0:50 · Fase 1, `/reasoning`
 ```json
-{"question": "Llevo dos semanas con sertralina para la depresión y me da muchísimo sueño. No he tenido náuseas."}
+{"question": "Escribo por mi padre, de 67 años, que estaba tomando pantoprazol. Tiene antecedentes de ansiedad. Al cabo de un mes la cabeza le iba a estallar. Finalmente falleció a causa de una reacción anafiláctica.", "expected_answer": "Anaphylactic reaction; Headache"}
 ```
 Señalad en la respuesta:
-- el razonamiento en `thinking` y la respuesta separada en `answer`: `Somnolence`;
-- que **no** codifica la depresión (es la indicación) ni las náuseas (están negadas): son dos de
-  las cinco reglas.
+- el razonamiento en `thinking` y la respuesta separada en `answer`;
+- que **no** codifica la ansiedad (antecedente) ni `Death` (la muerte es un desenlace: se codifica
+  la causa, la reacción anafiláctica);
+- el veredicto del verificador (`verifier.is_correct`).
+
+**Probadlo antes en la máquina de la demo.** La generación es greedy, pero en bf16 cambiar de GPU
+o de tamaño de lote altera a veces el token elegido: dos ejemplos que el modelo acertó en la
+evaluación ("muchísimo sueño" con sertralina, "tos seca" con lamotrigina) salieron mal por la API
+en el portátil (`Insomnia`, `Dry cough`). Tened preparado un segundo caso que funcione en esa
+máquina, por ejemplo: "Tengo antecedentes de asma. Llevo tres días tomando amlodipino y empecé a
+perder mucho pelo." → `Alopecia`.
 
 Frase: "Qwen3-1.7B con LoRA, SFT sobre trazas de Qwen3-4B filtradas por el verificador y GRPO con
 tres recompensas: 18,5 % → 56,5 % en test."
@@ -59,7 +67,10 @@ Cerebro `base`. Mientras corre (unos 30–60 s):
 > FAERS en vivo, pasa los cuatro recuentos al PRR. Ningún número sale del modelo."
 
 Resultado esperado: PRR ≈ 3,5 con señal según Evans. (FAERS se consulta en vivo: los números
-pueden variar un poco respecto al informe.)
+pueden variar un poco respecto al informe.) Comprobado por la API en Docker: 4 pasos, PRR 3,49,
+señal; tardó 3 min 35 s en el portátil (8 GB, muy justo de memoria) y será bastante más rápido en
+la DGX. La respuesta sale en inglés aunque la tarea esté en español: si os preguntan, es un fallo
+conocido del modelo pequeño con el protocolo en inglés.
 
 ### 2:40–3:00 · La salvaguarda
 Tarea:
