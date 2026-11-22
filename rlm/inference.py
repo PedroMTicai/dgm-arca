@@ -106,6 +106,10 @@ class ReasoningModel:
         from peft import PeftModel
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
+        from common.llm import fast_attention
+
+        fast_attention()  # 20x faster generation on the DGX's H200 (see common/llm.py)
+
         device = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.bfloat16 if device == "cuda" else torch.float32
         self.tokenizer = AutoTokenizer.from_pretrained(self.base_model, padding_side="left")

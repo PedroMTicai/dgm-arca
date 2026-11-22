@@ -637,3 +637,27 @@ desarrollo y el mismo troceado; solo cambia el generador a Qwen3-4B (`ARCA_LLM_M
 **Qué concluimos.** Confirmado: con la misma recuperación, el generador de 4B arregla casi todo
 lo que fallaba. La API usa 1,7B por defecto porque comparte GPU con las demás fases; con
 `ARCA_LLM_MODEL=Qwen/Qwen3-4B` el RAG da estas cifras.
+
+### 2026-11-22 · API · Generación 20 veces más lenta en la DGX: la atención de cuDNN
+
+**Qué queríamos saber.** Por qué la API en la DGX tardaba más de 10 minutos en una tarea del
+agente que en la evaluación tardaba unos 60 s, hasta el punto de que la conexión de ngrok se cortaba
+(`ERR_NGROK_3004`).
+
+**Qué hicimos.** Medir por capas, descartando una cosa cada vez: el modelo estaba en la GPU
+(`cuda:0`, MIG 1g.18gb, 77 TFLOPS en un producto de matrices), la CPU no estaba limitada (4 núcleos,
+`sum(range(10**8))` en 0,7 s), la sincronización con la GPU era instantánea, y un paso del modelo
+tardaba 13 ms (≈ 75 tokens/s). Pero `generate` iba a 3,5 tokens/s fuera de la API, y en el
+portátil no perdía nada. El perfilador (`cProfile`) señaló el culpable: de 7,97 s para 30 tokens,
+7,17 s en `scaled_dot_product_attention`, 8,5 ms por llamada.
+
+**Qué pasó.** En GPU Hopper (la H200), PyTorch 2.11 elige por defecto el backend de atención de
+cuDNN, que prepara un plan de ejecución para cada tamaño de secuencia. Al generar, la secuencia
+crece un token por paso, así que vuelve a planificar en cada paso. Desactivándolo
+(`torch.backends.cuda.enable_cudnn_sdp(False)`; PyTorch usa entonces flash o memory-efficient):
+**69 tokens/s, unas 20 veces más rápido**. En el portátil (RTX 5070) no cambia nada.
+
+**Qué concluimos.** `common/llm.py` y `rlm/inference.py` lo desactivan al cargar el modelo. Las
+evaluaciones anteriores en la DGX sufrieron esta lentitud (por eso tardaban tanto), pero sus
+resultados no cambian: es otra implementación de la misma operación. La lección: medir por capas
+y perfilar antes de culpar al hardware; la primera sospecha (CPU, GPU compartida) era falsa.
