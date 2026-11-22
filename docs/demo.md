@@ -4,6 +4,25 @@ Para el equipo. Diez minutos de defensa: tres de demo en vivo y siete de pregunt
 recorre las cuatro fases con casos que ya sabemos que salen bien, y enseña a propósito una
 salvaguarda (la confirmación humana), porque es lo más fácil de recordar.
 
+## Servir la API para la corrección (DGX + ngrok)
+
+URL pública fija (el dominio gratuito de la cuenta de ngrok, no cambia entre sesiones):
+**https://unzip-array-ascension.ngrok-free.dev** · documentación en `/docs`.
+
+Cuando el profesor avise de que va a corregir:
+
+1. En hpc.comillas.edu → *My Interactive Sessions*: borrar cualquier sesión antigua (una API o un
+   ngrok vivos en otra sesión ocupan el dominio y no se ven desde la nueva) y abrir una nueva.
+2. En la sesión nueva:
+   ```bash
+   cd ~/dgm-arca && git pull && rm -f .env
+   export NGROK_AUTHTOKEN=...        # el de la cuenta de ngrok; nunca en el repo
+   bash scripts/dgx_serve.sh         # carga las cuatro fases y abre el túnel
+   ```
+3. Comprobar desde fuera que responde nuestra API, con el equipo:
+   `curl -s https://unzip-array-ascension.ngrok-free.dev/health`
+4. La sesión dura unas horas: si la corrección se alarga, repetir en una sesión nueva.
+
 ## Antes de empezar (10 minutos antes)
 
 1. API levantada y **ya caliente**: la primera petición a cada fase carga modelos y tarda. Lanzad

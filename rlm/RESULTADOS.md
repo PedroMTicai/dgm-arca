@@ -327,15 +327,38 @@ Fuentes: `reports/phase1_eval.json` (test), `reports/phase1_eval_ood.json` (OOD)
 - El OOD es muy bajo para todos: el modelo no generaliza a términos que no ha visto.
 - La línea base dio 5 % y 7,5 % en dos ejecuciones greedy: no determinismo de bf16 con padding.
 
+## El mismo modelo, servido de uno en uno (como la API)
+
+La evaluación de arriba genera en lotes de 16 preguntas con relleno a la izquierda. La API
+(`/reasoning`) genera una pregunta cada vez. Con decodificación greedy debería dar lo mismo, pero
+en bf16 el tamaño del lote cambia mínimamente los cálculos y, cuando dos tokens casi empatan,
+cambia cuál se elige. Medido en la DGX con el mismo adaptador, el mismo test y `--batch-size 1`:
+
+| | Lotes de 16 | Lotes de 1 (como la API) |
+|---|---|---|
+| **pass@1** | **56,5 %** | **53,5 %** |
+| Formato válido | 90,5 % | 91 % |
+| F1 medio | 0,72 | 0,71 |
+| Tokens medios | 733 | 729 |
+| `single` / `multi` / `diagnosis` / `death` / `lack_of_effect` | 72 / 47 / 39 / 67 / 72 % | 69 / 40 / 32 / 70 / 76 % |
+
+Fuente: `reports/phase1_eval_1.7b_batch1.json`.
+
+- **Es el mismo modelo**: formato, longitud y F1 iguales; solo cambia qué problemas concretos
+  acierta, y unas familias suben mientras otras bajan.
+- **3 puntos de diferencia sin cambiar nada del modelo.** Es del mismo tamaño que la diferencia
+  entre el GRPO final y la ablación sin recompensa de dominio (56,5 frente a 53,0 %). Confirma con
+  un dato propio lo que decía McNemar: con 200 problemas, diferencias de 3 puntos no se separan
+  del ruido de evaluación.
+- **Qué esperar de la API**: entre el 53 y el 56 % en el test. Informamos 56,5 % (la evaluación
+  completa, en lotes) y este 53,5 % como lo que da el mismo modelo servido de uno en uno.
+
+    uv run python -u -m rlm.evaluate --data rlm/data/test.jsonl --model Qwen/Qwen3-1.7B \
+        --max-new-tokens 2048 --batch-size 1 \
+        --adapters grpo=$HOME/clusters/dgx/arca_weights/grpo_lora_1.7b \
+        --out reports/phase1_eval_1.7b_batch1.json
+
 ## Pendiente
-
-**Medir el pass@1 tal como lo ve la API** (una pregunta por llamada, sin lotes). La evaluación se
-hizo en lotes de 16 con relleno a la izquierda; en bf16, el tamaño de lote y la GPU cambian a
-veces el token elegido en greedy, así que caso a caso la API puede responder distinto (lo vimos en
-el portátil: "tos seca" → `Dry cough` por la API, `Cough` en la evaluación). En promedio debería
-dar lo mismo; para comprobarlo, en la DGX:
-
-    uv run python -u -m rlm.evaluate --data rlm/data/test.jsonl --model Qwen/Qwen3-1.7B         --max-new-tokens 2048 --batch-size 1 --adapters grpo=$HOME/clusters/dgx/arca_weights/grpo_lora_1.7b         --out reports/phase1_eval_1.7b_batch1.json
 
 Nada de entrenamiento. Posibles extensiones: recompensa por longitud o penalización de
 repetición contra los bucles (fallo 4), y una herramienta de búsqueda en MedDRA para los
