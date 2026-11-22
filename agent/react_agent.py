@@ -34,7 +34,9 @@ What makes it a harness and not just a loop:
 from __future__ import annotations
 
 import json
+import logging
 import os
+import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeout
@@ -52,6 +54,7 @@ from tool_use.registry import ToolRegistry, tool
 from tool_use.tools import default_registry
 
 MAX_OBSERVATION_CHARS = 1500
+log = logging.getLogger("arca.agent")  # one line per step in the API log
 TOOL_TIMEOUTS = {"faers_reaction_counts": 60.0, "search_knowledge_base": 60.0, "code_meddra": 120.0}
 DEFAULT_TIMEOUT = 15.0
 
@@ -192,10 +195,17 @@ class ReActAgent:
 
     def generate(self, messages: list[dict], brain: Brain) -> tuple[str, int]:
         """One generation. Returns the raw text and the tokens it cost (prompt + output)."""
+        started = time.perf_counter()
         raw, generated = brain.llm.generate(
             messages,
             max_new_tokens=1024 if brain.thinking else 512,
             enable_thinking=brain.thinking,
+        )
+        log.info(
+            "agent: generated %d tokens (prompt %d) in %.1f s",
+            generated,
+            brain.llm.last_prompt_tokens,
+            time.perf_counter() - started,
         )
         return raw, brain.llm.last_prompt_tokens + generated
 
@@ -212,11 +222,16 @@ class ReActAgent:
         """``registry.call`` with a timeout. The worker thread is left behind on timeout
         (Python cannot kill it), but the agent moves on with an error observation."""
         timeout = TOOL_TIMEOUTS.get(name, DEFAULT_TIMEOUT)
+        log.info("agent: calling %s", name)
+        started = time.perf_counter()
         pool = ThreadPoolExecutor(max_workers=1)
         future = pool.submit(self.registry.call, name, arguments)
         try:
-            return future.result(timeout=timeout)
+            record = future.result(timeout=timeout)
+            log.info("agent: %s ok=%s in %.1f s", name, record.ok, time.perf_counter() - started)
+            return record
         except FutureTimeout:
+            log.warning("agent: %s timed out after %.0f s", name, timeout)
             return ToolCallRecord(
                 name=name,
                 arguments=arguments,
