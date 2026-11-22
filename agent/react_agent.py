@@ -360,9 +360,13 @@ class ReActAgent:
             except Exception as exc:  # noqa: BLE001 - validation errors are observations
                 return f"error: invalid arguments: {exc}"
             pending.append(AgentAction(name=name, arguments=arguments))
+            # Worded as an instruction for the next step: with the old wording the model
+            # copied this text verbatim as its answer to the user.
             return (
-                "not executed: this action has side effects and needs human "
-                "confirmation. It has been queued for review; tell the user it is pending."
+                f"not executed: {name} has side effects, so it was validated and queued for a "
+                "human to confirm it; nothing has been written yet. Do not call it again. "
+                "Next, call final_answer telling the user, in the language of their task, "
+                "that the action is pending human review."
             )
         record = self.execute(name, arguments)
         text = (

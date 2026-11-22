@@ -43,7 +43,13 @@ def render_trace(response: dict) -> str:
             )
         if step.get("observation") is not None:
             blocks.append(card("Observation", str(step["observation"]), "observation"))
+    pending = response.get("pending_actions") or []
+    if pending:
+        body = "\n\n".join(json.dumps(a, ensure_ascii=False, indent=2) for a in pending)
+        blocks.append(card("PENDING HUMAN CONFIRMATION (not executed)", body, "action"))
     blocks.append(card("FINAL ANSWER", response.get("final_answer", ""), "final"))
+    footer = f"stop_reason: {response.get('stop_reason')} · tokens: {response.get('tokens_used')}"
+    blocks.append(f'<p style="color:#6b7280">{html.escape(footer)}</p>')
     return "\n".join(blocks)
 
 

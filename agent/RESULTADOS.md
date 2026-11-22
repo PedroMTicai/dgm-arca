@@ -172,6 +172,9 @@ Fuente: `reports/phase4_eval.json`.
 - `faers_reaction_counts` devuelve en cada resultado su alcance ("worldwide reports of all
   years; no filter by country or date").
 - `create_icsr_report` devuelve todos los problemas juntos.
+- La observación de una acción retenida está redactada como instrucción ("no la repitas; llama a
+  `final_answer` diciendo al usuario, en su idioma, que está pendiente"): probando la API, el modelo
+  copiaba el mensaje anterior, en inglés, como respuesta al usuario.
 - El modelo de la fase 1 (`/reasoning` y la herramienta `code_meddra`) genera en greedy con 2 048
   tokens, como `rlm/evaluate.py`. Antes muestreaba a temperatura 0,6 con 1 024 tokens. Las cifras
   de la fase 1 no se ven afectadas (salen de `evaluate.py`, siempre greedy); en esta evaluación
