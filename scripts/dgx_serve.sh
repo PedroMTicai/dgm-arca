@@ -21,7 +21,10 @@ BIN=$WORK/bin
 # "something answers on 8000" may be another team's API. 20000 + uid % 10000 is fixed per user.
 PORT=${ARCA_SERVE_PORT:-$((20000 + $(id -u) % 10000))}
 export ARCA_API_PORT=$PORT
-ME=$(id -un)   # not $USER: it is not always set in the DGX terminals
+# Numeric uid, not the name: DGX user names are numbers (e.g. 202215419) and `pkill -u 202215419`
+# would read it as a uid, which is a different number, and match nothing. Not $USER either: it is
+# not always set in the DGX terminals.
+ME=$(id -u)
 mkdir -p "$OUT" "$BIN"
 
 if [[ "${1:-}" == "stop" ]]; then
