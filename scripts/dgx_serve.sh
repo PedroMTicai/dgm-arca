@@ -18,12 +18,13 @@ WORK=${ARCA_WORK_DIR:-$HOME/clusters/dgx}
 OUT=$WORK/arca_serve
 BIN=$WORK/bin
 PORT=8000
+ME=$(id -un)   # not $USER: it is not always set in the DGX terminals
 mkdir -p "$OUT" "$BIN"
 
 if [[ "${1:-}" == "stop" ]]; then
-    # -u $USER: the DGX is shared, never touch other people's processes.
-    pkill -u "$USER" -f "ngrok http" && echo "ngrok parado"
-    pkill -u "$USER" -f "arca-api" && echo "API parada"
+    # -u $ME: the DGX is shared, never touch other people's processes.
+    pkill -u "$ME" -f "ngrok http" && echo "ngrok parado" || echo "ngrok no estaba en marcha"
+    pkill -u "$ME" -f "arca-api" && echo "API parada" || echo "la API no estaba en marcha"
     exit 0
 fi
 
@@ -75,7 +76,8 @@ if [[ -z ${NGROK_AUTHTOKEN:-} ]]; then
     echo "Falta NGROK_AUTHTOKEN (export NGROK_AUTHTOKEN=... con el token de tu cuenta de ngrok)."
     exit 1
 fi
-pkill -u "$USER" -f "ngrok http" 2>/dev/null
+pkill -u "$ME" -f "ngrok http" 2>/dev/null
+sleep 2  # ngrok needs a moment to release the endpoint on its servers
 args=(http "$PORT" --log stdout)
 [[ -n ${NGROK_DOMAIN:-} ]] && args+=(--url "$NGROK_DOMAIN")
 nohup "$BIN/ngrok" "${args[@]}" > "$OUT/ngrok.log" 2>&1 &
@@ -89,7 +91,9 @@ for _ in $(seq 1 30); do
     sleep 1
 done
 if [[ -z $url ]]; then
-    echo "ngrok no ha abierto el túnel: mira $OUT/ngrok.log"
+    echo "ngrok no ha abierto el túnel ($OUT/ngrok.log):"
+    grep "^ERROR" "$OUT/ngrok.log" | head -n 3
+    echo "Si dice que el endpoint ya está online: bash scripts/dgx_serve.sh stop, y vuelve a lanzarlo."
     exit 1
 fi
 echo "$url" > "$OUT/url.txt"
