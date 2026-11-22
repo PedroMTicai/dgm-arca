@@ -64,7 +64,8 @@ def main() -> None:
         gr.Markdown("# ARCA · ReAct trace viewer")
         task = gr.Textbox(label="Task", lines=3)
         with gr.Row():
-            brain = gr.Dropdown(["base", "rlm", "thinking"], value="rlm", label="Brain")
+            # "base" by default: "rlm" does not work as a brain (see agent/RESULTADOS.md).
+            brain = gr.Dropdown(["base", "rlm", "thinking"], value="base", label="Brain")
             max_steps = gr.Slider(1, 30, value=10, step=1, label="Max steps")
         button = gr.Button("Run", variant="primary")
         answer = gr.Textbox(label="Final answer", lines=4, interactive=False)
