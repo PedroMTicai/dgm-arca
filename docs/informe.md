@@ -122,7 +122,11 @@ Quitar la recompensa de dominio cuesta justo en las familias donde los grupos fa
 que es lo que predice el argumento anterior; el crédito parcial no aporta ni en F1. Pero con 200
 problemas ninguna diferencia entre variantes de GRPO es significativa, **tampoco GRPO frente a
 SFT** (21 problemas mejoran y 11 empeoran, p = 0,11). El SFT frente a la base sí lo es
-(p < 0,001). Lo presentamos como tendencia, consistente entre 0,6B y 1,7B.
+(p < 0,001). Lo presentamos como tendencia, consistente entre 0,6B y 1,7B. Hay un dato que lo
+confirma: el mismo modelo, evaluado generando de una en una (como la API) en lugar de en lotes de
+16, da 53,5 % en vez de 56,5 %. En bf16 el tamaño del lote cambia a veces el token elegido en
+greedy; con formato, longitud y F1 iguales, esos 3 puntos son ruido de evaluación, del mismo tamaño
+que la diferencia entre el GRPO final y la ablación sin recompensa de dominio.
 
 **Cinco fallos** (detalle en `rlm/RESULTADOS.md`):
 1. *Sinónimo en vez de PT*: "cosquilleo en los dedos, como pinchacitos" → `Prickling` en lugar de
