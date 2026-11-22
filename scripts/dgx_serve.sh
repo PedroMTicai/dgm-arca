@@ -17,7 +17,10 @@ set -u
 WORK=${ARCA_WORK_DIR:-$HOME/clusters/dgx}
 OUT=$WORK/arca_serve
 BIN=$WORK/bin
-PORT=8000
+# A port of our own: the DGX is shared and every team runs the same ARCA template on 8000, so
+# "something answers on 8000" may be another team's API. 20000 + uid % 10000 is fixed per user.
+PORT=${ARCA_SERVE_PORT:-$((20000 + $(id -u) % 10000))}
+export ARCA_API_PORT=$PORT
 ME=$(id -un)   # not $USER: it is not always set in the DGX terminals
 mkdir -p "$OUT" "$BIN"
 
@@ -25,6 +28,7 @@ if [[ "${1:-}" == "stop" ]]; then
     # -u $ME: the DGX is shared, never touch other people's processes.
     pkill -u "$ME" -f "ngrok http" && echo "ngrok parado" || echo "ngrok no estaba en marcha"
     pkill -u "$ME" -f "arca-api" && echo "API parada" || echo "la API no estaba en marcha"
+    rm -f "$OUT/api.pid"
     exit 0
 fi
 
@@ -44,11 +48,18 @@ if (( n_guides < 3 )); then
     echo "    Vuelve a lanzar el script o cópialas desde otra máquina antes de la corrección."
 fi
 
-# 1. La API, en segundo plano.
-if ! curl -s -o /dev/null "localhost:$PORT/docs"; then
+# 1. La API, en segundo plano, en nuestro puerto. Solo se reutiliza si es la que lanzamos nosotros.
+ours=false
+[[ -f $OUT/api.pid ]] && kill -0 "$(cat "$OUT/api.pid")" 2>/dev/null && ours=true
+if ! $ours; then
+    if curl -s -o /dev/null "localhost:$PORT/docs"; then
+        echo "El puerto $PORT está ocupado por otro proceso. Elige otro: ARCA_SERVE_PORT=2xxxx bash $0"
+        exit 1
+    fi
     nohup uv run arca-api > "$OUT/api.log" 2>&1 &
-    echo "API arrancando (log: $OUT/api.log)…"
-    for _ in $(seq 1 60); do curl -s -o /dev/null "localhost:$PORT/docs" && break; sleep 2; done
+    echo $! > "$OUT/api.pid"
+    echo "API arrancando en el puerto $PORT (log: $OUT/api.log)…"
+    for _ in $(seq 1 90); do curl -s -o /dev/null "localhost:$PORT/docs" && break; sleep 2; done
 fi
 curl -s -o /dev/null "localhost:$PORT/docs" || { echo "La API no arranca: mira $OUT/api.log"; exit 1; }
 
@@ -58,8 +69,9 @@ echo "Cargando las cuatro fases (unos minutos)…"
 curl -s -m 1800 "localhost:$PORT/health" > "$OUT/health.json"
 python3 - "$OUT/health.json" <<'EOF'
 import json, sys
-phases = json.load(open(sys.argv[1]))["phases"]
-for name, status in phases.items():
+health = json.load(open(sys.argv[1]))
+print(f"  equipo: {health.get('team') or '(ARCA_TEAM vacío en .env)'}")
+for name, status in health["phases"].items():
     print(f"  {name:10s} {status['status']}  {status.get('detail') or ''}")
 EOF
 
