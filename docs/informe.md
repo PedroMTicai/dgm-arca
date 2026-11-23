@@ -265,8 +265,9 @@ bloque `<tool_call>`. SFT y GRPO sobre una sola tarea le quitaron la capacidad d
 (olvido catastrófico a pequeña escala). Sus dos "aciertos" son falsos positivos de comprobaciones
 débiles. Por eso el modelo de la fase 1 entra en el agente como herramienta (`code_meddra`).
 
-**Thinking**: no mejora a 1,7B (empata con `base`) y sigue peor el protocolo (la mitad de las
-respuestas acaban en texto sin `final_answer`).
+**Thinking**: es el mejor cerebro (65 % frente a 55 % de `base`, dos tareas de veinte, dentro
+del ruido) y el único que en a20 dice que no hay datos de España, pero sigue peor el protocolo:
+casi siempre escribe la respuesta como texto en lugar de llamar a `final_answer`.
 
 **JSON frente a código.** El agente de código usa los mismos cerebros, herramientas, permisos y
 reglas, así que solo cambia el formato de la acción. Gana donde hay que calcular (ficha +

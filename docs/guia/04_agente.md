@@ -112,7 +112,7 @@ agente con todos sus cambios y las comprobaciones corregidas del banco:
   en el agente como **herramienta** (`code_meddra`).
 - **El agente de código gana donde hay que calcular** (ficha + calculadora, 3/5) y pierde donde
   hay que leer el resultado estructurado de FAERS y llamar al PRR (0–1 de 3 frente a 3 de 3).
-- **El thinking no mejora el agente a 1,7B** (55 % los dos) y sigue peor el protocolo.
+- **`thinking` es el mejor** (65 % frente a 55 %; dos tareas, dentro del ruido) y el único que en la tarea de España dice que no hay datos de ese país, pero casi nunca usa `final_answer`.
 - **El agente de código rinde menos y cuesta casi el triple de tokens**: el modelo pequeño se
   enreda corrigiendo su propio Python y agota los pasos. Una llamada JSON por paso es más robusta.
 - Las tareas imposibles siguen fallando. En la primera evaluación (RTX 5070), `base` con 0,6B dio
