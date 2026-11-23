@@ -92,15 +92,19 @@ observaciones en verde. `uv run python -m agent.ui` con la API levantada.
 
 ## 4. Resultados
 
-Evaluación final en la DGX, los tres cerebros con Qwen3-1.7B y el corpus completo:
+Evaluación final (v2) en la DGX, los tres cerebros con Qwen3-1.7B, el corpus completo, el
+agente con todos sus cambios y las comprobaciones corregidas del banco:
 
 | Agente | Cerebro | Éxito (20 tareas) | Herramientas requeridas | Terminó con `final_answer` | Pasos | Tokens |
 |---|---|---|---|---|---|---|
-| ReAct (JSON) | `base` | **55 %** | 85 % | 75 % | 3,3 | 11 550 |
-| ReAct (JSON) | `rlm` | 10 % | 10 % | 0 % | 1,0 | 3 152 |
-| ReAct (JSON) | `thinking` | **55 %** | 75 % | 50 % | 2,9 | 11 127 |
-| Código | `thinking` | 35 % | 40 % | 60 % | 5,7 | 31 565 |
-| Código | `base` | 40 % | 45 % | 60 % | 5,4 | 28 214 |
+| ReAct (JSON) | `base` | 55 % | 75 % | 65 % | 2,85 | 9 868 |
+| ReAct (JSON) | `rlm` | 10 % | 10 % | 0 % | 1,0 | 3 274 |
+| ReAct (JSON) | `thinking` | **65 %** | 70 % | 15 % | 2,75 | 10 849 |
+| Código | `thinking` | 30 % | 50 % | 60 % | 5,75 | 31 855 |
+| Código | `base` | 20 % | 50 % | 70 % | 4,9 | 25 419 |
+
+`thinking` es el cerebro por defecto de `/agent`. La evaluación anterior y la comparación, en
+[`agent/RESULTADOS.md`](../../agent/RESULTADOS.md).
 
 - **`rlm` no funciona como cerebro**: el LoRA de la fase 1 escribe de una vez toda la traza
   ReAct, con observaciones inventadas, sin el bloque `<tool_call>` que el bucle ejecuta; sus dos

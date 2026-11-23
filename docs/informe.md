@@ -248,11 +248,15 @@ acción quedó pendiente.
 
 | Agente | Cerebro (Qwen3-1.7B) | Éxito | Herramientas requeridas | Pasos | Tokens |
 |---|---|---|---|---|---|
-| ReAct (JSON) | `base` | **55 %** | 85 % | 3,3 | 11 550 |
-| ReAct (JSON) | `rlm` (+ LoRA fase 1) | 10 % | 10 % | 1,0 | 3 152 |
-| ReAct (JSON) | `thinking` | **55 %** | 75 % | 2,9 | 11 127 |
-| Código (smolagents) | `thinking` | 35 % | 40 % | 5,7 | 31 565 |
-| Código (smolagents) | `base` | 40 % | 45 % | 5,4 | 28 214 |
+| ReAct (JSON) | `base` | 55 % | 75 % | 2,85 | 9 868 |
+| ReAct (JSON) | `rlm` (+ LoRA fase 1) | 10 % | 10 % | 1,0 | 3 274 |
+| ReAct (JSON) | `thinking` | **65 %** | 70 % | 2,75 | 10 849 |
+| Código (smolagents) | `thinking` | 30 % | 50 % | 5,75 | 31 855 |
+| Código (smolagents) | `base` | 20 % | 50 % | 4,9 | 25 419 |
+
+Evaluación final, con el agente de la sección siguiente y las comprobaciones del banco corregidas
+(cuatro eran demasiado laxas o demasiado estrictas; recalculada con ellas, la evaluación anterior
+daba 60 / 5 / 65 / 35 / 40 %).
 
 **Qué pasó cuando le pusimos el modelo de razonamiento al agente.** `rlm` no llega a ejecutar
 ninguna herramienta: escribe de una vez toda la traza (`Action: faers_reaction_counts` /
@@ -279,10 +283,15 @@ notificaciones hubo en España en 2025?" consulta FAERS (EE. UU., todos los año
 puede, pero en inglés, y en una ejecución anterior intentó crear un ICSR inventando la edad (la
 confirmación lo retuvo).
 
-Después de esta evaluación reforzamos el prompt para las tareas imposibles (FAERS no filtra por
-país ni por fecha; no sustituir una acción imposible por otra; responder en el idioma del
-usuario), añadimos el alcance a cada resultado de FAERS e hicimos que el ICSR devuelva todos los
-problemas juntos. No hemos vuelto a medir el banco con estos cambios.
+**Lo que cambiamos al probar la API, y qué efecto tuvo.** (1) Cortar la generación al cerrar la
+primera llamada (`</tool_call>`): el modelo ya no escribe la traza que espera con observaciones
+inventadas, y cada tarea cuesta menos (`base`: 11 550 → 9 868 tokens). (2) Reglas para las tareas
+imposibles y el alcance de FAERS en cada resultado: en "notificaciones en España en 2025",
+`thinking` ya dice que no hay datos de España (aunque copia mal el total mundial). (3) Confirmación
+humana completa: `POST /agent/confirm` ejecuta exactamente la acción retenida y el agente retoma
+la conversación para contar el resultado (id del informe, plazo). El éxito global no cambia más
+allá del ruido; `thinking` (65 %) es el cerebro por defecto de la API. Un efecto no buscado:
+`thinking` casi nunca usa `final_answer` (3 de 20) y escribe la respuesta como texto.
 
 ## 7. Lo que no funcionó
 

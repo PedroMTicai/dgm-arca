@@ -661,3 +661,33 @@ crece un token por paso, así que vuelve a planificar en cada paso. Desactivánd
 evaluaciones anteriores en la DGX sufrieron esta lentitud (por eso tardaban tanto), pero sus
 resultados no cambian: es otra implementación de la misma operación. La lección: medir por capas
 y perfilar antes de culpar al hardware; la primera sospecha (CPU, GPU compartida) era falsa.
+
+### 2026-11-23 · Fase 4 · Probar la API cambia el agente: corte en `</tool_call>`, confirmación humana y reevaluación
+
+**Qué queríamos saber.** Si los problemas que vimos usando el agente por la API y el visor
+(trazas con observaciones inventadas, respuestas que copiaban mensajes internos, una acción
+retenida que nadie podía aprobar) se arreglan, y si el banco de 20 tareas medía bien.
+
+**Qué hicimos.**
+- Cortar la generación de cada paso en `</tool_call>` (un criterio de parada que no actúa dentro
+  de `<think>`). Antes el modelo seguía escribiendo la traza que esperaba: en una prueba inventó
+  recuentos de FAERS y un PRR de 0,30 ("no hay señal"); el real es 3,49, con señal.
+- Confirmación humana completa: `POST /agent/confirm` ejecuta exactamente la acción retenida que
+  la persona revisó; con el `session_id`, el resultado entra en la conversación y el agente da un
+  paso más para contárselo al usuario. En el visor, un botón.
+- Corregir cuatro comprobaciones del banco (a08 y a19 demasiado estrictas, a17 demasiado laxa,
+  a20 como a19) y recalcular la evaluación anterior con ellas (`agent.evaluate --rescore`), para
+  comparar antes y después con las mismas reglas.
+- Reevaluar los cinco agentes en la DGX (ya con la generación 20 veces más rápida).
+
+**Qué pasó.** Con las comprobaciones corregidas, la evaluación anterior pasa de 55 / 10 / 55 /
+35 / 40 % a 60 / 5 / 65 / 35 / 40 % (`base` / `rlm` / `thinking` / código·`thinking` /
+código·`base`). La nueva: 55 / 10 / 65 / 30 / 20 %. Probado a mano, el ciclo completo funciona:
+el agente prepara el ICSR, queda retenido, se confirma, se escribe y el agente informa del id real
+y del plazo de 90 días.
+
+**Qué concluimos.** Los cambios no mueven el éxito más allá del ruido, pero el agente es más
+barato y más honesto (no inventa resultados) y las tareas imposibles mejoran a medias. `thinking`
+pasa a ser el cerebro por defecto de la API (en la plantilla era `rlm`, el que no funciona).
+Efecto no buscado: `thinking` casi nunca usa `final_answer`. El agente de código empeora sin que
+lo hayamos tocado: la variación entre ejecuciones con 20 tareas es grande.

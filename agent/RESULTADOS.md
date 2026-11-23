@@ -5,7 +5,44 @@ tareas imposibles; máximo 8 pasos; las acciones con efecto quedan pendientes de
 (`allow_actions=False`). Ejecutado en una RTX 5070 de 8 GB; cada cerebro en su propio proceso (dos
 cerebros a la vez no caben en 8 GB). Detalle del diseño en [`docs/guia/04_agente.md`](../docs/guia/04_agente.md).
 
-## Evaluación final: los tres cerebros a 1,7B y el agente de código (DGX)
+## Reevaluación con los cambios posteriores (v2, la que vale)
+
+Después de la evaluación de abajo cambiamos el agente: la generación de cada paso se corta al
+cerrar la primera llamada (`</tool_call>`), el prompt trata las tareas imposibles (FAERS no filtra
+por país ni por fecha; una acción sin herramienta no se sustituye por otra), FAERS devuelve su
+alcance en cada resultado, el ICSR devuelve todos sus errores juntos, la observación de una acción
+retenida es una instrucción, y la generación en la DGX va unas 20 veces más rápida (sin la
+atención de cuDNN). Mismo banco, comprobaciones v2, mismos cerebros:
+
+| Agente | Cerebro | Éxito v1 (comprob. v2) | **Éxito v2** | Herramientas requeridas | Terminó con `final_answer` | Pasos | Tokens |
+|---|---|---|---|---|---|---|---|
+| ReAct | `base` | 60 % | **55 %** | 75 % | 65 % | 2,85 | 9 868 |
+| ReAct | `rlm` | 5 % | 10 % | 10 % | 0 % | 1,0 | 3 274 |
+| ReAct | `thinking` | 65 % | **65 %** | 70 % | 15 % | 2,75 | 10 849 |
+| Código | `thinking` | 35 % | 30 % | 50 % | 60 % | 5,75 | 31 855 |
+| Código | `base` | 40 % | 20 % | 50 % | 70 % | 4,9 | 25 419 |
+
+Fuente: `reports/phase4_eval_1.7b_v2.json`; la columna v1 es `reports/phase4_eval_1.7b_checks_v2.json`.
+
+- **El éxito no cambia más allá del ruido** (±5 puntos es una tarea de 20), pero cada tarea
+  cuesta menos: `base` pasa de 11 550 a 9 868 tokens, porque el modelo ya no escribe trazas
+  inventadas detrás de su primera llamada.
+- **Las tareas imposibles, a medias.** En a20 ("¿cuántas notificaciones hubo en España en
+  2025?") `thinking` ya no presenta el total mundial como dato de España: "Spain-specific data
+  cannot be retrieved with the available tools". Pero el total que da está mal copiado (54 740;
+  el real es 5 474) y lo sitúa "en 2025", cuando FAERS no filtra por año; la comprobación lo
+  acepta por la negativa. `base` sigue respondiendo "5474" sin más. En a19 (enviar un correo)
+  `thinking` dice que no puede y propone registrar el ICSR y enviarlo a mano.
+- **`thinking` casi no usa `final_answer`** (3 de 20, antes 10): tras razonar escribe
+  "Final Answer: …" como texto. La respuesta llega limpia (el harness se queda con lo que sigue a
+  esa marca), pero no sigue el protocolo.
+- **`rlm` sigue sin funcionar como cerebro**: sus dos aciertos son, otra vez, una traza inventada
+  que contiene palabras de una negativa (a20) y una negativa genérica (a19).
+- **El agente de código empeora** (30 % y 20 %) y agota los pasos en 8 y 6 tareas. Ninguno de los
+  cambios le afecta (no usa nuestro bucle) y la variación entre ejecuciones es grande: la
+  conclusión JSON > código se mantiene, ahora con más diferencia.
+
+## Evaluación anterior (v1): los tres cerebros a 1,7B y el agente de código (DGX)
 
 Mismo banco y mismas reglas; los tres cerebros parten de los mismos pesos (Qwen3-1.7B), así que
 solo cambia una cosa en cada comparación. MIG de 16 GB en la DGX, un proceso por cerebro. Corpus
