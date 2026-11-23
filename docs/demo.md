@@ -99,8 +99,9 @@ Señalad la tarjeta **PENDING HUMAN CONFIRMATION**: el ICSR está validado pero 
 > "Las acciones con efecto esperan confirmación humana. Lo decidimos porque en la fase 2 el modelo
 > se inventó una edad para saltarse una validación."
 
-Pulsad **Confirmar acciones pendientes**: aparece la tarjeta **CONFIRMED** con el id del informe y
-el fichero escrito.
+Pulsad **Confirmar acciones pendientes**: el agente retoma la conversación y explica el resultado
+(tarjeta **AGENT · after confirmation**, con el id real del informe y el plazo), y debajo la
+tarjeta **CONFIRMED** con el registro técnico.
 > "Se ejecuta exactamente lo que la persona ha revisado, sin volver a preguntar al modelo
 > (`POST /agent/confirm`)."
 

@@ -152,14 +152,30 @@ def test_a_human_confirms_exactly_the_held_action(tmp_path, monkeypatch):
         outcome="recovered",
         narrative="x",
     )
-    agent = _agent([_call("create_icsr_report", **args), _call("final_answer", answer="pendiente")])
-    held = agent.run("registra", brain="base").pending_actions[0]
+    agent = _agent(
+        [
+            _call("create_icsr_report", **args),
+            _call("final_answer", answer="pendiente"),
+            _call("final_answer", answer="Registrado; plazo de 90 días."),  # after confirming
+        ]
+    )
+    run = agent.run("registra", brain="base")
+    held = run.pending_actions[0]
     assert not list(tmp_path.iterdir())
-    record = agent.confirm(held)  # what the person saw is what runs; the model is not called
+    # What the person saw is what runs; then the same conversation resumes for one step.
+    record, message = agent.confirm(held, run.session_id)
     assert record.ok and record.result["reactions"] == ["Somnolence"]
     assert len(list(tmp_path.iterdir())) == 1
-    refused = agent.confirm(AgentAction(name="calculator", arguments={"expression": "1+1"}))
+    assert message == "Registrado; plazo de 90 días."
+    last_prompt = agent.brains["base"].llm.seen[-1]
+    assert any("confirmed by the human reviewer" in m["content"] for m in last_prompt)
+    assert record.result["id"] in last_prompt[-2]["content"]  # the agent saw the real outcome
+    refused, _ = agent.confirm(AgentAction(name="calculator", arguments={"expression": "1+1"}))
     assert not refused.ok and "confirmation" in refused.error
+    # Without a session there is no conversation to resume: a fixed message, no model call.
+    agent2 = _agent([])
+    record2, message2 = agent2.confirm(held)
+    assert record2.ok and record2.result["id"] in message2
 
 
 def test_text_answers_keep_only_the_final_answer():

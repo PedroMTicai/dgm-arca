@@ -181,7 +181,9 @@ Fuente: `reports/phase4_eval.json`.
   limpiar. Probado con el modelo real: pensamientos limpios, dos pasos y 14 s para la tarea de la
   calculadora en el portátil.
 - Confirmación humana: `POST /agent/confirm` ejecuta exactamente la acción retenida que la
-  persona revisó (y el visor tiene un botón para hacerlo).
+  persona revisó (y el visor tiene un botón para hacerlo). Con el `session_id`, el resultado entra
+  en esa conversación y el agente da un paso más para contárselo al usuario: probado con el modelo
+  real, informa del id real del informe y del plazo de 90 días.
 - El modelo de la fase 1 (`/reasoning` y la herramienta `code_meddra`) genera en greedy con 2 048
   tokens, como `rlm/evaluate.py`. Antes muestreaba a temperatura 0,6 con 1 024 tokens. Las cifras
   de la fase 1 no se ven afectadas (salen de `evaluate.py`, siempre greedy); en esta evaluación

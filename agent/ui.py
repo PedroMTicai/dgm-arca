@@ -53,33 +53,49 @@ def render_trace(response: dict) -> str:
     return "\n".join(blocks)
 
 
-def run(task: str, brain: str, max_steps: int) -> tuple[str, str, list, dict]:
+def run(task: str, brain: str, max_steps: int) -> tuple[str, str, list, str, dict]:
     import gradio as gr
 
     reply = httpx.post(
         f"{API_URL}/agent", json={"task": task, "brain": brain, "max_steps": max_steps}, timeout=600
     )
     if reply.status_code != 200:
-        return f"API error {reply.status_code}: {reply.text}", "", [], gr.update(visible=False)
+        error = f"API error {reply.status_code}: {reply.text}"
+        return error, "", [], "", gr.update(visible=False)
     body = reply.json()
     pending = body.get("pending_actions") or []
-    return body["final_answer"], render_trace(body), pending, gr.update(visible=bool(pending))
+    return (
+        body["final_answer"],
+        render_trace(body),
+        pending,
+        body.get("session_id") or "",
+        gr.update(visible=bool(pending)),
+    )
 
 
-def confirm(pending: list) -> tuple[str, list, dict]:
-    """The human approves the held actions: each one runs exactly as it was shown."""
+def confirm(pending: list, session_id: str) -> tuple[str, list, dict]:
+    """The human approves the held actions: each one runs exactly as it was shown, and the
+    agent (same conversation) tells the user the outcome."""
     import gradio as gr
 
     cards = []
     for action in pending:
-        reply = httpx.post(f"{API_URL}/agent/confirm", json=action, timeout=120)
-        record = reply.json() if reply.status_code == 200 else {"ok": False, "error": reply.text}
+        reply = httpx.post(
+            f"{API_URL}/agent/confirm",
+            json={"action": action, "session_id": session_id or None},
+            timeout=300,
+        )
+        if reply.status_code != 200:
+            cards.append(card(f"NOT EXECUTED · {action['name']}", reply.text, "action"))
+            continue
+        body = reply.json()
+        record = body["record"]
+        cards.append(card("AGENT · after confirmation", body["message"], "thought"))
         if record.get("ok"):
-            body = json.dumps(record.get("result"), ensure_ascii=False, indent=2)
-            cards.append(card(f"CONFIRMED · {action['name']} executed", body, "final"))
+            result = json.dumps(record.get("result"), ensure_ascii=False, indent=2)
+            cards.append(card(f"CONFIRMED · {action['name']} executed", result, "final"))
         else:
-            error = str(record.get("error"))
-            cards.append(card(f"NOT EXECUTED · {action['name']}", error, "action"))
+            cards.append(card(f"NOT EXECUTED · {action['name']}", str(record["error"]), "action"))
     return "\n".join(cards), [], gr.update(visible=False)
 
 
@@ -96,13 +112,16 @@ def main() -> None:
         button = gr.Button("Run", variant="primary")
         answer = gr.Textbox(label="Final answer", lines=4, interactive=False)
         pending = gr.State([])
+        session = gr.State("")
         approve = gr.Button("Confirmar acciones pendientes", variant="stop", visible=False)
         confirmed = gr.HTML()
         trace = gr.HTML(label="Trace")
         button.click(
-            run, inputs=[task, brain, max_steps], outputs=[answer, trace, pending, approve]
+            run,
+            inputs=[task, brain, max_steps],
+            outputs=[answer, trace, pending, session, approve],
         ).then(lambda: "", outputs=confirmed)
-        approve.click(confirm, inputs=pending, outputs=[confirmed, pending, approve])
+        approve.click(confirm, inputs=[pending, session], outputs=[confirmed, pending, approve])
     demo.launch()
 
 

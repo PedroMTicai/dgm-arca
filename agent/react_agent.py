@@ -162,6 +162,7 @@ class ReActAgent:
     token_budget: int = 6000
     brains: dict[str, Brain] = field(default_factory=dict)
     sessions: dict[str, ConversationMemory] = field(default_factory=dict)
+    session_brains: dict[str, str] = field(default_factory=dict)  # for confirm() to resume
 
     @classmethod
     def from_env(cls) -> ReActAgent:
@@ -262,23 +263,67 @@ class ReActAgent:
         finally:
             pool.shutdown(wait=False)
 
-    def confirm(self, action: AgentAction) -> ToolCallRecord:
+    def confirm(
+        self, action: AgentAction, session_id: str | None = None
+    ) -> tuple[ToolCallRecord, str]:
         """Human-in-the-loop: execute exactly the held action a person reviewed and approved.
 
         Only for tools that need confirmation (the others already ran inside the loop). The
         arguments are validated again by the registry, as in any call, and the model is not
-        involved: what runs is what the person saw in ``pending_actions``.
+        involved in what runs: it is what the person saw in ``pending_actions``.
+
+        With the ``session_id`` of the run that held the action, the outcome goes into that
+        conversation as an observation and the agent resumes for one step to tell the user
+        what happened, so the conversation knows the action ran (the report id, the deadline).
+        Returns the execution record and that message (a fixed one without a session, or if
+        the model does not answer properly).
         """
         spec = self.registry.tools.get(action.name)
         if spec is None or not spec.requires_confirmation:
-            return ToolCallRecord(
+            record = ToolCallRecord(
                 name=action.name,
                 arguments=action.arguments,
                 ok=False,
                 error="only actions that wait for human confirmation can be confirmed",
             )
+            return record, f"No se ha ejecutado: {record.error}."
         log.info("agent: human confirmed %s", action.name)
-        return self.execute(action.name, action.arguments)
+        record = self.execute(action.name, action.arguments)
+        fallback = (
+            f"Acción confirmada y ejecutada ({action.name}): "
+            + json.dumps(record.result, ensure_ascii=False, default=str)
+            if record.ok
+            else f"La acción confirmada ({action.name}) ha fallado: {record.error}"
+        )
+        memory = self.sessions.get(session_id or "")
+        if memory is None:
+            return record, fallback
+        outcome = (
+            json.dumps(record.result, ensure_ascii=False, default=str)
+            if record.ok
+            else f"error: {record.error}"
+        )
+        memory.add(
+            "tool", f"confirmed by the human reviewer and executed: {outcome}", name=action.name
+        )
+        memory.add(
+            "user",
+            "I have confirmed the pending action. Call final_answer to tell me its outcome "
+            "(identifiers, deadlines, any error), in the language of my original task.",
+        )
+        mind = self.brain_for(self.session_brains.get(session_id, "base"))
+        raw, _ = self.generate(memory.model_messages(), mind)
+        parsed = parse_tool_calls(raw)
+        calls = [c for c in parsed.tool_calls if c.name == "final_answer" and not c.error]
+        if calls:
+            message = str(calls[0].arguments.get("answer", "")).strip()
+        elif not parsed.tool_calls:
+            message = plain_answer(parsed.text or parsed.thinking or "")
+        else:
+            message = ""
+        message = message or fallback
+        memory.add("assistant", message)
+        return record, message
 
     def run(
         self,
@@ -300,6 +345,7 @@ class ReActAgent:
             )
             self.sessions[session_id] = memory
         memory.add("user", task, pinned=True)
+        self.session_brains[session_id] = brain
 
         steps: list[AgentStep] = []
         pending: list[AgentAction] = []

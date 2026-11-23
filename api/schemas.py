@@ -146,6 +146,23 @@ class AgentAction(BaseModel):
     arguments: dict[str, Any] = Field(default_factory=dict)
 
 
+class ConfirmRequest(BaseModel):
+    """A held action approved by a person (``/agent/confirm``)."""
+
+    action: AgentAction = Field(..., description="The action exactly as in pending_actions.")
+    session_id: str | None = Field(
+        default=None,
+        description="session_id of the /agent run that held it: the agent then tells the user "
+        "the outcome and the conversation remembers it.",
+    )
+
+
+class ConfirmResponse(BaseModel):
+    record: ToolCallRecord
+    message: str = Field(..., description="The agent's answer to the user about the outcome.")
+    session_id: str | None = None
+
+
 class AgentStep(BaseModel):
     thought: str
     action: AgentAction | None = None

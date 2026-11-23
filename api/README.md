@@ -17,7 +17,7 @@ docker compose up api
 | `POST /reasoning` | 1 | `question`, `expected_answer?`, `max_new_tokens?` | `thinking`, `answer`, `raw`, `has_valid_format`, `verifier?`, `tokens_generated`, `model` |
 | `POST /tools` | 2 | `query`, `max_turns?` | `answer`, `tool_calls[]` (nombre, argumentos, resultado, ok, error, latencia), `turns`, `model` |
 | `POST /rag` | 3 | `question`, `top_k?`, `retriever?` (`dense`, `bm25`, `hybrid`) | `answer`, `chunks[]` (id, fuente, puntuación, texto), `citations[]`, `retriever`, `model` |
-| `POST /agent/confirm` | 4 | una acción de `pending_actions` tal cual (`name`, `arguments`) | el registro de la ejecución (`ok`, `result`, `error`): confirmación humana de una acción retenida |
+| `POST /agent/confirm` | 4 | `action` (una de `pending_actions`, tal cual), `session_id?` | `record` (`ok`, `result`, `error`) y `message`: el agente retoma la conversación y explica el resultado |
 | `POST /agent` | 4 | `task`, `max_steps?`, `brain?` (`base`, `rlm`, `thinking`) | `final_answer`, `steps[]` (pensamiento, acción, observación), `n_steps`, `succeeded`, `model`, `tokens_used` |
 
 Una fase que todavía no está implementada responde `501` con el nombre de la fase y un
