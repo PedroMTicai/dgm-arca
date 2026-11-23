@@ -46,8 +46,8 @@ REASONING_EXAMPLES = [
 ]
 TOOLS_EXAMPLES = [
     [
-        "¿La somnolencia con sertralina es una señal de desproporcionalidad en FAERS? "
-        "Calcula el PRR."
+        "¿La somnolencia (Somnolence) con sertralina es una señal de desproporcionalidad en "
+        "FAERS? Calcula el PRR."
     ],
     [
         "Calcula el Naranjo: el mareo empezó una semana antes de que el paciente tomara el "

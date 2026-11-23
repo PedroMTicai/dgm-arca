@@ -58,9 +58,11 @@ sinónimo aceptado). Señalad:
 Reserva: el segundo ejemplo (caída de pelo con amlodipino → `Alopecia`).
 
 ### 0:45–1:15 · Pestaña «Fase 2 · Herramientas»
-Primer ejemplo (¿señal de somnolencia con sertralina?). Señalad las tres llamadas: la primera a
-FAERS **falla** (escribió "Somnolencia" en español), el error vuelve al modelo, la repite en inglés,
-y pasa los recuentos reales al PRR: 2,62, señal.
+Primer ejemplo (¿señal de somnolencia (Somnolence) con sertralina?). Dos llamadas: FAERS con los
+recuentos reales (5 474 casos) y el PRR: 2,62, señal; la respuesta explica la regla de Evans.
+Poned el término en inglés entre paréntesis, como en el banco: sin él, el modelo a veces llama a
+FAERS en español, recibe el error y unas veces lo corrige solo y otras le pide el término al
+usuario (las dos cosas nos han pasado probando).
 > "El modelo decide; nuestro código valida y ejecuta. Los errores son observaciones."
 
 Si sobra tiempo: «¿Qué es la farmacovigilancia?» responde **sin llamar a ninguna herramienta**.
