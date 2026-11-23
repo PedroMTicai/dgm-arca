@@ -127,7 +127,10 @@ class AgentRequest(BaseModel):
     task: str = Field(..., min_length=1)
     max_steps: int = Field(default=10, ge=1, le=50)
     brain: Literal["base", "rlm", "thinking"] = Field(
-        default="rlm",
+        # The template's default was "rlm"; ours is the brain that works best on our bench
+        # (thinking, 65 %). "rlm" (our phase-1 LoRA) does not work as a brain: it writes the
+        # whole trace with invented observations (agent/RESULTADOS.md). It stays selectable.
+        default="thinking",
         description="Model driving the loop: base model, your phase-1 RLM, or a thinking model",
     )
     session_id: str | None = Field(
