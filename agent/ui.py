@@ -56,8 +56,8 @@ TOOLS_EXAMPLES = [
     ["¿Qué es la farmacovigilancia?"],
 ]
 RAG_EXAMPLES = [
-    ["¿Con qué frecuencia produce somnolencia la sertralina?", "hybrid"],
     ["¿Qué hacer ante una sobredosis de metformina?", "hybrid"],
+    ["¿Con qué frecuencia produce somnolencia la sertralina?", "hybrid"],
     ["¿El omeprazol es seguro para perros?", "hybrid"],
 ]
 AGENT_EXAMPLES = [

@@ -68,9 +68,15 @@ usuario (las dos cosas nos han pasado probando).
 Si sobra tiempo: «¿Qué es la farmacovigilancia?» responde **sin llamar a ninguna herramienta**.
 
 ### 1:15–1:45 · Pestaña «Fase 3 · Conocimiento»
-Primer ejemplo (somnolencia con sertralina): la respuesta cita `[ee3f3fd9f0-0073]`, y entre los
-fragmentos ese sale marcado **CITADO** (sección 4.8 de la ficha). Luego el tercero (omeprazol en
-perros): **se abstiene**.
+Primer ejemplo (sobredosis de metformina): responde hemodiálisis citando el fragmento de la
+sección 4.9 de la ficha, que sale marcado **CITADO**. Luego el tercero (omeprazol en perros): **se
+abstiene**.
+
+El de la somnolencia con sertralina sirve para enseñar el límite, si os preguntan: el buscador pone
+primero el fragmento correcto (tabla de la 4.8, "muy frecuente"), pero el generador de 1,7B a veces
+cita el segundo (síntomas de retirada) y concluye "frecuente". Es la conclusión de la fase 3: la
+recuperación funciona y el cuello de botella es el generador (con Qwen3-4B, las citas del
+fragmento correcto pasaban del 40 % al 67 %).
 > "Recupera con BM25 + embeddings (λ = 0,3); cita lo que usa y, si no está en el corpus, no inventa."
 
 ### 1:45–2:35 · Pestaña «Fase 4 · Agente»
