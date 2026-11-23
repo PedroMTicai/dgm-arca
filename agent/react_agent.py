@@ -55,6 +55,7 @@ from tool_use.tools import default_registry
 
 MAX_OBSERVATION_CHARS = 1500
 log = logging.getLogger("arca.agent")  # one line per step in the API log
+TOOL_CALL_END = "</tool_call>"
 
 
 def plain_answer(text: str) -> str:
@@ -208,11 +209,18 @@ class ReActAgent:
     def generate(self, messages: list[dict], brain: Brain) -> tuple[str, int]:
         """One generation. Returns the raw text and the tokens it cost (prompt + output)."""
         started = time.perf_counter()
+        # Stop at the end of the first tool call. Otherwise the model keeps writing the trace it
+        # expects, inventing the observation and the next steps (Qwen3-1.7B wrote 512 tokens of
+        # made-up FAERS counts and "the report was created" after its first call). The stop
+        # does not fire inside <think> (common/llm.py), so the thinking brain still reasons.
         raw, generated = brain.llm.generate(
             messages,
             max_new_tokens=1024 if brain.thinking else 512,
             enable_thinking=brain.thinking,
+            stop=[TOOL_CALL_END],
         )
+        if raw.count("<tool_call>") > raw.count(TOOL_CALL_END):
+            raw += TOOL_CALL_END  # the stop string is cut from the text; the parser needs it
         log.info(
             "agent: generated %d tokens (prompt %d) in %.1f s",
             generated,

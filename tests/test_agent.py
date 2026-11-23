@@ -44,12 +44,17 @@ class _ScriptedLLM:
     name = "scripted"
     last_prompt_tokens = 100
 
-    def __init__(self, replies):
-        self.replies, self.seen = list(replies), []
+    def __init__(self, replies, honor_stop=False):
+        # honor_stop=False plays a model that ignores the stop string (the harness must still
+        # run only the first call); True plays ChatModel, which cuts at it.
+        self.replies, self.seen, self.honor_stop = list(replies), [], honor_stop
 
-    def generate(self, messages, max_new_tokens=512, enable_thinking=False, tools=None):
+    def generate(self, messages, max_new_tokens=512, enable_thinking=False, tools=None, stop=None):
+        from common.llm import cut_at_stop
+
         self.seen.append([dict(m) for m in messages])
-        return self.replies.pop(0), 10
+        reply = self.replies.pop(0)
+        return (cut_at_stop(reply, stop) if self.honor_stop else reply), 10
 
     def count_tokens(self, text):
         return len(text.split())
@@ -112,6 +117,25 @@ def test_side_effect_tools_wait_for_confirmation(tmp_path, monkeypatch):
     agent = _agent([_call("create_icsr_report", **args), _call("final_answer", answer="hecho")])
     r = agent.run("registra", brain="base", allow_actions=True)
     assert not r.pending_actions and len(list(tmp_path.iterdir())) == 1
+
+
+def test_generation_stops_after_the_first_call():
+    invented = "\nObservation: 120 reports\nThought: done.\n" + _call("final_answer", answer="5")
+    agent = _agent([])
+    agent.brains["base"] = Brain(
+        llm=_ScriptedLLM(
+            [
+                "Thought: x.\n" + _call("calculator", expression="2+2") + invented,
+                _call("final_answer", answer="4"),
+            ],
+            honor_stop=True,
+        )
+    )
+    r = agent.run("suma", brain="base")
+    assert r.final_answer == "4" and r.steps[0].observation == "4.0"  # the call still parses
+    assert "only your first tool call" not in r.steps[0].observation  # nothing was dropped
+    second_prompt = agent.brains["base"].llm.seen[1]
+    assert not any("120 reports" in m["content"] for m in second_prompt)  # no invented text
 
 
 def test_a_human_confirms_exactly_the_held_action(tmp_path, monkeypatch):
