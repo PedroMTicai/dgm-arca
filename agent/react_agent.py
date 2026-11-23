@@ -3,11 +3,12 @@
 This is the "minimal harness" of the course: the model only produces text; everything that
 turns it into an agent lives here. Phases 1 to 3 meet in it:
 
-* **Brain** (``brain=``): ``base`` is Qwen3-1.7B without thinking, the model phase 1 started
-  from (``ARCA_RLM_BASE_MODEL``); ``rlm`` is the same model with our phase-1 LoRA adapter
-  (``ARCA_RLM_ADAPTER``, a folder or a Hub id); ``thinking`` is Qwen3-1.7B with its native
-  thinking mode on (``ARCA_THINKING_MODEL``). base vs rlm answers "did our training help
-  the agent?"; thinking is the native reasoning model to compare against.
+* **Brain** (``brain=``): ``base`` is the system's text-generation model without thinking
+  (``ARCA_LLM_MODEL``, Qwen3-1.7B by default: the model phase 1 started from); ``rlm`` is
+  Qwen3-1.7B (``ARCA_RLM_BASE_MODEL``) with our phase-1 LoRA adapter (``ARCA_RLM_ADAPTER``, a
+  folder or a Hub id); ``thinking`` is the same model as ``base`` with its native thinking mode
+  on (``ARCA_THINKING_MODEL`` overrides it). base vs rlm answers "did our training help the
+  agent?"; thinking is the native reasoning model to compare against.
 * **Hands**: the phase-2 registry (FAERS, Naranjo, PRR, ICSR, calculator), the phase-3
   retriever as ``search_knowledge_base``, ``final_answer``, and ``code_meddra`` (the phase-1
   model as a tool) when the adapter is available.
@@ -48,7 +49,7 @@ from pydantic import Field
 from agent.memory import ConversationMemory
 from agent.prompts import REACT_SYSTEM_PROMPT, SUMMARY_PROMPT
 from api.schemas import AgentAction, AgentResponse, AgentStep, ToolCallRecord
-from common.llm import ChatModel, get_chat_model, strip_thinking
+from common.llm import DEFAULT_LLM, ChatModel, get_chat_model, strip_thinking
 from tool_use.parser import parse_tool_calls
 from tool_use.registry import ToolRegistry, tool
 from tool_use.tools import default_registry
@@ -145,12 +146,16 @@ class Brain:
 
 
 def _brain_specs() -> dict[str, dict]:
-    base = os.environ.get("ARCA_RLM_BASE_MODEL", "Qwen/Qwen3-1.7B")
+    # One variable chooses the text-generation model of the whole system (/rag, /tools and the
+    # base and thinking brains): ARCA_LLM_MODEL. The phase-1 LoRA (rlm, /reasoning, code_meddra)
+    # only works on the model it was trained on, so rlm keeps its own base, ARCA_RLM_BASE_MODEL.
+    llm = os.environ.get("ARCA_LLM_MODEL") or DEFAULT_LLM
+    rlm_base = os.environ.get("ARCA_RLM_BASE_MODEL", "Qwen/Qwen3-1.7B")
     return {
-        "base": {"model_id": base},
-        "rlm": {"model_id": base, "adapter": os.environ.get("ARCA_RLM_ADAPTER") or None},
+        "base": {"model_id": llm},
+        "rlm": {"model_id": rlm_base, "adapter": os.environ.get("ARCA_RLM_ADAPTER") or None},
         "thinking": {
-            "model_id": os.environ.get("ARCA_THINKING_MODEL", "Qwen/Qwen3-1.7B"),
+            "model_id": os.environ.get("ARCA_THINKING_MODEL") or llm,
             "thinking": True,
         },
     }
