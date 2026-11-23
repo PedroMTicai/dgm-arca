@@ -33,16 +33,54 @@ def card(title: str, body: str, kind: str) -> str:
     )
 
 
+# Collapsed steps: <details> folds and unfolds by itself; the CSS only swaps the button label
+# ("Mostrar" while closed, "Ocultar" while open). Passed to demo.launch(css=...).
+CSS = """
+.arca-fold { border-radius: 8px; margin: 6px 0; padding: 6px 12px; }
+.arca-fold > summary { cursor: pointer; list-style: none; display: flex; gap: 10px;
+                       align-items: center; font-weight: 600; }
+.arca-fold > summary::-webkit-details-marker { display: none; }
+.arca-fold .arca-btn { margin-left: auto; font-size: 0.8em; font-weight: 500; padding: 2px 10px;
+                       border-radius: 6px; border: 1px solid currentColor; }
+.arca-fold .arca-hide, .arca-fold[open] .arca-show { display: none; }
+.arca-fold[open] .arca-hide { display: inline; }
+.arca-fold pre { white-space: pre-wrap; margin: 8px 0 4px; }
+"""
+
+
+def seconds(value) -> str:
+    return f"{value:.1f} s" if isinstance(value, int | float) else "—"
+
+
+def fold(title: str, body: str, kind: str) -> str:
+    """A step that starts collapsed: the title and a Mostrar/Ocultar button."""
+    bg, fg = COLORS[kind]
+    return (
+        f'<details class="arca-fold" style="background:{bg};color:{fg};'
+        f'border-left:6px solid {fg}"><summary>{html.escape(title)}'
+        '<span class="arca-btn arca-show">Mostrar</span>'
+        '<span class="arca-btn arca-hide">Ocultar</span></summary>'
+        f'<pre style="color:{fg}">{html.escape(body)}</pre></details>'
+    )
+
+
 def render_trace(response: dict) -> str:
     blocks = []
     for i, step in enumerate(response.get("steps", []), start=1):
-        blocks.append(card(f"STEP {i} · Thought", step["thought"], "thought"))
-        if step.get("action"):
-            blocks.append(
-                card("Action", json.dumps(step["action"], ensure_ascii=False, indent=2), "action")
-            )
-        if step.get("observation") is not None:
-            blocks.append(card("Observation", str(step["observation"]), "observation"))
+        title = f"Paso {i} · Thought for {seconds(step.get('thought_seconds'))}"
+        blocks.append(fold(title, step["thought"], "thought"))
+        action = step.get("action")
+        if action:
+            body = json.dumps(action.get("arguments", {}), ensure_ascii=False, indent=2)
+            if step.get("observation") is not None:
+                body += "\n\n— Observation —\n" + str(step["observation"])
+            name = action.get("name", "")
+            if name == "final_answer":
+                continue  # its text is the final answer card below
+            title = f"Action · {name} ({seconds(step.get('action_seconds'))})"
+            blocks.append(fold(title, body, "action"))
+        elif step.get("observation") is not None:
+            blocks.append(fold("Observation", str(step["observation"]), "observation"))
     pending = response.get("pending_actions") or []
     if pending:
         body = "\n\n".join(json.dumps(a, ensure_ascii=False, indent=2) for a in pending)
@@ -122,7 +160,7 @@ def main() -> None:
             outputs=[answer, trace, pending, session, approve],
         ).then(lambda: "", outputs=confirmed)
         approve.click(confirm, inputs=[pending, session], outputs=[confirmed, pending, approve])
-    demo.launch()
+    demo.launch(css=CSS)  # Gradio 6 takes custom CSS in launch()
 
 
 if __name__ == "__main__":

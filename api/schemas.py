@@ -167,6 +167,8 @@ class AgentStep(BaseModel):
     thought: str
     action: AgentAction | None = None
     observation: str | None = None
+    thought_seconds: float | None = Field(default=None, description="Time spent generating.")
+    action_seconds: float | None = Field(default=None, description="Time running the tool.")
 
 
 class AgentResponse(BaseModel):

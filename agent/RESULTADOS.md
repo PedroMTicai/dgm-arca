@@ -103,10 +103,27 @@ Revisando las respuestas aparecen errores de las comprobaciones en los dos senti
 - **Falsos negativos**: a08 espera el número 1000 (dosis diaria inicial de levetiracetam) y
   `base` responde "500 mg dos veces al día", que es correcto; a19 (arriba) solo acepta español.
 
-Con 20 tareas cada uno de estos casos mueve 5 puntos. Mejoras para la siguiente versión del
-banco: comprobar el valor del PRR en a17, exigir que las respuestas de `rlm` y del resto no
-contengan observaciones escritas por el modelo, aceptar "1000 mg/día" o "500 mg dos veces al día"
-en a08 y aceptar la negativa en inglés en las imposibles.
+Con 20 tareas cada uno de estos casos mueve 5 puntos.
+
+### Comprobaciones corregidas (v2) y la misma evaluación recalculada
+
+Corregidas en `agent/bench/tasks.jsonl`: a17 exige las dos partes de la tarea (que la ficha recoge
+el edema y el PRR real, ≈ 3,49); a08 acepta "1000 mg" o "500 mg dos veces al día"; a19 y a20
+aceptan la negativa también en inglés, y a20 también un recuento etiquetado como mundial. La
+evaluación de arriba, recalculada con ellas sin volver a ejecutar el agente
+(`python -m agent.evaluate --rescore reports/phase4_eval_1.7b.json`):
+
+| Agente | Cerebro | Éxito (v1) | Éxito (v2) | Tareas que cambian |
+|---|---|---|---|---|
+| ReAct | `base` | 55 % | **60 %** | +a08, +a19; −a17 (el PRR bien, pero nada de la ficha) |
+| ReAct | `rlm` | 10 % | 5 % | −a17 (falso positivo con números inventados) |
+| ReAct | `thinking` | 55 % | **65 %** | +a08, +a19 |
+| Código | `thinking` | 35 % | 35 % | −a17, +a19 |
+| Código | `base` | 40 % | 40 % | — |
+
+Fuente: `reports/phase4_eval_1.7b_checks_v2.json`. Las conclusiones no cambian (`rlm` no sirve
+como cerebro, JSON mejor que código); con las comprobaciones justas, `thinking` pasa por delante
+de `base`. Las comparaciones con evaluaciones posteriores se hacen con las v2.
 
 ## Primera evaluación (RTX 5070, 0,6B y 1,7B)
 

@@ -368,14 +368,16 @@ class ReActAgent:
             )
 
         for _ in range(max_steps):
+            started = time.perf_counter()
             raw, cost = self.generate(memory.model_messages(), mind)
+            took = round(time.perf_counter() - started, 1)  # shown as "thought for X s"
             tokens += cost
             parsed = parse_tool_calls(raw)
             thought = parsed.thinking or parsed.text
             if not parsed.tool_calls:
                 # Answered in plain text: accept it as the answer, but record that the model
                 # did not follow the protocol (it shows up in stop_reason and the benchmark).
-                steps.append(AgentStep(thought=thought))
+                steps.append(AgentStep(thought=thought, thought_seconds=took))
                 return respond(
                     plain_answer(parsed.text or thought), True, "answered_without_final_answer"
                 )
@@ -394,13 +396,15 @@ class ReActAgent:
             )
             if call.error:
                 observation = f"error: {call.error}{note}"
-                steps.append(AgentStep(thought=thought, observation=observation))
+                steps.append(
+                    AgentStep(thought=thought, observation=observation, thought_seconds=took)
+                )
                 memory.add("tool", observation, name="parser")
                 memory.compress(lambda old: self.summarize(mind, old))
                 continue
             action = AgentAction(name=call.name, arguments=call.arguments)
             if call.name == "final_answer":
-                steps.append(AgentStep(thought=thought, action=action))
+                steps.append(AgentStep(thought=thought, action=action, thought_seconds=took))
                 return respond(str(call.arguments.get("answer", "")), True, "final_answer")
 
             key = json.dumps([call.name, call.arguments], sort_keys=True, default=str)
@@ -411,6 +415,7 @@ class ReActAgent:
                         thought=thought,
                         action=action,
                         observation="stopped: same call repeated 3 times",
+                        thought_seconds=took,
                     )
                 )
                 return respond(
@@ -420,14 +425,24 @@ class ReActAgent:
                     "loop_detected",
                 )
 
+            acted = time.perf_counter()
             observation = self.observe(call.name, call.arguments, allow_actions, pending)
+            action_took = round(time.perf_counter() - acted, 1)
             if seen_calls[key] == 2:
                 observation += (
                     "\nwarning: you already made this exact call; use the "
                     "result you have or change the arguments."
                 )
             observation += note
-            steps.append(AgentStep(thought=thought, action=action, observation=observation))
+            steps.append(
+                AgentStep(
+                    thought=thought,
+                    action=action,
+                    observation=observation,
+                    thought_seconds=took,
+                    action_seconds=action_took,
+                )
+            )
             memory.add("tool", observation, name=call.name)
             memory.compress(lambda old: self.summarize(mind, old))
 
