@@ -25,85 +25,71 @@ Cuando el profesor avise de que va a corregir:
 
 ## Antes de empezar (10 minutos antes)
 
-1. API levantada y **ya caliente**: la primera petición a cada fase carga modelos y tarda. Lanzad
-   una vez cada petición de abajo antes de la defensa.
-   ```bash
-   docker compose up api        # o: uv run arca-api
+1. API levantada en la DGX (sección anterior) y comprobada desde fuera con `/health`.
+2. El visor en el portátil, con una pestaña por fase (PowerShell, desde la carpeta del repo):
+   ```powershell
+   $env:ARCA_API_URL = "https://unzip-array-ascension.ngrok-free.dev"
+   uv run python -m agent.ui          # http://127.0.0.1:7860
    ```
-2. Dos pestañas abiertas:
-   - `http://localhost:8000/docs` (Swagger: el formulario de cada endpoint, botón *Try it out*).
-   - El visor de trazas del agente: `uv run python -m agent.ui` (abre una página de Gradio).
-3. Tener a mano `rlm/RESULTADOS.md` y `agent/RESULTADOS.md` para las preguntas.
+3. **Calentar**: lanzar una vez cada ejemplo de abajo antes de la defensa (la primera llamada a
+   cada fase es la más lenta). Cada pestaña tiene sus ejemplos debajo: un clic rellena los campos.
+4. Tener a mano `rlm/RESULTADOS.md` y `agent/RESULTADOS.md` para las preguntas.
+
+Todos los ejemplos de este guion están comprobados contra la API de la DGX.
 
 ## La demo, minuto a minuto
 
-### 0:00–0:20 · Qué es y quién lo usa
+### 0:00–0:15 · Qué es y quién lo usa
 > "Un técnico de farmacovigilancia recibe notificaciones en lenguaje natural. ARCA las codifica en
 > MedDRA, consulta la ficha técnica y FAERS, calcula si hay señal y prepara el informe, con una
-> persona que confirma antes de registrar nada."
+> persona que confirma antes de registrar nada. Una pestaña por fase."
 
-En Swagger, `GET /health`: las cuatro fases en `ready`.
-
-### 0:20–0:50 · Fase 1, `/reasoning`
-```json
-{"question": "Escribo por mi padre, de 67 años, que estaba tomando pantoprazol. Tiene antecedentes de ansiedad. Al cabo de un mes la cabeza le iba a estallar. Finalmente falleció a causa de una reacción anafiláctica.", "expected_answer": "Anaphylactic reaction; Headache"}
-```
-Señalad en la respuesta:
-- el razonamiento en `thinking` y la respuesta separada en `answer`;
+### 0:15–0:45 · Pestaña «Fase 1 · Razonamiento»
+Primer ejemplo (pantoprazol): notificación de un padre que tenía antecedentes de ansiedad, dolor
+de cabeza y murió de una reacción anafiláctica; respuesta esperada `Anaphylactic reaction;
+Headache`. Sale **Verificador · CORRECTO** (predice `Headache; Anaphylaxis`: "Anaphylaxis" es un
+sinónimo aceptado). Señalad:
 - que **no** codifica la ansiedad (antecedente) ni `Death` (la muerte es un desenlace: se codifica
-  la causa, la reacción anafiláctica);
-- el veredicto del verificador (`verifier.is_correct`).
+  la causa);
+- el razonamiento, plegado: «Mostrar» para enseñarlo.
+> "Qwen3-1.7B con LoRA: SFT sobre trazas de Qwen3-4B filtradas por el verificador y GRPO con tres
+> recompensas. 18,5 % → 56,5 % en test."
 
-**Probadlo antes en la máquina de la demo.** La generación es greedy, pero en bf16 cambiar de GPU
-o de tamaño de lote altera a veces el token elegido: dos ejemplos que el modelo acertó en la
-evaluación ("muchísimo sueño" con sertralina, "tos seca" con lamotrigina) salieron mal por la API
-en el portátil (`Insomnia`, `Dry cough`). Tened preparado un segundo caso que funcione en esa
-máquina, por ejemplo: "Tengo antecedentes de asma. Llevo tres días tomando amlodipino y empecé a
-perder mucho pelo." → `Alopecia`.
+Reserva: el segundo ejemplo (caída de pelo con amlodipino → `Alopecia`).
 
-Frase: "Qwen3-1.7B con LoRA, SFT sobre trazas de Qwen3-4B filtradas por el verificador y GRPO con
-tres recompensas: 18,5 % → 56,5 % en test."
+### 0:45–1:15 · Pestaña «Fase 2 · Herramientas»
+Primer ejemplo (¿señal de somnolencia con sertralina?). Señalad las tres llamadas: la primera a
+FAERS **falla** (escribió "Somnolencia" en español), el error vuelve al modelo, la repite en inglés,
+y pasa los recuentos reales al PRR: 2,62, señal.
+> "El modelo decide; nuestro código valida y ejecuta. Los errores son observaciones."
 
-### 0:50–1:30 · Fase 3, `/rag`
-```json
-{"question": "¿Con qué frecuencia produce somnolencia la sertralina?", "retriever": "hybrid"}
-```
-Señalad: la respuesta ("muy frecuente") y la **cita** `[id]`; en `chunks`, el fragmento citado es
-la sección 4.8 de la ficha de sertralina.
+Si sobra tiempo: «¿Qué es la farmacovigilancia?» responde **sin llamar a ninguna herramienta**.
 
-Y una que el corpus no puede responder:
-```json
-{"question": "¿El omeprazol es seguro para perros?"}
-```
-Frase: "Cuando no está en el corpus, se abstiene en vez de inventar."
+### 1:15–1:45 · Pestaña «Fase 3 · Conocimiento»
+Primer ejemplo (somnolencia con sertralina): la respuesta cita `[ee3f3fd9f0-0073]`, y entre los
+fragmentos ese sale marcado **CITADO** (sección 4.8 de la ficha). Luego el tercero (omeprazol en
+perros): **se abstiene**.
+> "Recupera con BM25 + embeddings (λ = 0,3); cita lo que usa y, si no está en el corpus, no inventa."
 
-### 1:30–2:40 · Fase 4, el agente (visor de trazas)
-Tarea:
-> Mira en la ficha técnica si el edema periférico es una reacción conocida del amlodipino y calcula su PRR en FAERS (Oedema peripheral).
+### 1:45–2:35 · Pestaña «Fase 4 · Agente»
+Primer ejemplo (edema periférico con amlodipino), cerebro `base`. Mientras corre:
+> "Cada paso, plegado con su tiempo: pensamiento, acción y observación. Busca en la ficha,
+> consulta FAERS en vivo, pasa los cuatro recuentos al PRR. Ningún número sale del modelo."
 
-Cerebro `base`. Mientras corre (unos 30–60 s):
-> "Pensamiento en morado, acción en naranja, observación en verde. Busca en la ficha, consulta
-> FAERS en vivo, pasa los cuatro recuentos al PRR. Ningún número sale del modelo."
+Resultado: PRR ≈ 3,49 con señal (FAERS en vivo: los números pueden variar un poco). A veces el
+agente traduce el término al español, FAERS da error y lo corrige llamando a `code_meddra`, el
+modelo de la fase 1: si pasa, es el mejor momento para decirlo ("las cuatro fases en una tarea").
+La respuesta suele salir en inglés: limitación conocida del modelo pequeño.
 
-Resultado esperado: PRR ≈ 3,5 con señal según Evans. (FAERS se consulta en vivo: los números
-pueden variar un poco respecto al informe.) Comprobado por la API en Docker: 4 pasos, PRR 3,49,
-señal; tardó 3 min 35 s en el portátil (8 GB, muy justo de memoria) y será bastante más rápido en
-la DGX. La respuesta sale en inglés aunque la tarea esté en español: si os preguntan, es un fallo
-conocido del modelo pequeño con el protocolo en inglés.
+### 2:35–3:00 · La salvaguarda (misma pestaña)
+Segundo ejemplo (registrar el ICSR). Tarjeta **PENDING HUMAN CONFIRMATION**: validado, **no
+escrito**.
+> "Las acciones con efecto esperan a una persona. Lo decidimos porque en la fase 2 el modelo se
+> inventó una edad para saltarse una validación."
 
-### 2:40–3:00 · La salvaguarda
-Tarea:
-> Registra esta notificación: una farmacéutica comunica que una mujer de 45 años que toma sertralina tuvo somnolencia, no grave, ya recuperada.
-
-Señalad la tarjeta **PENDING HUMAN CONFIRMATION**: el ICSR está validado pero **no se ha escrito**.
-> "Las acciones con efecto esperan confirmación humana. Lo decidimos porque en la fase 2 el modelo
-> se inventó una edad para saltarse una validación."
-
-Pulsad **Confirmar acciones pendientes**: el agente retoma la conversación y explica el resultado
-(tarjeta **AGENT · after confirmation**, con el id real del informe y el plazo), y debajo la
-tarjeta **CONFIRMED** con el registro técnico.
-> "Se ejecuta exactamente lo que la persona ha revisado, sin volver a preguntar al modelo
-> (`POST /agent/confirm`)."
+Pulsad **Confirmar acciones pendientes**: el agente retoma la conversación y cuenta el resultado
+(id real del informe, 90 días de plazo) y debajo sale el registro técnico. La reacción, escrita
+`DROWSINESS` por el modelo, se guarda como el PT `Somnolence`.
 
 ## Si algo falla en directo
 
