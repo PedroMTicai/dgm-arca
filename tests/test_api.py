@@ -30,5 +30,11 @@ def test_request_validation():
     assert client.post("/agent", json={"task": "x", "max_steps": 0}).status_code == 422
 
 
+def test_confirm_endpoint_validates_the_action():
+    assert client.post("/agent/confirm", json={"arguments": {}}).status_code == 422  # no name
+    response = client.post("/agent/confirm", json={"name": "create_icsr_report"})
+    assert response.status_code in {200, 501}  # 501 while the agent is disabled in the tests
+
+
 def test_docs_available():
     assert client.get("/docs").status_code == 200

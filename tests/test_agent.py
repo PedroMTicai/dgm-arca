@@ -114,6 +114,38 @@ def test_side_effect_tools_wait_for_confirmation(tmp_path, monkeypatch):
     assert not r.pending_actions and len(list(tmp_path.iterdir())) == 1
 
 
+def test_a_human_confirms_exactly_the_held_action(tmp_path, monkeypatch):
+    from api.schemas import AgentAction
+
+    monkeypatch.setattr(tools, "ICSR_DIR", tmp_path)
+    args = dict(
+        reporter_type="healthcare_professional",
+        patient_age=45,
+        patient_sex="female",
+        suspect_drug="sertralina",
+        reactions=["Drowsiness"],
+        serious=False,
+        outcome="recovered",
+        narrative="x",
+    )
+    agent = _agent([_call("create_icsr_report", **args), _call("final_answer", answer="pendiente")])
+    held = agent.run("registra", brain="base").pending_actions[0]
+    assert not list(tmp_path.iterdir())
+    record = agent.confirm(held)  # what the person saw is what runs; the model is not called
+    assert record.ok and record.result["reactions"] == ["Somnolence"]
+    assert len(list(tmp_path.iterdir())) == 1
+    refused = agent.confirm(AgentAction(name="calculator", arguments={"expression": "1+1"}))
+    assert not refused.ok and "confirmation" in refused.error
+
+
+def test_text_answers_keep_only_the_final_answer():
+    from agent.react_agent import plain_answer
+
+    raw = "Thought: queued.\nAction: not executed\n\nFinal Answer: Pendiente de revisión."
+    assert plain_answer(raw) == "Pendiente de revisión."
+    assert plain_answer("La respuesta es 4.") == "La respuesta es 4."
+
+
 def test_errors_are_observations_and_loops_are_stopped():
     bad = _call("calculator", expression="__import__('os')")
     agent = _agent([bad, bad, bad])

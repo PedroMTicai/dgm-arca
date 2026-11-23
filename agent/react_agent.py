@@ -55,6 +55,18 @@ from tool_use.tools import default_registry
 
 MAX_OBSERVATION_CHARS = 1500
 log = logging.getLogger("arca.agent")  # one line per step in the API log
+
+
+def plain_answer(text: str) -> str:
+    """The answer inside a text reply: what follows the last "Final Answer:", if any.
+
+    When the model answers without the ``final_answer`` tool it often writes the whole ReAct
+    block ("Thought: … Action: … Final Answer: …"); the user should only see the last part.
+    """
+    marker = text.lower().rfind("final answer:")
+    return text[marker + len("final answer:") :].strip() if marker >= 0 else text.strip()
+
+
 TOOL_TIMEOUTS = {"faers_reaction_counts": 60.0, "search_knowledge_base": 60.0, "code_meddra": 120.0}
 DEFAULT_TIMEOUT = 15.0
 
@@ -242,6 +254,24 @@ class ReActAgent:
         finally:
             pool.shutdown(wait=False)
 
+    def confirm(self, action: AgentAction) -> ToolCallRecord:
+        """Human-in-the-loop: execute exactly the held action a person reviewed and approved.
+
+        Only for tools that need confirmation (the others already ran inside the loop). The
+        arguments are validated again by the registry, as in any call, and the model is not
+        involved: what runs is what the person saw in ``pending_actions``.
+        """
+        spec = self.registry.tools.get(action.name)
+        if spec is None or not spec.requires_confirmation:
+            return ToolCallRecord(
+                name=action.name,
+                arguments=action.arguments,
+                ok=False,
+                error="only actions that wait for human confirmation can be confirmed",
+            )
+        log.info("agent: human confirmed %s", action.name)
+        return self.execute(action.name, action.arguments)
+
     def run(
         self,
         task: str,
@@ -292,7 +322,9 @@ class ReActAgent:
                 # Answered in plain text: accept it as the answer, but record that the model
                 # did not follow the protocol (it shows up in stop_reason and the benchmark).
                 steps.append(AgentStep(thought=thought))
-                return respond(parsed.text or thought, True, "answered_without_final_answer")
+                return respond(
+                    plain_answer(parsed.text or thought), True, "answered_without_final_answer"
+                )
             # ReAct is one action per step, then look at the observation. Qwen sometimes
             # writes several calls at once, final_answer included, i.e. it answers before
             # seeing any result. Only the first call runs; the rest are dropped from the

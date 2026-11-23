@@ -95,9 +95,14 @@ conocido del modelo pequeño con el protocolo en inglés.
 Tarea:
 > Registra esta notificación: una farmacéutica comunica que una mujer de 45 años que toma sertralina tuvo somnolencia, no grave, ya recuperada.
 
-Señalad `pending_actions`: el ICSR está validado pero **no se ha escrito**.
+Señalad la tarjeta **PENDING HUMAN CONFIRMATION**: el ICSR está validado pero **no se ha escrito**.
 > "Las acciones con efecto esperan confirmación humana. Lo decidimos porque en la fase 2 el modelo
 > se inventó una edad para saltarse una validación."
+
+Pulsad **Confirmar acciones pendientes**: aparece la tarjeta **CONFIRMED** con el id del informe y
+el fichero escrito.
+> "Se ejecuta exactamente lo que la persona ha revisado, sin volver a preguntar al modelo
+> (`POST /agent/confirm`)."
 
 ## Si algo falla en directo
 

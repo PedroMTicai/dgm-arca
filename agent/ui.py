@@ -53,14 +53,34 @@ def render_trace(response: dict) -> str:
     return "\n".join(blocks)
 
 
-def run(task: str, brain: str, max_steps: int) -> tuple[str, str]:
+def run(task: str, brain: str, max_steps: int) -> tuple[str, str, list, dict]:
+    import gradio as gr
+
     reply = httpx.post(
         f"{API_URL}/agent", json={"task": task, "brain": brain, "max_steps": max_steps}, timeout=600
     )
     if reply.status_code != 200:
-        return f"API error {reply.status_code}: {reply.text}", ""
+        return f"API error {reply.status_code}: {reply.text}", "", [], gr.update(visible=False)
     body = reply.json()
-    return body["final_answer"], render_trace(body)
+    pending = body.get("pending_actions") or []
+    return body["final_answer"], render_trace(body), pending, gr.update(visible=bool(pending))
+
+
+def confirm(pending: list) -> tuple[str, list, dict]:
+    """The human approves the held actions: each one runs exactly as it was shown."""
+    import gradio as gr
+
+    cards = []
+    for action in pending:
+        reply = httpx.post(f"{API_URL}/agent/confirm", json=action, timeout=120)
+        record = reply.json() if reply.status_code == 200 else {"ok": False, "error": reply.text}
+        if record.get("ok"):
+            body = json.dumps(record.get("result"), ensure_ascii=False, indent=2)
+            cards.append(card(f"CONFIRMED · {action['name']} executed", body, "final"))
+        else:
+            error = str(record.get("error"))
+            cards.append(card(f"NOT EXECUTED · {action['name']}", error, "action"))
+    return "\n".join(cards), [], gr.update(visible=False)
 
 
 def main() -> None:
@@ -75,8 +95,14 @@ def main() -> None:
             max_steps = gr.Slider(1, 30, value=10, step=1, label="Max steps")
         button = gr.Button("Run", variant="primary")
         answer = gr.Textbox(label="Final answer", lines=4, interactive=False)
+        pending = gr.State([])
+        approve = gr.Button("Confirmar acciones pendientes", variant="stop", visible=False)
+        confirmed = gr.HTML()
         trace = gr.HTML(label="Trace")
-        button.click(run, inputs=[task, brain, max_steps], outputs=[answer, trace])
+        button.click(
+            run, inputs=[task, brain, max_steps], outputs=[answer, trace, pending, approve]
+        ).then(lambda: "", outputs=confirmed)
+        approve.click(confirm, inputs=pending, outputs=[confirmed, pending, approve])
     demo.launch()
 
 

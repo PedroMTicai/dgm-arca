@@ -28,6 +28,7 @@ load_dotenv()
 
 from api.backends import Backends, env  # noqa: E402
 from api.schemas import (  # noqa: E402
+    AgentAction,
     AgentRequest,
     AgentResponse,
     HealthResponse,
@@ -35,6 +36,7 @@ from api.schemas import (  # noqa: E402
     RagResponse,
     ReasoningRequest,
     ReasoningResponse,
+    ToolCallRecord,
     ToolsRequest,
     ToolsResponse,
 )
@@ -141,6 +143,16 @@ def agent(request: AgentRequest):
             allow_actions=request.allow_actions,
         ),
     )
+
+
+@app.post("/agent/confirm", response_model=ToolCallRecord, tags=["fase 4"])
+def agent_confirm(action: AgentAction):
+    """Phase 4, human in the loop: run one action that ``/agent`` held in ``pending_actions``.
+
+    Send the held action exactly as it came back (name and arguments). It is validated again
+    and executed; the model is not involved. Only tools that need confirmation are accepted.
+    """
+    return _run("agent", backends.agent, lambda a: a.confirm(action))
 
 
 def main() -> None:
