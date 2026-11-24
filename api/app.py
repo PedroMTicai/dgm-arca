@@ -30,6 +30,8 @@ from api.backends import Backends, env  # noqa: E402
 from api.schemas import (  # noqa: E402
     AgentRequest,
     AgentResponse,
+    ConfirmRequest,
+    ConfirmResponse,
     HealthResponse,
     RagRequest,
     RagResponse,
@@ -49,6 +51,10 @@ app = FastAPI(
         "Un endpoint por fase: /reasoning, /tools, /rag y /agent."
     ),
     version="0.1.0",
+    # Behind a proxy that adds a path prefix (Open OnDemand on the DGX:
+    # /rnode/dgx/<port-node>/proxy/8000), /docs must fetch <prefix>/openapi.json. Not needed
+    # with ngrok or locally.
+    root_path=env("ARCA_ROOT_PATH"),
 )
 backends = Backends()
 
@@ -137,6 +143,22 @@ def agent(request: AgentRequest):
             allow_actions=request.allow_actions,
         ),
     )
+
+
+@app.post("/agent/confirm", response_model=ConfirmResponse, tags=["fase 4"])
+def agent_confirm(request: ConfirmRequest):
+    """Phase 4, human in the loop: run one action that ``/agent`` held in ``pending_actions``.
+
+    Send the held action exactly as it came back (name and arguments). It is validated again
+    and executed as is. With the ``session_id`` of that run, the agent resumes the conversation
+    for one step and tells the user the outcome. Only tools that need confirmation are accepted.
+    """
+
+    def confirm(agent):
+        record, message = agent.confirm(request.action, request.session_id)
+        return ConfirmResponse(record=record, message=message, session_id=request.session_id)
+
+    return _run("agent", backends.agent, confirm)
 
 
 def main() -> None:

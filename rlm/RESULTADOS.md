@@ -195,11 +195,70 @@ Fuente: `reports/grpo_1.7b_trainer_state.json`.
   reciben la misma recompensa total, de modo que la ventaja es nula y el paso no enseña nada. Con
   la recompensa de dominio se queda en el 16–27 %; es el mecanismo con el que explicamos la
   ablación sin dominio (la exactitud sola es binaria y deja más grupos empatados).
-- El recorte de PPO no llega a actuar (`clip_ratio` = 0 en los 100 pasos): con una sola
-  actualización por lote de respuestas, la política que se optimiza es la misma que las generó,
-  el cociente vale 1 y el recorte no se activa. Tampoco hay KL (`--beta 0`, el valor por defecto):
-  lo que impide que el modelo se aleje demasiado del SFT es el LoRA, la tasa de aprendizaje y los
-  pocos pasos.
+- El recorte de PPO no llega a actuar (`clip_ratio` = 0 en los 100 pasos). Tampoco hay KL
+  (`--beta 0`, el valor por defecto): lo que impide que el modelo se aleje demasiado del SFT es el
+  LoRA, la tasa de aprendizaje y los pocos pasos. El porqué del recorte, en la sección siguiente.
+
+### Qué se entrenó con TRL, qué es `grpo_step.py` y cómo leer la pérdida
+
+**Dos piezas distintas.** El entrenamiento real (`rlm/train_grpo.py`) usa `GRPOTrainer` de TRL
+1.13: genera las 8 respuestas, llama a nuestras recompensas, calcula la pérdida y actualiza el
+LoRA. `rlm/grpo_step.py` es el mínimo del enunciado "un paso de GRPO a mano": las mismas
+operaciones (ventajas, ratio, recorte, KL) sobre tensores, con sus tests, para demostrar que
+entendemos lo que hace la librería. **No se usa al entrenar**; nada lo importa salvo los tests.
+
+**Por qué el ratio vale 1 y el recorte no actúa.** ρ = π_nuevo / π_viejo compara el modelo en el
+momento de calcular la pérdida con el que escribió las respuestas. TRL hace **una sola
+actualización por grupo** (`num_iterations = 1`, el valor por defecto): la pérdida se calcula
+antes de cambiar nada, con el mismo modelo que acaba de generar, así que ρ = 1 en todos los
+tokens y nunca sale de [0,8; 1,2]. No es por `--batch-size 1`: ese parámetro solo decide cuántas
+respuestas pasan a la vez por la GPU; los gradientes de las 8 se acumulan y se hace un único
+paso del optimizador, matemáticamente igual que pasarlas juntas. El recorte solo actuaría
+reutilizando el mismo grupo para varias actualizaciones (`num_iterations` > 1).
+
+**Por qué aun así aprende.** Con ρ = 1 el objetivo de cada token vale Aᵢ, pero el gradiente no
+es cero: la derivada de ρ es la de log π, y queda
+
+    ∇L = −(1/G) Σᵢ Aᵢ · (1/|oᵢ|) Σₜ ∇log π(oᵢ,ₜ)
+
+Aunque las ventajas sumen 0 dentro del grupo, cada Aᵢ multiplica un vector distinto (el de los
+tokens de la respuesta i), así que no se cancelan: sube los tokens de las respuestas buenas y baja
+los de las malas. En esta configuración GRPO equivale a REINFORCE con la media del grupo como
+línea base. Solo es cero si todas las respuestas del grupo empatan (`frac_reward_zero_std`).
+
+**Por qué la pérdida registrada es positiva.** Con la media por respuesta del GRPO original (la
+de `grpo_step.py`), el valor de la pérdida con ρ = 1 es −mean(Aᵢ) = 0 siempre. TRL 1.13 usa por
+defecto `loss_type = "dapo"`: divide por el total de tokens del grupo, de modo que
+
+    L = −Σᵢ Aᵢ·|oᵢ| / Σᵢ |oᵢ|
+
+y las respuestas largas pesan más. Al principio las peores respuestas son las largas (se cortan a
+1 024 tokens sin `<answer>`, recompensa 0, ventaja negativa), así que la pérdida sale positiva
+(0,11 de media en los pasos 1–10) y el gradiente empuja con fuerza a acortar: es lo primero que
+aprende el modelo. **El valor de la pérdida en GRPO no indica si el modelo aprende**; lo que hay
+que mirar son las recompensas y la longitud. Diferencia a tener en cuenta: nuestro paso a mano
+implementa la media por respuesta del GRPO original, y el entrenamiento usó la de DAPO.
+
+## Qué mide (y qué no) el conjunto OOD
+
+Codificar exige dos cosas distintas: **seleccionar** qué hay que codificar (las reglas: no la
+indicación, no lo negado, el diagnóstico en vez de sus síntomas, la causa y no la muerte) y
+**nombrar** cada cosa con su PT ("me sangra la nariz" → `Epistaxis`). El modelo no tiene ningún
+diccionario: el vocabulario lo saca de su preentrenamiento (Qwen3 ha leído mucho inglés médico) y
+de los 76 PT que vio en el entrenamiento. Los 90 PT de `rlm/meddra.py` solo los usan el
+verificador y la recompensa para corregir.
+
+En OOD el vocabulario sí se transfiere (`single` 72 % en test → 76 % en OOD), pero las reglas que
+exigen conocimiento clínico del término nuevo no (`diagnosis` 39 → 15 %, `death` 67 → 20 %):
+para no codificar los síntomas típicos de un diagnóstico hay que saber cuáles son los síntomas
+típicos de *ese* diagnóstico. Lo que generaliza es el procedimiento sencillo, no el criterio
+clínico.
+
+**Limitación del subconjunto.** Un término que no está entre nuestros 90 cuenta como fallo
+(`not in MedDRA`) aunque exista en el MedDRA real (`Abdominal discomfort`, en el fallo 3). En la
+práctica pesa poco (2 casos de 200 en test, 0 en OOD) porque la respuesta esperada siempre está
+dentro de los 90; con los ficheros oficiales (`ARCA_MEDDRA_DIR`) el verificador aceptaría todos
+los LLT y desaparecerían esos falsos fallos.
 
 ## Cinco fallos del GRPO (test, 1,7B)
 
@@ -218,7 +277,9 @@ Fuente: `reports/grpo_1.7b_trainer_state.json`.
    de un infarto de miocardio" → `Chest pain; Abdominal discomfort`. Esperado: `Abdominal pain;
    Myocardial infarction`. En el razonamiento dice "el infarto es la causa de la muerte, así que
    no se codifica la muerte" (bien) y luego tampoco codifica el infarto (mal), y en su lugar
-   inventa un "dolor torácico" que el texto no menciona, asociado al infarto.
+   inventa un "dolor torácico" que el texto no menciona, asociado al infarto. (Por qué la regla:
+   en el ICSR la muerte ya se registra como desenlace y criterio de gravedad; codificar `Death`
+   como reacción perdería lo útil para detectar señales, que es *de qué* murió.)
 4. **Bucles de repetición sin respuesta** (19 casos, 13 en `diagnosis`). Ante una duda, el modelo
    repite la misma frase hasta agotar los 2048 tokens: "But the son is the one who reported it,
    so the adverse event is the weight gain. But the son is the one who called the center…", o
@@ -265,6 +326,40 @@ Fuentes: `reports/phase1_eval.json` (test), `reports/phase1_eval_ood.json` (OOD)
   (652 → 586 tokens), y eso explica parte de su mejora.
 - El OOD es muy bajo para todos: el modelo no generaliza a términos que no ha visto.
 - La línea base dio 5 % y 7,5 % en dos ejecuciones greedy: no determinismo de bf16 con padding.
+
+## El mismo modelo, servido de uno en uno (como la API)
+
+La evaluación de arriba genera en lotes de 16 preguntas con relleno a la izquierda. La API
+(`/reasoning`) genera una pregunta cada vez. Con decodificación greedy debería dar lo mismo, pero
+en bf16 el tamaño del lote cambia mínimamente los cálculos y, cuando dos tokens casi empatan,
+cambia cuál se elige. Medido en la DGX con el mismo adaptador, el mismo test y `--batch-size 1`:
+
+| | Lotes de 16 | Lotes de 1 (como la API) |
+|---|---|---|
+| **pass@1** | **56,5 %** | **53,5 %** |
+| Formato válido | 90,5 % | 91 % |
+| F1 medio | 0,72 | 0,71 |
+| Tokens medios | 733 | 729 |
+| `single` / `multi` / `diagnosis` / `death` / `lack_of_effect` | 72 / 47 / 39 / 67 / 72 % | 69 / 40 / 32 / 70 / 76 % |
+
+Fuente: `reports/phase1_eval_1.7b_batch1.json`.
+
+- **Es el mismo modelo**: formato, longitud y F1 iguales; solo cambia qué problemas concretos
+  acierta, y unas familias suben mientras otras bajan.
+- **Caso a caso**: solo 7 de las 200 respuestas son idénticas palabra por palabra (el efecto de
+  bf16 no es raro, es casi universal), pero 170 tienen el mismo veredicto. Solo acierta en lotes
+  de 16 en 18 problemas y solo de uno en uno en 12: McNemar p = 0,36, no significativo.
+- **3 puntos de diferencia sin cambiar nada del modelo.** Es del mismo tamaño que la diferencia
+  entre el GRPO final y la ablación sin recompensa de dominio (56,5 frente a 53,0 %). Confirma con
+  un dato propio lo que decía McNemar: con 200 problemas, diferencias de 3 puntos no se separan
+  del ruido de evaluación.
+- **Qué esperar de la API**: entre el 53 y el 56 % en el test. Informamos 56,5 % (la evaluación
+  completa, en lotes) y este 53,5 % como lo que da el mismo modelo servido de uno en uno.
+
+    uv run python -u -m rlm.evaluate --data rlm/data/test.jsonl --model Qwen/Qwen3-1.7B \
+        --max-new-tokens 2048 --batch-size 1 \
+        --adapters grpo=$HOME/clusters/dgx/arca_weights/grpo_lora_1.7b \
+        --out reports/phase1_eval_1.7b_batch1.json
 
 ## Pendiente
 

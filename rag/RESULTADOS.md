@@ -15,6 +15,31 @@ sola vez con la configuración fijada. **Los números que se informan son los de
 Troceado recursivo (800 caracteres, solapamiento 100) · híbrido con **λ = 0,3** · instrucción de
 farmacovigilancia · encabezado de contexto en cada fragmento.
 
+## Cómo leer estos resultados
+
+El sistema tiene **dos piezas que se miden por separado**:
+
+```
+pregunta → [1. buscador] → 5 fragmentos → [2. generador, Qwen3] → respuesta con citas
+```
+
+Si la respuesta sale mal, hay que saber cuál falló: el buscador (no trajo el fragmento) o el
+generador (lo tenía delante y no lo usó). Y hay **dos conjuntos de preguntas**: con el de
+desarrollo se eligió todo (troceado, λ, instrucción); el de test, nuevo, se midió una sola vez
+con todo fijado. Elegir y medir con las mismas preguntas infla el resultado, así que **los números
+que valen son los de test**.
+
+En una línea por pieza (test):
+
+| Pieza | Pregunta | Resultado |
+|---|---|---|
+| Buscador (híbrido) | ¿Trae el fragmento correcto entre los 5 primeros? | **86 de cada 100** (denso solo: 90; BM25: 66) |
+| Generador (Qwen3-1.7B) | Con el fragmento delante, ¿lo cita? | **40 de cada 100**; y en 15 dice "no lo sé" teniéndolo |
+| Generador (Qwen3-4B), mismos fragmentos | ¿Y con un modelo mayor? | **67 de cada 100**; "no lo sé" sin motivo, 3 |
+
+Conclusión: **el buscador funciona; el cuello de botella es el generador de 1,7B**, y se demuestra
+cambiando solo el generador.
+
 ## Recuperación
 
 | Retriever | Hit@1 | Hit@3 | Hit@5 | Hit@10 | Recall@5 | MRR |
@@ -66,6 +91,13 @@ que el encabezado ayuda a BM25.
 | Abstención en preguntas sin respuesta | 6/6 | 5/8 | **8/8** |
 
 "Cita el fragmento relevante" es una cota inferior: a veces cita otro fragmento igual de válido.
+
+**Lo que estas métricas no miden: si la respuesta es correcta.** Miden citas y abstención, no el
+contenido. Ejemplo (t001, "¿Puedo conducir si tomo atorvastatina?"): el fragmento correcto ("la
+influencia … es nula o insignificante") estaba en el prompt y el modelo respondió "no se
+recomienda conducir … la influencia es nula o insignificante … se sugiere que no se conduzca",
+con una cita válida. Cuenta como "respuesta con cita" y dice lo contrario de la ficha. Medir la
+corrección exigiría un juez (otro modelo, o una comprobación de la respuesta esperada).
 
 ## Lectura
 

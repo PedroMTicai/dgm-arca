@@ -304,6 +304,8 @@ def faers_reaction_counts(
     else:
         result["top_reactions"] = _openfda_top_reactions(drug_query, top)
     result["source"] = "openFDA drug/event (FAERS); unvalidated spontaneous reports"
+    # Said in every result so the model cannot present these counts as Spain's or one year's.
+    result["scope"] = "worldwide reports of all years; no filter by country or date"
     return result
 
 
@@ -506,18 +508,26 @@ def create_icsr_report(
     for name in reactions:
         pt = dictionary.to_pt(name)
         (pts.append(pt) if pt else not_pts.append(name))
+    # Every check runs and all problems are reported together: stopping at the first one hid
+    # the real problem (an unidentifiable patient was rejected only for a Spanish term).
+    problems = []
     if not_pts:
-        raise ValueError(
+        problems.append(
             f"not Preferred Terms of our MedDRA dictionary: {not_pts}. Do not substitute "
             "another reaction: correct the term only if it is a spelling or language issue, "
-            "otherwise tell the user the report could not be created for these terms."
+            "otherwise tell the user the report could not be created for these terms"
         )
-    if not pts:
-        raise ValueError("an ICSR needs at least one suspected reaction")
+    if not reactions:
+        problems.append("an ICSR needs at least one suspected reaction")
     if patient_age is None and patient_sex == "unknown":
-        raise ValueError("the patient is not identifiable: give the age or the sex")
+        problems.append(
+            "the patient is not identifiable (no age and no sex): this is a missing minimum "
+            "element, ask the reporter; do not invent it"
+        )
     if not suspect_drug.strip():
-        raise ValueError("an ICSR needs a suspect drug")
+        problems.append("an ICSR needs a suspect drug")
+    if problems:
+        raise ValueError("the report was not created: " + "; ".join(problems))
 
     report = {
         "schema": "simplified-E2B (dgm-arca)",

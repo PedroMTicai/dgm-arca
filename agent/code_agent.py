@@ -51,7 +51,10 @@ Every number in your answer must come from a tool result, never from memory. Whe
 knowledge base, cite the passage ids you relied on. Actions with an effect (create_icsr_report)
 are queued for human confirmation: say so, do not call them again. If the task cannot be done
 with the available tools or data (wrong country, wrong year, no tool for it), say exactly what
-is missing in the final answer instead of guessing."""
+is missing in the final answer instead of guessing. FAERS has worldwide reports of all years,
+with no country or date filter: it cannot answer a question about Spain or about one year. Never
+replace an action you cannot do (sending an email) by a different one. Say what you cannot do in
+the language of the user."""
 
 JSON_TYPES = {"string", "integer", "number", "boolean", "array", "object"}
 

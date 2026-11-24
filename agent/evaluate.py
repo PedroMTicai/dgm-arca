@@ -85,6 +85,32 @@ def summarise(rows: list[dict]) -> dict:
     }
 
 
+def rescore(results_path: Path, bench: list[dict], out: Path) -> dict:
+    """Re-check a finished evaluation with the bench's current checks, without running the
+    agent again: the saved final answers are scored again (``live`` checks query FAERS now).
+
+    Used when a check is corrected, so the old run and a new one are compared with the same
+    rules.
+    """
+    from tool_use.tools import default_registry
+
+    registry = default_registry()
+    by_id = {task["id"]: task for task in bench}
+    results = json.loads(results_path.read_text(encoding="utf-8"))
+    for brain, block in results.items():
+        for row in block["rows"]:
+            task = {**row, "check": by_id[row["id"]]["check"]}
+            row["check"] = task["check"]
+            row["correct"] = bool(row.get("succeeded")) and check_answer(
+                task, row.get("final_answer") or "", row, registry
+            )
+        block["summary"] = summarise(block["rows"])
+        print(f"{brain:>13}: {json.dumps(block['summary'])}", flush=True)
+    out.write_text(json.dumps(results, indent=2, ensure_ascii=False, default=list), "utf-8")
+    print(f"report -> {out}")
+    return results
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -93,6 +119,11 @@ def main() -> None:
     parser.add_argument("--brains", nargs="+", default=["base", "thinking"])
     parser.add_argument("--max-steps", type=int, default=8)
     parser.add_argument("--out", default="reports/phase4_eval.json")
+    parser.add_argument(
+        "--rescore",
+        default=None,
+        help="re-check this results JSON with the current checks (no agent run); writes --out",
+    )
     args = parser.parse_args()
 
     from agent.react_agent import ReActAgent
@@ -102,6 +133,9 @@ def main() -> None:
         for line in Path(args.bench).read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
+    if args.rescore:
+        rescore(Path(args.rescore), tasks, Path(args.out))
+        return
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     # Brains not in this run keep their previous results, so brains can be run one at a time.

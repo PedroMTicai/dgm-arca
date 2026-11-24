@@ -41,6 +41,12 @@ selección y de argumentos, comparando con y sin herramientas.
   y otros fármacos; c+d = con otros fármacos. PRR = [a/(a+b)] / [c/(c+d)]. Señal (Evans):
   PRR ≥ 2, a ≥ 3 y límite inferior del IC 95 % > 1. Ejemplo real: sertralina-somnolencia, a = 5 474,
   PRR = 2,62 [2,55; 2,69] → señal.
+- **Señal (PRR) y causalidad (Naranjo) son preguntas distintas.** La señal es poblacional
+  (¿esta reacción se notifica con este fármaco más de lo esperable, en miles de notificaciones?)
+  y es una hipótesis, no una prueba: FAERS son notificaciones voluntarias. Naranjo es individual
+  (¿este fármaco causó esta reacción en este paciente?). No van una tras otra: cada caso se valora
+  con Naranjo al llegar; la búsqueda de señales se hace periódicamente sobre toda la base, y una
+  señal se valida revisando los casos individuales que la forman.
 - **Naranjo.** Puntos por pregunta (sí / no): reportes previos (+1/0), apareció tras el fármaco
   (+2/−1), mejoró al retirarlo (+1/0), reapareció al reintroducirlo (+2/−1), causas alternativas
   (−1/+2), reapareció con placebo (−1/+1), niveles tóxicos (+1/0), relación con la dosis (+1/0),

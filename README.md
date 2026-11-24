@@ -5,7 +5,7 @@ y datos de FAERS, calcula señales de desproporcionalidad y prepara el ICSR, con
 confirma antes de registrar nada.**
 
 Práctica final de Modelos Generativos Profundos · Máster en Inteligencia Artificial · ICAI ·
-2026-2027. Todo con modelos abiertos pequeños (Qwen3-1.7B) entrenados y evaluados en una GPU de
+2026-2027. Equipo: Matteo Ferrari, Pedro Meseguer y Mario Alonso. Todo con modelos abiertos pequeños (Qwen3-1.7B) entrenados y evaluados en una GPU de
 16 GB. El enunciado de la práctica está en [`docs/practica.md`](docs/practica.md).
 
 ## Para quién y qué problema resuelve
@@ -100,19 +100,23 @@ sin respuesta: el cuello de botella era el generador. [`rag/RESULTADOS.md`](rag/
 
 | Agente | Cerebro | Éxito | Tokens por tarea |
 |---|---|---|---|
-| ReAct (JSON) | `base` | **55 %** | 11 550 |
-| ReAct (JSON) | `thinking` | **55 %** | 11 127 |
-| ReAct (JSON) | `rlm` (LoRA de la fase 1) | 10 % | 3 152 |
-| Código (smolagents) | `thinking` / `base` | 35 % / 40 % | ~30 000 |
+| ReAct (JSON) | `thinking` (por defecto) | **65 %** | 10 849 |
+| ReAct (JSON) | `base` | 55 % | 9 868 |
+| ReAct (JSON) | `rlm` (LoRA de la fase 1) | 10 % | 3 274 |
+| Código (smolagents) | `thinking` / `base` | 30 % / 20 % | ~28 000 |
 
 El modelo de la fase 1 como cerebro olvida el protocolo de herramientas (escribe la traza entera
 con observaciones inventadas), así que entra en el agente como herramienta. El agente de código
 gana en las tareas de cálculo, pero gasta casi el triple de tokens y pierde en el resto.
 [`agent/RESULTADOS.md`](agent/RESULTADOS.md)
 
-Lo que no funciona, sin adornos: **las tareas imposibles** ("¿cuántas notificaciones hubo en
-España en 2025?" → da el total mundial de FAERS) fallan con todos los cerebros, y con 20 tareas
-el ruido es de unos ±20 puntos. El cuaderno completo, fechado, está en [`EXPERIMENTS.md`](EXPERIMENTS.md).
+Las acciones con efecto (el ICSR) quedan retenidas hasta que una persona las confirma
+(`POST /agent/confirm`); entonces el agente retoma la conversación y explica el resultado.
+
+Lo que no funciona, sin adornos: **las tareas imposibles** solo a medias ("¿cuántas notificaciones
+hubo en España en 2025?" → `thinking` ya dice que no hay datos de España, pero copia mal el total
+mundial; `base` lo da sin más), el modelo responde a menudo en inglés, y con 20 tareas el ruido es
+de unos ±20 puntos. El cuaderno completo, fechado, está en [`EXPERIMENTS.md`](EXPERIMENTS.md).
 
 ## Cómo ejecutarlo
 

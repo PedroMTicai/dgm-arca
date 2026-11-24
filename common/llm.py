@@ -41,6 +41,20 @@ def cut_at_stop(text: str, stop: list[str] | None) -> str:
     return text[: min(cuts)] if cuts else text
 
 
+def fast_attention() -> None:
+    """Turn off PyTorch's cuDNN attention backend; the others (flash, memory-efficient) stay.
+
+    On Hopper GPUs (the H200 of the DGX) PyTorch prefers cuDNN for ``scaled_dot_product_attention``,
+    and cuDNN builds a new execution plan for every new sequence length. When generating, the
+    length grows by one token per step, so it re-plans every step: profiled on the DGX, attention
+    took 8.5 ms per layer and generation ran at 3.5 tokens/s; without cuDNN, 69 tokens/s. On other
+    GPUs this changes nothing.
+    """
+    import torch
+
+    torch.backends.cuda.enable_cudnn_sdp(False)
+
+
 class ChatModel:
     """A Hugging Face causal LM (plus optional LoRA adapter) behind a chat interface."""
 
@@ -61,6 +75,8 @@ class ChatModel:
     def load(self) -> ChatModel:
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
+
+        fast_attention()
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.bfloat16 if device == "cuda" else torch.float32

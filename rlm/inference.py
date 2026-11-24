@@ -106,6 +106,10 @@ class ReasoningModel:
         from peft import PeftModel
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
+        from common.llm import fast_attention
+
+        fast_attention()  # 20x faster generation on the DGX's H200 (see common/llm.py)
+
         device = "cuda" if torch.cuda.is_available() else "cpu"
         dtype = torch.bfloat16 if device == "cuda" else torch.float32
         self.tokenizer = AutoTokenizer.from_pretrained(self.base_model, padding_side="left")
@@ -156,13 +160,17 @@ class ReasoningModel:
         return results
 
     def generate(
-        self, question: str, max_new_tokens: int = 1024, temperature: float = 0.6
+        self, question: str, max_new_tokens: int = 2048, temperature: float = 0.0
     ) -> tuple[str, int]:
-        """Return the raw completion and the number of generated tokens."""
+        """Return the raw completion and the number of generated tokens.
+
+        Greedy and 2048 tokens by default: the settings of ``rlm/evaluate.py``, so the endpoint
+        answers like the model whose pass@1 we report.
+        """
         return self.generate_batch([question], max_new_tokens, temperature)[0]
 
     def answer(
-        self, question: str, expected_answer: str | None = None, max_new_tokens: int = 1024
+        self, question: str, expected_answer: str | None = None, max_new_tokens: int = 2048
     ) -> ReasoningResponse:
         raw, n_tokens = self.generate(question, max_new_tokens)
         thinking, answer = split_thinking(raw)

@@ -23,7 +23,7 @@ agente JSON con un agente de código; traza visible.
 | **Cerebro** (`brain`) | `base` = Qwen3-1.7B sin thinking (el modelo del que partió la fase 1); `rlm` = Qwen3-1.7B + nuestro LoRA de la fase 1 (carpeta local o el id del Hub `Matteofermar/arca-meddra-qwen3-1.7b`); `thinking` = Qwen3-1.7B con modo thinking. La primera evaluación se hizo con `base` = Qwen3-0.6B | `base` frente a `rlm` responde a "¿ayudó entrenar?"; `thinking` es el modelo con razonamiento nativo. Los tres con los mismos pesos de partida, para que solo cambie una cosa |
 | **Herramientas** | Las 5 de la fase 2 + `search_knowledge_base` (fase 3) + `final_answer` + `code_meddra` (el modelo de la fase 1 como herramienta, si está el adaptador) | Pocas herramientas y bien descritas: un modelo pequeño se pierde con muchas |
 | **Una acción por paso** | Si el modelo escribe varias llamadas a la vez, solo se ejecuta la primera y se le avisa | En la primera prueba el modelo escribió buscar + FAERS + `final_answer` en la misma generación, es decir, **respondió antes de ver los resultados** (inventó "1 500 notificaciones" cuando FAERS daba 5 472) |
-| **Permisos** | Las herramientas con `requires_confirmation` (el ICSR) **no se ejecutan** salvo `allow_actions=True`; se validan y quedan en `pending_actions` para un humano | En la fase 2 el modelo inventó `patient_age: 0` para saltarse una validación |
+| **Permisos** | Las herramientas con `requires_confirmation` (el ICSR) **no se ejecutan** salvo `allow_actions=True`; se validan y quedan en `pending_actions` para un humano, que las aprueba con `POST /agent/confirm` (se ejecuta exactamente la acción revisada; con el `session_id`, el resultado entra en esa conversación y el agente da un paso más para explicárselo al usuario; en el visor, el botón «Confirmar acciones pendientes») | En la fase 2 el modelo inventó `patient_age: 0` para saltarse una validación |
 | **Timeouts** | Por herramienta (FAERS y la base de conocimiento 60 s, resto 15 s), en un hilo aparte | Una API lenta se convierte en observación, no en un cuelgue |
 | **Errores** | JSON roto, herramienta desconocida, argumentos inválidos, excepciones → observación | El modelo puede corregirse (en la prueba real, reintentó "somnolencia" como "drowsiness") |
 | **Bucles** | La misma llamada con los mismos argumentos: la 2.ª vez, aviso; la 3.ª, se para (`loop_detected`) | Los modelos pequeños repiten llamadas que fallan |
@@ -92,15 +92,19 @@ observaciones en verde. `uv run python -m agent.ui` con la API levantada.
 
 ## 4. Resultados
 
-Evaluación final en la DGX, los tres cerebros con Qwen3-1.7B y el corpus completo:
+Evaluación final (v2) en la DGX, los tres cerebros con Qwen3-1.7B, el corpus completo, el
+agente con todos sus cambios y las comprobaciones corregidas del banco:
 
 | Agente | Cerebro | Éxito (20 tareas) | Herramientas requeridas | Terminó con `final_answer` | Pasos | Tokens |
 |---|---|---|---|---|---|---|
-| ReAct (JSON) | `base` | **55 %** | 85 % | 75 % | 3,3 | 11 550 |
-| ReAct (JSON) | `rlm` | 10 % | 10 % | 0 % | 1,0 | 3 152 |
-| ReAct (JSON) | `thinking` | **55 %** | 75 % | 50 % | 2,9 | 11 127 |
-| Código | `thinking` | 35 % | 40 % | 60 % | 5,7 | 31 565 |
-| Código | `base` | 40 % | 45 % | 60 % | 5,4 | 28 214 |
+| ReAct (JSON) | `base` | 55 % | 75 % | 65 % | 2,85 | 9 868 |
+| ReAct (JSON) | `rlm` | 10 % | 10 % | 0 % | 1,0 | 3 274 |
+| ReAct (JSON) | `thinking` | **65 %** | 70 % | 15 % | 2,75 | 10 849 |
+| Código | `thinking` | 30 % | 50 % | 60 % | 5,75 | 31 855 |
+| Código | `base` | 20 % | 50 % | 70 % | 4,9 | 25 419 |
+
+`thinking` es el cerebro por defecto de `/agent`. La evaluación anterior y la comparación, en
+[`agent/RESULTADOS.md`](../../agent/RESULTADOS.md).
 
 - **`rlm` no funciona como cerebro**: el LoRA de la fase 1 escribe de una vez toda la traza
   ReAct, con observaciones inventadas, sin el bloque `<tool_call>` que el bucle ejecuta; sus dos
@@ -108,7 +112,7 @@ Evaluación final en la DGX, los tres cerebros con Qwen3-1.7B y el corpus comple
   en el agente como **herramienta** (`code_meddra`).
 - **El agente de código gana donde hay que calcular** (ficha + calculadora, 3/5) y pierde donde
   hay que leer el resultado estructurado de FAERS y llamar al PRR (0–1 de 3 frente a 3 de 3).
-- **El thinking no mejora el agente a 1,7B** (55 % los dos) y sigue peor el protocolo.
+- **`thinking` es el mejor** (65 % frente a 55 %; dos tareas, dentro del ruido) y el único que en la tarea de España dice que no hay datos de ese país, pero casi nunca usa `final_answer`.
 - **El agente de código rinde menos y cuesta casi el triple de tokens**: el modelo pequeño se
   enreda corrigiendo su propio Python y agota los pasos. Una llamada JSON por paso es más robusta.
 - Las tareas imposibles siguen fallando. En la primera evaluación (RTX 5070), `base` con 0,6B dio

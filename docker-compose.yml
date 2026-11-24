@@ -27,7 +27,9 @@ x-arca: &arca
   environment:
     - HF_HOME=/data/hf_cache
     - HF_TOKEN=${HF_TOKEN:-}
-    - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-all}
+    # Sin valor: se pasa solo si está definida en el anfitrión o en .env. No poner "all": eso
+    # vale para NVIDIA_VISIBLE_DEVICES, pero CUDA espera índices y con "all" no ve ninguna GPU.
+    - CUDA_VISIBLE_DEVICES
     - TOKENIZERS_PARALLELISM=false
   shm_size: "8gb"
   deploy:
@@ -45,7 +47,7 @@ services:
     environment:
       - HF_HOME=/data/hf_cache
       - HF_TOKEN=${HF_TOKEN:-}
-      - CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-all}
+      - CUDA_VISIBLE_DEVICES
       - TOKENIZERS_PARALLELISM=false
       - ARCA_API_PORT=8000  # dentro del contenedor siempre 8000; fuera, el de .env
     ports:

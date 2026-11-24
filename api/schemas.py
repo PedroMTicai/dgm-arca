@@ -39,7 +39,12 @@ class ReasoningRequest(BaseModel):
         default=None,
         description="Optional ground truth; when given, the response includes the verifier verdict",
     )
-    max_new_tokens: int = Field(default=1024, ge=16, le=8192)
+    max_new_tokens: int = Field(
+        default=2048,
+        ge=16,
+        le=8192,
+        description="Generation budget; 2048 is what rlm/evaluate.py used for the reported pass@1",
+    )
 
 
 class VerifierVerdict(BaseModel):
@@ -122,7 +127,10 @@ class AgentRequest(BaseModel):
     task: str = Field(..., min_length=1)
     max_steps: int = Field(default=10, ge=1, le=50)
     brain: Literal["base", "rlm", "thinking"] = Field(
-        default="rlm",
+        # The template's default was "rlm"; ours is the brain that works best on our bench
+        # (thinking, 65 %). "rlm" (our phase-1 LoRA) does not work as a brain: it writes the
+        # whole trace with invented observations (agent/RESULTADOS.md). It stays selectable.
+        default="thinking",
         description="Model driving the loop: base model, your phase-1 RLM, or a thinking model",
     )
     session_id: str | None = Field(
@@ -141,10 +149,29 @@ class AgentAction(BaseModel):
     arguments: dict[str, Any] = Field(default_factory=dict)
 
 
+class ConfirmRequest(BaseModel):
+    """A held action approved by a person (``/agent/confirm``)."""
+
+    action: AgentAction = Field(..., description="The action exactly as in pending_actions.")
+    session_id: str | None = Field(
+        default=None,
+        description="session_id of the /agent run that held it: the agent then tells the user "
+        "the outcome and the conversation remembers it.",
+    )
+
+
+class ConfirmResponse(BaseModel):
+    record: ToolCallRecord
+    message: str = Field(..., description="The agent's answer to the user about the outcome.")
+    session_id: str | None = None
+
+
 class AgentStep(BaseModel):
     thought: str
     action: AgentAction | None = None
     observation: str | None = None
+    thought_seconds: float | None = Field(default=None, description="Time spent generating.")
+    action_seconds: float | None = Field(default=None, description="Time running the tool.")
 
 
 class AgentResponse(BaseModel):

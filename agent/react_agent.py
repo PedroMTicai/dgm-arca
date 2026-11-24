@@ -3,11 +3,12 @@
 This is the "minimal harness" of the course: the model only produces text; everything that
 turns it into an agent lives here. Phases 1 to 3 meet in it:
 
-* **Brain** (``brain=``): ``base`` is Qwen3-1.7B without thinking, the model phase 1 started
-  from (``ARCA_RLM_BASE_MODEL``); ``rlm`` is the same model with our phase-1 LoRA adapter
-  (``ARCA_RLM_ADAPTER``, a folder or a Hub id); ``thinking`` is Qwen3-1.7B with its native
-  thinking mode on (``ARCA_THINKING_MODEL``). base vs rlm answers "did our training help
-  the agent?"; thinking is the native reasoning model to compare against.
+* **Brain** (``brain=``): ``base`` is the system's text-generation model without thinking
+  (``ARCA_LLM_MODEL``, Qwen3-1.7B by default: the model phase 1 started from); ``rlm`` is
+  Qwen3-1.7B (``ARCA_RLM_BASE_MODEL``) with our phase-1 LoRA adapter (``ARCA_RLM_ADAPTER``, a
+  folder or a Hub id); ``thinking`` is the same model as ``base`` with its native thinking mode
+  on (``ARCA_THINKING_MODEL`` overrides it). base vs rlm answers "did our training help the
+  agent?"; thinking is the native reasoning model to compare against.
 * **Hands**: the phase-2 registry (FAERS, Naranjo, PRR, ICSR, calculator), the phase-3
   retriever as ``search_knowledge_base``, ``final_answer``, and ``code_meddra`` (the phase-1
   model as a tool) when the adapter is available.
@@ -34,7 +35,9 @@ What makes it a harness and not just a loop:
 from __future__ import annotations
 
 import json
+import logging
 import os
+import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeout
@@ -46,12 +49,26 @@ from pydantic import Field
 from agent.memory import ConversationMemory
 from agent.prompts import REACT_SYSTEM_PROMPT, SUMMARY_PROMPT
 from api.schemas import AgentAction, AgentResponse, AgentStep, ToolCallRecord
-from common.llm import ChatModel, get_chat_model, strip_thinking
+from common.llm import DEFAULT_LLM, ChatModel, get_chat_model, strip_thinking
 from tool_use.parser import parse_tool_calls
 from tool_use.registry import ToolRegistry, tool
 from tool_use.tools import default_registry
 
 MAX_OBSERVATION_CHARS = 1500
+log = logging.getLogger("arca.agent")  # one line per step in the API log
+TOOL_CALL_END = "</tool_call>"
+
+
+def plain_answer(text: str) -> str:
+    """The answer inside a text reply: what follows the last "Final Answer:", if any.
+
+    When the model answers without the ``final_answer`` tool it often writes the whole ReAct
+    block ("Thought: … Action: … Final Answer: …"); the user should only see the last part.
+    """
+    marker = text.lower().rfind("final answer:")
+    return text[marker + len("final answer:") :].strip() if marker >= 0 else text.strip()
+
+
 TOOL_TIMEOUTS = {"faers_reaction_counts": 60.0, "search_knowledge_base": 60.0, "code_meddra": 120.0}
 DEFAULT_TIMEOUT = 15.0
 
@@ -129,12 +146,16 @@ class Brain:
 
 
 def _brain_specs() -> dict[str, dict]:
-    base = os.environ.get("ARCA_RLM_BASE_MODEL", "Qwen/Qwen3-1.7B")
+    # One variable chooses the text-generation model of the whole system (/rag, /tools and the
+    # base and thinking brains): ARCA_LLM_MODEL. The phase-1 LoRA (rlm, /reasoning, code_meddra)
+    # only works on the model it was trained on, so rlm keeps its own base, ARCA_RLM_BASE_MODEL.
+    llm = os.environ.get("ARCA_LLM_MODEL") or DEFAULT_LLM
+    rlm_base = os.environ.get("ARCA_RLM_BASE_MODEL", "Qwen/Qwen3-1.7B")
     return {
-        "base": {"model_id": base},
-        "rlm": {"model_id": base, "adapter": os.environ.get("ARCA_RLM_ADAPTER") or None},
+        "base": {"model_id": llm},
+        "rlm": {"model_id": rlm_base, "adapter": os.environ.get("ARCA_RLM_ADAPTER") or None},
         "thinking": {
-            "model_id": os.environ.get("ARCA_THINKING_MODEL", "Qwen/Qwen3-1.7B"),
+            "model_id": os.environ.get("ARCA_THINKING_MODEL") or llm,
             "thinking": True,
         },
     }
@@ -146,6 +167,7 @@ class ReActAgent:
     token_budget: int = 6000
     brains: dict[str, Brain] = field(default_factory=dict)
     sessions: dict[str, ConversationMemory] = field(default_factory=dict)
+    session_brains: dict[str, str] = field(default_factory=dict)  # for confirm() to resume
 
     @classmethod
     def from_env(cls) -> ReActAgent:
@@ -192,10 +214,24 @@ class ReActAgent:
 
     def generate(self, messages: list[dict], brain: Brain) -> tuple[str, int]:
         """One generation. Returns the raw text and the tokens it cost (prompt + output)."""
+        started = time.perf_counter()
+        # Stop at the end of the first tool call. Otherwise the model keeps writing the trace it
+        # expects, inventing the observation and the next steps (Qwen3-1.7B wrote 512 tokens of
+        # made-up FAERS counts and "the report was created" after its first call). The stop
+        # does not fire inside <think> (common/llm.py), so the thinking brain still reasons.
         raw, generated = brain.llm.generate(
             messages,
             max_new_tokens=1024 if brain.thinking else 512,
             enable_thinking=brain.thinking,
+            stop=[TOOL_CALL_END],
+        )
+        if raw.count("<tool_call>") > raw.count(TOOL_CALL_END):
+            raw += TOOL_CALL_END  # the stop string is cut from the text; the parser needs it
+        log.info(
+            "agent: generated %d tokens (prompt %d) in %.1f s",
+            generated,
+            brain.llm.last_prompt_tokens,
+            time.perf_counter() - started,
         )
         return raw, brain.llm.last_prompt_tokens + generated
 
@@ -212,11 +248,16 @@ class ReActAgent:
         """``registry.call`` with a timeout. The worker thread is left behind on timeout
         (Python cannot kill it), but the agent moves on with an error observation."""
         timeout = TOOL_TIMEOUTS.get(name, DEFAULT_TIMEOUT)
+        log.info("agent: calling %s", name)
+        started = time.perf_counter()
         pool = ThreadPoolExecutor(max_workers=1)
         future = pool.submit(self.registry.call, name, arguments)
         try:
-            return future.result(timeout=timeout)
+            record = future.result(timeout=timeout)
+            log.info("agent: %s ok=%s in %.1f s", name, record.ok, time.perf_counter() - started)
+            return record
         except FutureTimeout:
+            log.warning("agent: %s timed out after %.0f s", name, timeout)
             return ToolCallRecord(
                 name=name,
                 arguments=arguments,
@@ -226,6 +267,68 @@ class ReActAgent:
             )
         finally:
             pool.shutdown(wait=False)
+
+    def confirm(
+        self, action: AgentAction, session_id: str | None = None
+    ) -> tuple[ToolCallRecord, str]:
+        """Human-in-the-loop: execute exactly the held action a person reviewed and approved.
+
+        Only for tools that need confirmation (the others already ran inside the loop). The
+        arguments are validated again by the registry, as in any call, and the model is not
+        involved in what runs: it is what the person saw in ``pending_actions``.
+
+        With the ``session_id`` of the run that held the action, the outcome goes into that
+        conversation as an observation and the agent resumes for one step to tell the user
+        what happened, so the conversation knows the action ran (the report id, the deadline).
+        Returns the execution record and that message (a fixed one without a session, or if
+        the model does not answer properly).
+        """
+        spec = self.registry.tools.get(action.name)
+        if spec is None or not spec.requires_confirmation:
+            record = ToolCallRecord(
+                name=action.name,
+                arguments=action.arguments,
+                ok=False,
+                error="only actions that wait for human confirmation can be confirmed",
+            )
+            return record, f"No se ha ejecutado: {record.error}."
+        log.info("agent: human confirmed %s", action.name)
+        record = self.execute(action.name, action.arguments)
+        fallback = (
+            f"Acción confirmada y ejecutada ({action.name}): "
+            + json.dumps(record.result, ensure_ascii=False, default=str)
+            if record.ok
+            else f"La acción confirmada ({action.name}) ha fallado: {record.error}"
+        )
+        memory = self.sessions.get(session_id or "")
+        if memory is None:
+            return record, fallback
+        outcome = (
+            json.dumps(record.result, ensure_ascii=False, default=str)
+            if record.ok
+            else f"error: {record.error}"
+        )
+        memory.add(
+            "tool", f"confirmed by the human reviewer and executed: {outcome}", name=action.name
+        )
+        memory.add(
+            "user",
+            "I have confirmed the pending action. Call final_answer to tell me its outcome "
+            "(identifiers, deadlines, any error), in the language of my original task.",
+        )
+        mind = self.brain_for(self.session_brains.get(session_id, "base"))
+        raw, _ = self.generate(memory.model_messages(), mind)
+        parsed = parse_tool_calls(raw)
+        calls = [c for c in parsed.tool_calls if c.name == "final_answer" and not c.error]
+        if calls:
+            message = str(calls[0].arguments.get("answer", "")).strip()
+        elif not parsed.tool_calls:
+            message = plain_answer(parsed.text or parsed.thinking or "")
+        else:
+            message = ""
+        message = message or fallback
+        memory.add("assistant", message)
+        return record, message
 
     def run(
         self,
@@ -247,6 +350,7 @@ class ReActAgent:
             )
             self.sessions[session_id] = memory
         memory.add("user", task, pinned=True)
+        self.session_brains[session_id] = brain
 
         steps: list[AgentStep] = []
         pending: list[AgentAction] = []
@@ -269,15 +373,19 @@ class ReActAgent:
             )
 
         for _ in range(max_steps):
+            started = time.perf_counter()
             raw, cost = self.generate(memory.model_messages(), mind)
+            took = round(time.perf_counter() - started, 1)  # shown as "thought for X s"
             tokens += cost
             parsed = parse_tool_calls(raw)
             thought = parsed.thinking or parsed.text
             if not parsed.tool_calls:
                 # Answered in plain text: accept it as the answer, but record that the model
                 # did not follow the protocol (it shows up in stop_reason and the benchmark).
-                steps.append(AgentStep(thought=thought))
-                return respond(parsed.text or thought, True, "answered_without_final_answer")
+                steps.append(AgentStep(thought=thought, thought_seconds=took))
+                return respond(
+                    plain_answer(parsed.text or thought), True, "answered_without_final_answer"
+                )
             # ReAct is one action per step, then look at the observation. Qwen sometimes
             # writes several calls at once, final_answer included, i.e. it answers before
             # seeing any result. Only the first call runs; the rest are dropped from the
@@ -293,13 +401,15 @@ class ReActAgent:
             )
             if call.error:
                 observation = f"error: {call.error}{note}"
-                steps.append(AgentStep(thought=thought, observation=observation))
+                steps.append(
+                    AgentStep(thought=thought, observation=observation, thought_seconds=took)
+                )
                 memory.add("tool", observation, name="parser")
                 memory.compress(lambda old: self.summarize(mind, old))
                 continue
             action = AgentAction(name=call.name, arguments=call.arguments)
             if call.name == "final_answer":
-                steps.append(AgentStep(thought=thought, action=action))
+                steps.append(AgentStep(thought=thought, action=action, thought_seconds=took))
                 return respond(str(call.arguments.get("answer", "")), True, "final_answer")
 
             key = json.dumps([call.name, call.arguments], sort_keys=True, default=str)
@@ -310,6 +420,7 @@ class ReActAgent:
                         thought=thought,
                         action=action,
                         observation="stopped: same call repeated 3 times",
+                        thought_seconds=took,
                     )
                 )
                 return respond(
@@ -319,14 +430,24 @@ class ReActAgent:
                     "loop_detected",
                 )
 
+            acted = time.perf_counter()
             observation = self.observe(call.name, call.arguments, allow_actions, pending)
+            action_took = round(time.perf_counter() - acted, 1)
             if seen_calls[key] == 2:
                 observation += (
                     "\nwarning: you already made this exact call; use the "
                     "result you have or change the arguments."
                 )
             observation += note
-            steps.append(AgentStep(thought=thought, action=action, observation=observation))
+            steps.append(
+                AgentStep(
+                    thought=thought,
+                    action=action,
+                    observation=observation,
+                    thought_seconds=took,
+                    action_seconds=action_took,
+                )
+            )
             memory.add("tool", observation, name=call.name)
             memory.compress(lambda old: self.summarize(mind, old))
 
@@ -345,9 +466,13 @@ class ReActAgent:
             except Exception as exc:  # noqa: BLE001 - validation errors are observations
                 return f"error: invalid arguments: {exc}"
             pending.append(AgentAction(name=name, arguments=arguments))
+            # Worded as an instruction for the next step: with the old wording the model
+            # copied this text verbatim as its answer to the user.
             return (
-                "not executed: this action has side effects and needs human "
-                "confirmation. It has been queued for review; tell the user it is pending."
+                f"not executed: {name} has side effects, so it was validated and queued for a "
+                "human to confirm it; nothing has been written yet. Do not call it again. "
+                "Next, call final_answer telling the user, in the language of their task, "
+                "that the action is pending human review."
             )
         record = self.execute(name, arguments)
         text = (

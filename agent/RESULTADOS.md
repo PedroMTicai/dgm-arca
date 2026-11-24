@@ -5,7 +5,44 @@ tareas imposibles; máximo 8 pasos; las acciones con efecto quedan pendientes de
 (`allow_actions=False`). Ejecutado en una RTX 5070 de 8 GB; cada cerebro en su propio proceso (dos
 cerebros a la vez no caben en 8 GB). Detalle del diseño en [`docs/guia/04_agente.md`](../docs/guia/04_agente.md).
 
-## Evaluación final: los tres cerebros a 1,7B y el agente de código (DGX)
+## Reevaluación con los cambios posteriores (v2, la que vale)
+
+Después de la evaluación de abajo cambiamos el agente: la generación de cada paso se corta al
+cerrar la primera llamada (`</tool_call>`), el prompt trata las tareas imposibles (FAERS no filtra
+por país ni por fecha; una acción sin herramienta no se sustituye por otra), FAERS devuelve su
+alcance en cada resultado, el ICSR devuelve todos sus errores juntos, la observación de una acción
+retenida es una instrucción, y la generación en la DGX va unas 20 veces más rápida (sin la
+atención de cuDNN). Mismo banco, comprobaciones v2, mismos cerebros:
+
+| Agente | Cerebro | Éxito v1 (comprob. v2) | **Éxito v2** | Herramientas requeridas | Terminó con `final_answer` | Pasos | Tokens |
+|---|---|---|---|---|---|---|---|
+| ReAct | `base` | 60 % | **55 %** | 75 % | 65 % | 2,85 | 9 868 |
+| ReAct | `rlm` | 5 % | 10 % | 10 % | 0 % | 1,0 | 3 274 |
+| ReAct | `thinking` | 65 % | **65 %** | 70 % | 15 % | 2,75 | 10 849 |
+| Código | `thinking` | 35 % | 30 % | 50 % | 60 % | 5,75 | 31 855 |
+| Código | `base` | 40 % | 20 % | 50 % | 70 % | 4,9 | 25 419 |
+
+Fuente: `reports/phase4_eval_1.7b_v2.json`; la columna v1 es `reports/phase4_eval_1.7b_checks_v2.json`.
+
+- **El éxito no cambia más allá del ruido** (±5 puntos es una tarea de 20), pero cada tarea
+  cuesta menos: `base` pasa de 11 550 a 9 868 tokens, porque el modelo ya no escribe trazas
+  inventadas detrás de su primera llamada.
+- **Las tareas imposibles, a medias.** En a20 ("¿cuántas notificaciones hubo en España en
+  2025?") `thinking` ya no presenta el total mundial como dato de España: "Spain-specific data
+  cannot be retrieved with the available tools". Pero el total que da está mal copiado (54 740;
+  el real es 5 474) y lo sitúa "en 2025", cuando FAERS no filtra por año; la comprobación lo
+  acepta por la negativa. `base` sigue respondiendo "5474" sin más. En a19 (enviar un correo)
+  `thinking` dice que no puede y propone registrar el ICSR y enviarlo a mano.
+- **`thinking` casi no usa `final_answer`** (3 de 20, antes 10): tras razonar escribe
+  "Final Answer: …" como texto. La respuesta llega limpia (el harness se queda con lo que sigue a
+  esa marca), pero no sigue el protocolo.
+- **`rlm` sigue sin funcionar como cerebro**: sus dos aciertos son, otra vez, una traza inventada
+  que contiene palabras de una negativa (a20) y una negativa genérica (a19).
+- **El agente de código empeora** (30 % y 20 %) y agota los pasos en 8 y 6 tareas. Ninguno de los
+  cambios le afecta (no usa nuestro bucle) y la variación entre ejecuciones es grande: la
+  conclusión JSON > código se mantiene, ahora con más diferencia.
+
+## Evaluación anterior (v1): los tres cerebros a 1,7B y el agente de código (DGX)
 
 Mismo banco y mismas reglas; los tres cerebros parten de los mismos pesos (Qwen3-1.7B), así que
 solo cambia una cosa en cada comparación. MIG de 16 GB en la DGX, un proceso por cerebro. Corpus
@@ -103,10 +140,27 @@ Revisando las respuestas aparecen errores de las comprobaciones en los dos senti
 - **Falsos negativos**: a08 espera el número 1000 (dosis diaria inicial de levetiracetam) y
   `base` responde "500 mg dos veces al día", que es correcto; a19 (arriba) solo acepta español.
 
-Con 20 tareas cada uno de estos casos mueve 5 puntos. Mejoras para la siguiente versión del
-banco: comprobar el valor del PRR en a17, exigir que las respuestas de `rlm` y del resto no
-contengan observaciones escritas por el modelo, aceptar "1000 mg/día" o "500 mg dos veces al día"
-en a08 y aceptar la negativa en inglés en las imposibles.
+Con 20 tareas cada uno de estos casos mueve 5 puntos.
+
+### Comprobaciones corregidas (v2) y la misma evaluación recalculada
+
+Corregidas en `agent/bench/tasks.jsonl`: a17 exige las dos partes de la tarea (que la ficha recoge
+el edema y el PRR real, ≈ 3,49); a08 acepta "1000 mg" o "500 mg dos veces al día"; a19 y a20
+aceptan la negativa también en inglés, y a20 también un recuento etiquetado como mundial. La
+evaluación de arriba, recalculada con ellas sin volver a ejecutar el agente
+(`python -m agent.evaluate --rescore reports/phase4_eval_1.7b.json`):
+
+| Agente | Cerebro | Éxito (v1) | Éxito (v2) | Tareas que cambian |
+|---|---|---|---|---|
+| ReAct | `base` | 55 % | **60 %** | +a08, +a19; −a17 (el PRR bien, pero nada de la ficha) |
+| ReAct | `rlm` | 10 % | 5 % | −a17 (falso positivo con números inventados) |
+| ReAct | `thinking` | 55 % | **65 %** | +a08, +a19 |
+| Código | `thinking` | 35 % | 35 % | −a17, +a19 |
+| Código | `base` | 40 % | 40 % | — |
+
+Fuente: `reports/phase4_eval_1.7b_checks_v2.json`. Las conclusiones no cambian (`rlm` no sirve
+como cerebro, JSON mejor que código); con las comprobaciones justas, `thinking` pasa por delante
+de `base`. Las comparaciones con evaluaciones posteriores se hacen con las v2.
 
 ## Primera evaluación (RTX 5070, 0,6B y 1,7B)
 
@@ -165,9 +219,34 @@ Fuente: `reports/phase4_eval.json`.
 
 ## Pendiente
 
-Reforzar las tareas imposibles en el prompt ("si los datos no corresponden a lo que se pregunta
-—país, año—, dilo") y corregir las comprobaciones débiles del banco (ver "Límites de la
-evaluación").
+**Cambios hechos después de esta evaluación, todavía sin medir:**
+- Prompt reforzado para las tareas imposibles, en ReAct (`agent/prompts.py`) y en el agente de
+  código: FAERS no filtra por país ni por fecha, una acción sin herramienta no se sustituye por
+  otra, y lo que no se puede hacer se dice en el idioma del usuario.
+- `faers_reaction_counts` devuelve en cada resultado su alcance ("worldwide reports of all
+  years; no filter by country or date").
+- `create_icsr_report` devuelve todos los problemas juntos.
+- La observación de una acción retenida está redactada como instrucción ("no la repitas; llama a
+  `final_answer` diciendo al usuario, en su idioma, que está pendiente"): probando la API, el modelo
+  copiaba el mensaje anterior, en inglés, como respuesta al usuario.
+- La generación de cada paso se corta al cerrar la primera llamada (`</tool_call>`). Antes, el
+  modelo seguía escribiendo la traza que esperaba, con observaciones y pasos inventados (hasta 512
+  tokens que luego se descartaban): era lo que la regla de "una acción por paso" tenía que
+  limpiar. Probado con el modelo real: pensamientos limpios, dos pasos y 14 s para la tarea de la
+  calculadora en el portátil.
+- Confirmación humana: `POST /agent/confirm` ejecuta exactamente la acción retenida que la
+  persona revisó (y el visor tiene un botón para hacerlo). Con el `session_id`, el resultado entra
+  en esa conversación y el agente da un paso más para contárselo al usuario: probado con el modelo
+  real, informa del id real del informe y del plazo de 90 días.
+- El modelo de la fase 1 (`/reasoning` y la herramienta `code_meddra`) genera en greedy con 2 048
+  tokens, como `rlm/evaluate.py`. Antes muestreaba a temperatura 0,6 con 1 024 tokens. Las cifras
+  de la fase 1 no se ven afectadas (salen de `evaluate.py`, siempre greedy); en esta evaluación
+  del agente, `code_meddra` solo se llamó en 5 de las 100 ejecuciones y en ninguna tarea era la
+  herramienta necesaria.
+
+Falta volver a evaluar los cerebros con estos cambios (unas 2,5 h en la DGX) y, en la misma
+tanda, corregir las comprobaciones débiles del banco (ver "Límites de la evaluación"). Las cifras
+de esta página son las de antes de estos cambios.
 
 ## Reproducir
 
